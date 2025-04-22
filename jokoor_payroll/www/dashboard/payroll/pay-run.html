@@ -1,0 +1,1232 @@
+{% extends "templates/web.html" %}
+
+{% block head_include %}
+<!-- Link to global styles -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/dashboard/styles/global.css">
+<style>
+    /* Page-specific styling for pay run */
+    body.custom-dashboard .payroll-status {
+        display: inline-block !important;
+        padding: 4px 10px !important;
+        border-radius: 6px !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        margin-left: 10px !important;
+    }
+    
+    body.custom-dashboard .status-draft {
+        background-color: #f3f4f6 !important;
+        color: #6b7280 !important;
+    }
+    
+    body.custom-dashboard .status-processing {
+        background-color: #fffaeb !important;
+        color: #f59e0b !important;
+    }
+    
+    body.custom-dashboard .status-completed {
+        background-color: #ecfdf3 !important;
+        color: #10b981 !important;
+    }
+    
+    body.custom-dashboard .employee-card {
+        cursor: pointer !important;
+        transition: all 0.2s !important;
+    }
+    
+    body.custom-dashboard .employee-card:hover {
+        transform: translateY(-3px) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+    }
+    
+    body.custom-dashboard .summary-value {
+        font-size: 24px !important;
+        font-weight: 600 !important;
+        color: #344054 !important;
+    }
+    
+    body.custom-dashboard .summary-label {
+        font-size: 13px !important;
+        color: #6b7280 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+    }
+    
+    body.custom-dashboard .pay-day-box {
+        text-align: center !important;
+        padding: 20px !important;
+        border-left: 1px solid #e5e7eb !important;
+    }
+    
+    body.custom-dashboard .pay-day-number {
+        font-size: 45px !important;
+        font-weight: 700 !important;
+        line-height: 1 !important;
+        color: #344054 !important;
+    }
+    
+    body.custom-dashboard .pay-day-month {
+        font-size: 14px !important;
+        text-transform: uppercase !important;
+        color: #6b7280 !important;
+        letter-spacing: 1px !important;
+    }
+    
+    body.custom-dashboard .employees-count {
+        font-size: 14px !important;
+        color: #6b7280 !important;
+        margin-top: 5px !important;
+    }
+    
+    body.custom-dashboard .task-alert {
+        background-color: #fff9e6 !important;
+        border-left: 4px solid #f59e0b !important;
+        padding: 16px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    body.custom-dashboard .nav-tabs .nav-link {
+        font-weight: 500 !important;
+        padding: 12px 16px !important;
+        color: #6b7280 !important;
+    }
+    
+    body.custom-dashboard .nav-tabs .nav-link.active {
+        font-weight: 600 !important;
+        color: #7d5fd2 !important;
+        border-bottom: 2px solid #7d5fd2 !important;
+    }
+    
+    body.custom-dashboard .edit-days {
+        color: #7d5fd2 !important;
+        cursor: pointer !important;
+        font-size: 14px !important;
+    }
+    
+    body.custom-dashboard .component-item {
+        display: flex !important;
+        justify-content: space-between !important;
+        padding: 12px 0 !important;
+        border-bottom: 1px solid #f0f0f5 !important;
+    }
+    
+    body.custom-dashboard .component-label {
+        font-weight: 500 !important;
+        color: #4b5563 !important;
+    }
+    
+    body.custom-dashboard .component-value {
+        font-weight: 600 !important;
+        color: #111827 !important;
+        text-align: right !important;
+    }
+    
+    body.custom-dashboard .component-total {
+        font-weight: 700 !important;
+        font-size: 18px !important;
+        color: #111827 !important;
+    }
+    
+    body.custom-dashboard .employee-row {
+        cursor: pointer !important;
+    }
+    
+    body.custom-dashboard .employee-row:hover {
+        background-color: #f9f7ff !important;
+    }
+    
+    body.custom-dashboard .employee-row.selected {
+        background-color: #f3f0ff !important;
+    }
+    
+    body.custom-dashboard .employee-action-btn {
+        border-radius: 4px !important;
+        color: #7d5fd2 !important;
+        border: 1px solid #e9e1fb !important;
+        background-color: #f9f7ff !important;
+        padding: 5px 8px !important;
+        font-size: 12px !important;
+    }
+    
+    body.custom-dashboard .employee-action-btn:hover {
+        background-color: #f3f0ff !important;
+    }
+</style>
+{% endblock %}
+
+{% block title %}Pay Run | Jokoor Payroll{% endblock %}
+
+{% block header %}
+<!-- Override the header to remove Frappe's default header -->
+{% endblock %}
+
+{% block navbar %}
+<!-- Override navbar to remove Frappe's default navbar -->
+{% endblock %}
+
+{% block footer %}
+<!-- Override footer to remove Frappe's default footer -->
+{% endblock %}
+
+{% block content %}
+<div class="custom-dashboard">
+    <!-- Sidebar -->
+    {% include "templates/includes/dashboard/sidebar.html" %}
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="mb-4">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-sm btn-light me-3" onclick="history.back()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2 class="fw-bold mb-0">Regular Payroll <span class="payroll-status status-draft">Draft</span></h2>
+            </div>
+        </header>
+        
+        <!-- Task Alert -->
+        <div class="task-alert">
+            <p class="mb-1">You're yet to fetch pay run data from Zoho People for this pay run.</p>
+            <p class="mb-0 fw-medium">+1 more task(s) to be completed before you approve this payroll.</p>
+        </div>
+        
+        <!-- Pay Period Details -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card card-style">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-3">Period: December 2022 
+                                    <span class="ms-2 edit-days">
+                                        <i class="fas fa-pencil-alt"></i>
+                                        <span>30 Base Days</span>
+                                    </span>
+                                </h6>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <div class="summary-value">₹1,79,84,053.00</div>
+                                            <div class="summary-label">Payroll Cost</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <div class="summary-value">₹1,17,82,743.00</div>
+                                            <div class="summary-label">Employees' Net Pay</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="pay-day-box">
+                                <div class="pay-day-number">30</div>
+                                <div class="pay-day-month">Dec, 2022</div>
+                                <div class="employees-count">28 Employees</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tabs Navigation -->
+        <ul class="nav nav-tabs mt-4 mb-3" id="payrollTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="employee-tab" data-bs-toggle="tab" data-bs-target="#employee-summary" type="button" role="tab" aria-controls="employee-summary" aria-selected="true">Employee Summary</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="taxes-tab" data-bs-toggle="tab" data-bs-target="#taxes-deductions" type="button" role="tab" aria-controls="taxes-deductions" aria-selected="false">Taxes & Deductions</button>
+            </li>
+        </ul>
+        
+        <!-- Tab Content -->
+        <div class="tab-content" id="payrollTabContent">
+            <!-- Employee Summary Tab -->
+            <div class="tab-pane fade show active" id="employee-summary" role="tabpanel" aria-labelledby="employee-tab">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="employeeFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-filter me-1"></i> All Employees
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="employeeFilterDropdown">
+                            <li><a class="dropdown-item" href="#">All Employees</a></li>
+                            <li><a class="dropdown-item" href="#">By Department</a></li>
+                            <li><a class="dropdown-item" href="#">By Location</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">With Issues</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="form-control rounded-pill search-input" id="searchEmployee" placeholder="Search employee">
+                    </div>
+                </div>
+                
+                <div class="card card-style">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="dashboard-table" id="employeeTable">
+                                <thead>
+                                    <tr>
+                                        <th>Employee Name</th>
+                                        <th>Paid Days</th>
+                                        <th>Gross Pay</th>
+                                        <th>Deductions</th>
+                                        <th>Tax</th>
+                                        <th>Net Pay</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="employee-row" data-employee-id="103-355" data-bs-toggle="modal" data-bs-target="#employeeDetailsModal">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="fw-medium">Sandeep Lamichaane</div>
+                                                <div class="text-muted ms-2">(103-355)</div>
+                                            </div>
+                                        </td>
+                                        <td>30</td>
+                                        <td>₹2,30,383.00</td>
+                                        <td>₹0.00</td>
+                                        <td>₹35,035.00</td>
+                                        <td>₹1,93,548.00</td>
+                                    </tr>
+                                    <tr class="employee-row" data-employee-id="PER-111" data-bs-toggle="modal" data-bs-target="#employeeDetailsModal">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="fw-medium">Kenneth Parker</div>
+                                                <div class="text-muted ms-2">(PER 111)</div>
+                                            </div>
+                                        </td>
+                                        <td>30</td>
+                                        <td>₹1,18,050.00</td>
+                                        <td>₹500.00</td>
+                                        <td>₹18,450.00</td>
+                                        <td>₹99,100.00</td>
+                                    </tr>
+                                    <tr class="employee-row" data-employee-id="PER-6756" data-bs-toggle="modal" data-bs-target="#employeeDetailsModal">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="fw-medium">Sagar Elias Jacky</div>
+                                                <div class="text-muted ms-2">(PER 6756)</div>
+                                            </div>
+                                        </td>
+                                        <td>30</td>
+                                        <td>₹10,83,333.00</td>
+                                        <td>₹0.00</td>
+                                        <td>₹3,68,518.00</td>
+                                        <td>₹7,14,815.00</td>
+                                    </tr>
+                                    <tr class="employee-row" data-employee-id="PER-5634" data-bs-toggle="modal" data-bs-target="#employeeDetailsModal">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="fw-medium">Rachel Greene</div>
+                                                <div class="text-muted ms-2">(PER 5634)</div>
+                                            </div>
+                                        </td>
+                                        <td>30</td>
+                                        <td>₹66,667.00</td>
+                                        <td>₹500.00</td>
+                                        <td>₹5,495.00</td>
+                                        <td>₹60,672.00</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Taxes & Deductions Tab -->
+            <div class="tab-pane fade" id="taxes-deductions" role="tabpanel" aria-labelledby="taxes-tab">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card card-style">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Taxes</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="component-item">
+                                    <div class="component-label">Income Tax</div>
+                                    <div class="component-value">₹64,35,126.00</div>
+                                </div>
+                                <div class="component-item">
+                                    <div class="component-label">Professional Tax</div>
+                                    <div class="component-value">₹42,000.00</div>
+                                </div>
+                                <div class="component-item">
+                                    <div class="component-label fw-bold">Total Taxes</div>
+                                    <div class="component-value fw-bold">₹64,77,126.00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card card-style">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Pre-Tax Deductions</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="component-item">
+                                    <div class="component-label">EPF Contribution</div>
+                                    <div class="component-value">₹5,04,000.00</div>
+                                </div>
+                                <div class="component-item">
+                                    <div class="component-label fw-bold">Total Pre-Tax</div>
+                                    <div class="component-value fw-bold">₹5,04,000.00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card card-style">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Post-Tax Deductions</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="component-item">
+                                    <div class="component-label">Health Insurance</div>
+                                    <div class="component-value">₹14,000.00</div>
+                                </div>
+                                <div class="component-item">
+                                    <div class="component-label">Salary Advance</div>
+                                    <div class="component-value">₹35,000.00</div>
+                                </div>
+                                <div class="component-item">
+                                    <div class="component-label fw-bold">Total Post-Tax</div>
+                                    <div class="component-value fw-bold">₹49,000.00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="d-flex justify-content-end mt-4 mb-5">
+            <button class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#importExcelModal">
+                <i class="fas fa-file-import me-1"></i> Import Components
+            </button>
+            <button class="btn btn-outline-primary me-2" id="downloadTemplateBtn">
+                <i class="fas fa-download me-1"></i> Excel Template
+            </button>
+            <button class="btn btn-outline-secondary me-2">
+                <i class="fas fa-download me-1"></i> Download Report
+            </button>
+            <button class="btn btn-primary">
+                <i class="fas fa-check-circle me-1"></i> Approve Payroll
+            </button>
+        </div>
+    </div>
+    
+    <!-- Employee Details Modal -->
+    <div class="modal fade" id="employeeDetailsModal" tabindex="-1" aria-labelledby="employeeDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header d-block">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="modal-title" id="employeeDetailsModalLabel">Sandeep Lamichaane</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <div class="text-muted">Emp. ID: 103-355</div>
+                        <div class="text-end">
+                            <div class="fw-bold fs-4">₹1,93,548.00</div>
+                            <div class="text-muted">Net Pay</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <!-- Earnings Section -->
+                            <h6 class="mb-3 fw-bold">Earnings</h6>
+                            
+                            <div class="component-item">
+                                <div class="component-label">Basic</div>
+                                <div class="component-value">₹79,167.00</div>
+                            </div>
+                            
+                            <div class="component-item">
+                                <div class="component-label">Basic Arrear</div>
+                                <div class="component-value">₹37,500.00</div>
+                            </div>
+                            
+                            <div class="component-item">
+                                <div class="component-label">House Rent Allowance</div>
+                                <div class="component-value">₹39,584.00</div>
+                            </div>
+                            
+                            <div class="component-item">
+                                <div class="component-label">House Rent Allowance Arrear</div>
+                                <div class="component-value">₹18,750.00</div>
+                            </div>
+                            
+                            <div class="component-item">
+                                <div class="component-label">Fixed Allowance</div>
+                                <div class="component-value">₹36,632.00</div>
+                            </div>
+                            
+                            <div class="component-item">
+                                <div class="component-label">Fixed Allowance Arrear</div>
+                                <div class="component-value">₹18,750.00</div>
+                            </div>
+                            
+                            <div class="component-item">
+                                <div class="component-label fw-bold">Total Earnings</div>
+                                <div class="component-value fw-bold">₹2,30,383.00</div>
+                            </div>
+                            
+                            <div class="mt-4 mb-3">
+                                <button class="employee-action-btn" id="addEarningBtn">
+                                    <i class="fas fa-plus"></i> Add Earning
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <!-- Deductions Section -->
+                            <h6 class="mb-3 fw-bold">Deductions</h6>
+                            
+                            <div class="component-item">
+                                <div class="component-label">EPF Contribution</div>
+                                <div class="component-value">₹1,800.00</div>
+                            </div>
+                            
+                            <div class="component-item">
+                                <div class="component-label">Income Tax</div>
+                                <div class="component-value">₹35,035.00</div>
+                            </div>
+                            
+                            <div class="component-item">
+                                <div class="component-label">TN Professional Tax</div>
+                                <div class="component-value">₹0.00</div>
+                            </div>
+                            
+                            <div class="component-item">
+                                <div class="component-label fw-bold">Total Deductions</div>
+                                <div class="component-value fw-bold">₹36,835.00</div>
+                            </div>
+                            
+                            <div class="mt-4 mb-3">
+                                <button class="employee-action-btn" id="addDeductionBtn">
+                                    <i class="fas fa-plus"></i> Add Deduction
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveEmployeeChanges">
+                        <i class="fas fa-save me-1"></i> Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Component Modal -->
+    <div class="modal fade" id="addComponentModal" tabindex="-1" aria-labelledby="addComponentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addComponentModalLabel">Add Component</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addComponentForm">
+                        <div class="mb-3">
+                            <label for="componentType" class="form-label">Component Type</label>
+                            <select class="form-select" id="componentType" required>
+                                <option value="" selected disabled>Select type</option>
+                                <option value="earning">Earning</option>
+                                <option value="deduction">Deduction</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="componentName" class="form-label">Component</label>
+                            <select class="form-select" id="componentName" required disabled>
+                                <option value="" selected disabled>Select component</option>
+                                <!-- Options will be loaded dynamically based on selected type -->
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="componentValue" class="form-label">Value</label>
+                            <input type="number" class="form-control" id="componentValue" placeholder="Enter amount" required>
+                        </div>
+                        
+                        <input type="hidden" id="employeeId">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveComponent">
+                        <i class="fas fa-save me-1"></i> Add Component
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Excel Import Modal -->
+    <div class="modal fade" id="importExcelModal" tabindex="-1" aria-labelledby="importExcelModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importExcelModalLabel">Import Components from Excel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-4">
+                        <p class="mb-1">Upload an Excel file containing employee salary components for this pay run.</p>
+                        <p class="text-muted small">Make sure to use the template format for proper import. <a href="#" id="downloadTemplateLink">Download template</a></p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="importFileInput" class="form-label">Select Excel File</label>
+                        <input class="form-control" type="file" id="importFileInput" accept=".xlsx, .xls">
+                        <div class="form-text">Accepted formats: .xlsx, .xls</div>
+                    </div>
+                    
+                    <div class="import-options mb-3">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="replaceExistingCheck" checked>
+                            <label class="form-check-label" for="replaceExistingCheck">
+                                Replace existing components when identical
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="skipErrorRowsCheck">
+                            <label class="form-check-label" for="skipErrorRowsCheck">
+                                Skip rows with errors
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div id="importPreviewArea" class="d-none">
+                        <h6 class="mb-3">Import Preview</h6>
+                        <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr class="table-light">
+                                        <th>Employee ID</th>
+                                        <th>Component</th>
+                                        <th>Type</th>
+                                        <th>Value</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="previewTableBody">
+                                    <!-- Preview data will be inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div>
+                                <span class="badge bg-success me-1">Valid: <span id="validCount">0</span></span>
+                                <span class="badge bg-danger">Errors: <span id="errorCount">0</span></span>
+                            </div>
+                            <button class="btn btn-sm btn-outline-secondary" id="toggleAllRowsBtn">Show All Rows</button>
+                        </div>
+                    </div>
+                    
+                    <div id="importProgressArea" class="d-none">
+                        <h6 class="mb-3">Import Progress</h6>
+                        <div class="progress mb-3">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" id="importProgressBar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <p class="text-center" id="importStatusText">Processing...</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="previewImportBtn">
+                        <i class="fas fa-eye me-1"></i> Preview Import
+                    </button>
+                    <button type="button" class="btn btn-success d-none" id="confirmImportBtn">
+                        <i class="fas fa-file-import me-1"></i> Confirm Import
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+    // Add custom class to body to enable our custom styles
+    document.body.classList.add('custom-dashboard');
+    
+    $(document).ready(function() {
+        // Set the active menu item in the sidebar
+        const payrollMenuItem = document.querySelector('.sidebar-item[href*="payroll"]');
+        if (payrollMenuItem) {
+            payrollMenuItem.classList.add('active');
+        }
+        
+        // Initialize employee components data (dummy data)
+        const employeeComponents = {
+            '103-355': {
+                name: 'Sandeep Lamichaane',
+                earnings: [
+                    { name: 'Basic', value: 79167.00 },
+                    { name: 'Basic Arrear', value: 37500.00 },
+                    { name: 'House Rent Allowance', value: 39584.00 },
+                    { name: 'House Rent Allowance Arrear', value: 18750.00 },
+                    { name: 'Fixed Allowance', value: 36632.00 },
+                    { name: 'Fixed Allowance Arrear', value: 18750.00 }
+                ],
+                deductions: [
+                    { name: 'EPF Contribution', value: 1800.00 },
+                    { name: 'Income Tax', value: 35035.00 },
+                    { name: 'TN Professional Tax', value: 0.00 }
+                ]
+            },
+            'PER-111': {
+                name: 'Kenneth Parker',
+                earnings: [
+                    { name: 'Basic', value: 50000.00 },
+                    { name: 'House Rent Allowance', value: 25000.00 },
+                    { name: 'Fixed Allowance', value: 43050.00 }
+                ],
+                deductions: [
+                    { name: 'EPF Contribution', value: 500.00 },
+                    { name: 'Income Tax', value: 18450.00 }
+                ]
+            },
+            'PER-6756': {
+                name: 'Sagar Elias Jacky',
+                earnings: [
+                    { name: 'Basic', value: 350000.00 },
+                    { name: 'House Rent Allowance', value: 175000.00 },
+                    { name: 'Fixed Allowance', value: 558333.00 }
+                ],
+                deductions: [
+                    { name: 'Income Tax', value: 368518.00 }
+                ]
+            },
+            'PER-5634': {
+                name: 'Rachel Greene',
+                earnings: [
+                    { name: 'Basic', value: 30000.00 },
+                    { name: 'House Rent Allowance', value: 15000.00 },
+                    { name: 'Fixed Allowance', value: 21667.00 }
+                ],
+                deductions: [
+                    { name: 'EPF Contribution', value: 500.00 },
+                    { name: 'Income Tax', value: 5495.00 }
+                ]
+            }
+        };
+        
+        // Available components for selection
+        const availableComponents = {
+            earning: [
+                { id: 'basic', name: 'Basic' },
+                { id: 'hra', name: 'House Rent Allowance' },
+                { id: 'fa', name: 'Fixed Allowance' },
+                { id: 'ba', name: 'Basic Arrear' },
+                { id: 'hraa', name: 'House Rent Allowance Arrear' },
+                { id: 'faa', name: 'Fixed Allowance Arrear' },
+                { id: 'bonus', name: 'Bonus' },
+                { id: 'performance_bonus', name: 'Performance Bonus' },
+                { id: 'special_allowance', name: 'Special Allowance' }
+            ],
+            deduction: [
+                { id: 'epf', name: 'EPF Contribution' },
+                { id: 'income_tax', name: 'Income Tax' },
+                { id: 'prof_tax', name: 'Professional Tax' },
+                { id: 'health_insurance', name: 'Health Insurance' },
+                { id: 'salary_advance', name: 'Salary Advance' },
+                { id: 'loan_deduction', name: 'Loan Deduction' }
+            ]
+        };
+        
+        // Handle employee row click
+        $('.employee-row').on('click', function() {
+            const employeeId = $(this).data('employee-id');
+            const employeeData = employeeComponents[employeeId];
+            
+            // Update modal title
+            $('#employeeDetailsModalLabel').text(employeeData.name);
+            
+            // Clear existing component items
+            $('.modal-body .component-item').not(':last-child').remove();
+            
+            // Populate earnings
+            let totalEarnings = 0;
+            employeeData.earnings.forEach(function(earning) {
+                totalEarnings += earning.value;
+                
+                const earningItem = `
+                    <div class="component-item">
+                        <div class="component-label">${earning.name}</div>
+                        <div class="component-value">₹${earning.value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</div>
+                    </div>
+                `;
+                
+                $(earningItem).insertBefore($('.col-md-6:first-child .component-item:last-child'));
+            });
+            
+            // Update total earnings
+            $('.col-md-6:first-child .component-value.fw-bold').text(
+                `₹${totalEarnings.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
+            );
+            
+            // Populate deductions
+            let totalDeductions = 0;
+            employeeData.deductions.forEach(function(deduction) {
+                totalDeductions += deduction.value;
+                
+                const deductionItem = `
+                    <div class="component-item">
+                        <div class="component-label">${deduction.name}</div>
+                        <div class="component-value">₹${deduction.value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</div>
+                    </div>
+                `;
+                
+                $(deductionItem).insertBefore($('.col-md-6:last-child .component-item:last-child'));
+            });
+            
+            // Update total deductions
+            $('.col-md-6:last-child .component-value.fw-bold').text(
+                `₹${totalDeductions.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`
+            );
+            
+            // Store employee ID for add component functionality
+            $('#employeeId').val(employeeId);
+        });
+        
+        // Handle add earning button click
+        $('#addEarningBtn').on('click', function() {
+            $('#componentType').val('earning');
+            populateComponentOptions('earning');
+            $('#addComponentModalLabel').text('Add Earning');
+            $('#addComponentModal').modal('show');
+        });
+        
+        // Handle add deduction button click
+        $('#addDeductionBtn').on('click', function() {
+            $('#componentType').val('deduction');
+            populateComponentOptions('deduction');
+            $('#addComponentModalLabel').text('Add Deduction');
+            $('#addComponentModal').modal('show');
+        });
+        
+        // Component type change
+        $('#componentType').on('change', function() {
+            const type = $(this).val();
+            populateComponentOptions(type);
+        });
+        
+        // Save component
+        $('#saveComponent').on('click', function() {
+            if (!$('#addComponentForm')[0].checkValidity()) {
+                $('#addComponentForm')[0].reportValidity();
+                return;
+            }
+            
+            const employeeId = $('#employeeId').val();
+            const type = $('#componentType').val();
+            const componentName = $('#componentName option:selected').text();
+            const value = parseFloat($('#componentValue').val());
+            
+            // Add to employee data
+            if (type === 'earning') {
+                employeeComponents[employeeId].earnings.push({
+                    name: componentName,
+                    value: value
+                });
+            } else {
+                employeeComponents[employeeId].deductions.push({
+                    name: componentName,
+                    value: value
+                });
+            }
+            
+            // Close modal
+            $('#addComponentModal').modal('hide');
+            
+            // Reopen employee details modal
+            // This will refresh the components display
+            $('.employee-row[data-employee-id="' + employeeId + '"]').click();
+            
+            // Show success message
+            showToast(`${type.charAt(0).toUpperCase() + type.slice(1)} component added successfully`);
+        });
+        
+        // Search functionality
+        $('#searchEmployee').on('input', function() {
+            const searchTerm = $(this).val().toLowerCase();
+            
+            $('.employee-row').each(function() {
+                const text = $(this).text().toLowerCase();
+                $(this).toggle(text.indexOf(searchTerm) > -1);
+            });
+        });
+    });
+    
+    // Populate component options based on type
+    function populateComponentOptions(type) {
+        const componentSelect = $('#componentName');
+        componentSelect.empty();
+        componentSelect.append('<option value="" selected disabled>Select component</option>');
+        
+        if (type) {
+            // Enable the select
+            componentSelect.prop('disabled', false);
+            
+            // Add options
+            availableComponents[type].forEach(function(component) {
+                componentSelect.append(`<option value="${component.id}">${component.name}</option>`);
+            });
+        } else {
+            componentSelect.prop('disabled', true);
+        }
+    }
+    
+    // Show toast message
+    function showToast(message) {
+        const toast = $(`
+            <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
+                <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <strong class="me-auto">Success</strong> 
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                </div>
+            </div>
+        `);
+        
+        $('body').append(toast);
+        
+        setTimeout(function() {
+            toast.remove();
+        }, 3000);
+    }
+    
+    // Handle download template button click
+    $('#downloadTemplateBtn, #downloadTemplateLink').on('click', function(e) {
+        e.preventDefault();
+        downloadExcelTemplate();
+    });
+    
+    // Generate and download Excel template
+    function downloadExcelTemplate() {
+        // Create workbook and worksheet
+        const wb = XLSX.utils.book_new();
+        
+        // Create headers
+        const headers = ["Employee ID", "Employee Name", "Component Type", "Component Name", "Value"];
+        
+        // Create sample data rows
+        const sampleData = [
+            ["103-355", "Sandeep Lamichaane", "earning", "Bonus", "10000"],
+            ["PER-111", "Kenneth Parker", "deduction", "Health Insurance", "500"],
+            ["", "", "", "", ""]
+        ];
+        
+        // Combine headers and data
+        const wsData = [headers, ...sampleData];
+        
+        // Create worksheet
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
+        
+        // Add worksheet to workbook
+        XLSX.utils.book_append_sheet(wb, ws, "Components Template");
+        
+        // Add a help/instructions sheet
+        const instructionsData = [
+            ["Instructions for filling the template:"],
+            [""],
+            ["1. Employee ID: Must match an employee ID in the system (e.g., 103-355, PER-111)"],
+            ["2. Employee Name: For reference only, not used during import"],
+            ["3. Component Type: Must be either 'earning' or 'deduction'"],
+            ["4. Component Name: Must match a component name in the system"],
+            ["5. Value: Numeric value for the component (without currency symbol)"],
+            [""],
+            ["Available Component Names for Earnings:"],
+            ["Basic", "", "", "Available Component Names for Deductions:"],
+            ["House Rent Allowance", "", "", "EPF Contribution"],
+            ["Fixed Allowance", "", "", "Income Tax"],
+            ["Basic Arrear", "", "", "Professional Tax"],
+            ["House Rent Allowance Arrear", "", "", "Health Insurance"],
+            ["Fixed Allowance Arrear", "", "", "Salary Advance"],
+            ["Bonus", "", "", "Loan Deduction"],
+            ["Performance Bonus", "", "", ""],
+            ["Special Allowance", "", "", ""]
+        ];
+        
+        const wsInstructions = XLSX.utils.aoa_to_sheet(instructionsData);
+        XLSX.utils.book_append_sheet(wb, wsInstructions, "Instructions");
+        
+        // Generate download
+        showLoadingOverlay("Generating Excel template...");
+        setTimeout(function() {
+            hideLoadingOverlay();
+            XLSX.writeFile(wb, "payroll_components_template.xlsx");
+            showToast("Template downloaded successfully");
+        }, 1000);
+    }
+    
+    // Handle preview import button click
+    $('#previewImportBtn').on('click', function() {
+        const fileInput = document.getElementById('importFileInput');
+        if (!fileInput.files || fileInput.files.length === 0) {
+            alert("Please select an Excel file to import");
+            return;
+        }
+        
+        const file = fileInput.files[0];
+        
+        // Show loading for the preview
+        $('#previewImportBtn').html('<i class="fas fa-spinner fa-spin me-1"></i> Processing...');
+        $('#previewImportBtn').prop('disabled', true);
+        
+        // Read the Excel file
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                
+                // Get first sheet
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                
+                // Convert to JSON
+                const excelData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                
+                // Process data (skip header row)
+                processExcelData(excelData.slice(1));
+                
+                // Show preview area
+                $('#importPreviewArea').removeClass('d-none');
+                $('#previewImportBtn').addClass('d-none');
+                $('#confirmImportBtn').removeClass('d-none');
+                
+            } catch (error) {
+                console.error("Error processing Excel file:", error);
+                alert("Error processing the Excel file. Please check the format and try again.");
+            }
+            
+            // Reset button
+            $('#previewImportBtn').html('<i class="fas fa-eye me-1"></i> Preview Import');
+            $('#previewImportBtn').prop('disabled', false);
+        };
+        
+        reader.onerror = function() {
+            alert("Error reading the file. Please try again.");
+            $('#previewImportBtn').html('<i class="fas fa-eye me-1"></i> Preview Import');
+            $('#previewImportBtn').prop('disabled', false);
+        };
+        
+        reader.readAsArrayBuffer(file);
+    });
+    
+    // Process Excel data for preview
+    function processExcelData(data) {
+        let validCount = 0;
+        let errorCount = 0;
+        const previewTableBody = $('#previewTableBody');
+        previewTableBody.empty();
+        
+        data.forEach(function(row, index) {
+            // Skip empty rows
+            if (row.length === 0 || (row.length === 1 && !row[0])) {
+                return;
+            }
+            
+            const employeeId = row[0] || '';
+            const componentType = (row[2] || '').toLowerCase();
+            const componentName = row[3] || '';
+            const value = row[4] || '';
+            
+            // Validate data
+            let isValid = true;
+            let errorMessage = '';
+            
+            if (!employeeId) {
+                isValid = false;
+                errorMessage = 'Missing employee ID';
+            } else if (!employeeComponents[employeeId]) {
+                isValid = false;
+                errorMessage = 'Employee ID not found';
+            } else if (!componentType || (componentType !== 'earning' && componentType !== 'deduction')) {
+                isValid = false;
+                errorMessage = 'Invalid component type';
+            } else if (!componentName) {
+                isValid = false;
+                errorMessage = 'Missing component name';
+            } else if (!value || isNaN(parseFloat(value))) {
+                isValid = false;
+                errorMessage = 'Invalid value';
+            }
+            
+            // Check if component exists
+            if (isValid) {
+                const componentExists = availableComponents[componentType].some(comp => 
+                    comp.name.toLowerCase() === componentName.toLowerCase()
+                );
+                
+                if (!componentExists) {
+                    isValid = false;
+                    errorMessage = 'Component not found';
+                }
+            }
+            
+            // Create row HTML
+            const rowHtml = `
+                <tr class="${isValid ? '' : 'table-danger'}">
+                    <td>${employeeId}</td>
+                    <td>${componentName}</td>
+                    <td>${componentType}</td>
+                    <td>₹${parseFloat(value).toFixed(2)}</td>
+                    <td>${isValid ? '<span class="text-success">Valid</span>' : '<span class="text-danger">' + errorMessage + '</span>'}</td>
+                </tr>
+            `;
+            
+            previewTableBody.append(rowHtml);
+            
+            // Count valid and error rows
+            if (isValid) {
+                validCount++;
+            } else {
+                errorCount++;
+            }
+        });
+        
+        // Update counters
+        $('#validCount').text(validCount);
+        $('#errorCount').text(errorCount);
+        
+        // Handle empty preview
+        if (previewTableBody.children().length === 0) {
+            previewTableBody.append(`
+                <tr>
+                    <td colspan="5" class="text-center">No data found in the Excel file or all rows were empty</td>
+                </tr>
+            `);
+        }
+    }
+    
+    // Handle confirm import button click
+    $('#confirmImportBtn').on('click', function() {
+        const skipErrors = $('#skipErrorRowsCheck').is(':checked');
+        const errorCount = parseInt($('#errorCount').text());
+        
+        // Check if we can proceed with import
+        if (errorCount > 0 && !skipErrors) {
+            if (!confirm(`There are ${errorCount} rows with errors. Do you want to proceed anyway? Only valid rows will be imported.`)) {
+                return;
+            }
+        }
+        
+        // Hide preview and show progress
+        $('#importPreviewArea').addClass('d-none');
+        $('#importProgressArea').removeClass('d-none');
+        $('#confirmImportBtn').prop('disabled', true);
+        
+        // Simulate import process with progress
+        simulateImportProcess();
+    });
+    
+    // Simulate import process
+    function simulateImportProcess() {
+        const validCount = parseInt($('#validCount').text());
+        const progressBar = $('#importProgressBar');
+        let progress = 0;
+        
+        const interval = setInterval(function() {
+            progress += 5;
+            progressBar.css('width', progress + '%');
+            progressBar.attr('aria-valuenow', progress);
+            
+            if (progress >= 100) {
+                clearInterval(interval);
+                completeImport();
+            }
+        }, 200);
+        
+        $('#importStatusText').text(`Processing ${validCount} components...`);
+    }
+    
+    // Complete import process
+    function completeImport() {
+        const validCount = parseInt($('#validCount').text());
+        $('#importStatusText').html(`<span class="text-success"><i class="fas fa-check-circle me-1"></i> Successfully imported ${validCount} components</span>`);
+        
+        // Update button
+        $('#confirmImportBtn').html('<i class="fas fa-check me-1"></i> Done');
+        $('#confirmImportBtn').removeClass('btn-success').addClass('btn-outline-success');
+        $('#confirmImportBtn').prop('disabled', false);
+        $('#confirmImportBtn').off('click').on('click', function() {
+            $('#importExcelModal').modal('hide');
+            
+            // Show success message
+            showToast(`Successfully imported ${validCount} components`);
+            
+            // Refresh employee table (in a real implementation, this would fetch updated data)
+            // For demo, we'll just simulate the refresh
+            showLoadingOverlay("Refreshing employee data...");
+            setTimeout(function() {
+                hideLoadingOverlay();
+            }, 1000);
+        });
+    }
+    
+    // Toggle showing all rows in preview
+    $('#toggleAllRowsBtn').on('click', function() {
+        const button = $(this);
+        const allRows = $('#previewTableBody tr');
+        const errorRows = $('#previewTableBody tr.table-danger');
+        
+        if (button.text() === 'Show Valid Only') {
+            errorRows.show();
+            button.text('Show Valid Only');
+        } else {
+            errorRows.hide();
+            button.text('Show All Rows');
+        }
+    });
+    
+    // Reset import modal when closed
+    $('#importExcelModal').on('hidden.bs.modal', function() {
+        $('#importFileInput').val('');
+        $('#importPreviewArea').addClass('d-none');
+        $('#importProgressArea').addClass('d-none');
+        $('#previewImportBtn').removeClass('d-none');
+        $('#confirmImportBtn').addClass('d-none');
+        $('#previewTableBody').empty();
+        $('#validCount').text('0');
+        $('#errorCount').text('0');
+        $('#previewImportBtn').html('<i class="fas fa-eye me-1"></i> Preview Import');
+        $('#previewImportBtn').prop('disabled', false);
+        $('#confirmImportBtn').html('<i class="fas fa-file-import me-1"></i> Confirm Import');
+        $('#confirmImportBtn').removeClass('btn-outline-success').addClass('btn-success');
+        $('#confirmImportBtn').prop('disabled', false);
+    });
+</script>
+{% endblock %} 

@@ -1,0 +1,2223 @@
+{% extends "templates/web.html" %}
+
+{% block head_include %}
+<!-- Link to global styles -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/dashboard/styles/global.css">
+<style>
+    /* Page-specific styling for employee profile */
+    body.custom-dashboard .profile-header {
+        background-color: white !important;
+        border-radius: 8px !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+        padding: 24px !important;
+        margin-bottom: 24px !important;
+    }
+    
+    body.custom-dashboard .profile-avatar {
+        width: 100px !important;
+        height: 100px !important;
+        border-radius: 50% !important;
+        object-fit: cover !important;
+        border: 3px solid white !important;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    body.custom-dashboard .profile-name {
+        font-size: 24px !important;
+        font-weight: 700 !important;
+        color: #111827 !important;
+        margin-bottom: 4px !important;
+    }
+    
+    body.custom-dashboard .profile-title {
+        font-size: 16px !important;
+        color: #6b7280 !important;
+        margin-bottom: 12px !important;
+    }
+    
+    body.custom-dashboard .profile-section {
+        background-color: white !important;
+        border-radius: 8px !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+        padding: 24px !important;
+        margin-bottom: 24px !important;
+    }
+    
+    body.custom-dashboard .section-title {
+        font-size: 18px !important;
+        font-weight: 600 !important;
+        color: #111827 !important;
+        margin-bottom: 20px !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+    
+    body.custom-dashboard .section-title i {
+        margin-right: 10px !important;
+        color: #7d5fd2 !important;
+        font-size: 20px !important;
+    }
+    
+    body.custom-dashboard .profile-tabs .nav-link {
+        color: #4b5563 !important;
+        font-weight: 500 !important;
+        padding: 12px 16px !important;
+        border: none !important;
+        border-bottom: 2px solid transparent !important;
+        transition: all 0.2s !important;
+    }
+    
+    body.custom-dashboard .profile-tabs .nav-link:hover {
+        color: #7d5fd2 !important;
+    }
+    
+    body.custom-dashboard .profile-tabs .nav-link.active {
+        color: #7d5fd2 !important;
+        border-bottom-color: #7d5fd2 !important;
+        background-color: transparent !important;
+    }
+    
+    body.custom-dashboard .info-label {
+        font-size: 14px !important;
+        color: #6b7280 !important;
+        margin-bottom: 4px !important;
+    }
+    
+    body.custom-dashboard .info-value {
+        font-size: 16px !important;
+        color: #111827 !important;
+        font-weight: 500 !important;
+        margin-bottom: 16px !important;
+    }
+    
+    body.custom-dashboard .profile-badge {
+        display: inline-block !important;
+        padding: 6px 12px !important;
+        border-radius: 6px !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        margin-right: 8px !important;
+        margin-bottom: 8px !important;
+    }
+    
+    body.custom-dashboard .badge-purple {
+        background-color: #f3f0ff !important;
+        color: #7d5fd2 !important;
+    }
+    
+    body.custom-dashboard .badge-blue {
+        background-color: #e0f2fe !important;
+        color: #0284c7 !important;
+    }
+    
+    body.custom-dashboard .badge-green {
+        background-color: #ecfdf3 !important;
+        color: #10b981 !important;
+    }
+    
+    body.custom-dashboard .timeline {
+        position: relative !important;
+        padding-left: 30px !important;
+    }
+    
+    body.custom-dashboard .timeline::before {
+        content: "" !important;
+        position: absolute !important;
+        left: 0 !important;
+        top: 8px !important;
+        bottom: 8px !important;
+        width: 2px !important;
+        background-color: #e5e7eb !important;
+    }
+    
+    body.custom-dashboard .timeline-item {
+        position: relative !important;
+        padding-bottom: 20px !important;
+    }
+    
+    body.custom-dashboard .timeline-item:last-child {
+        padding-bottom: 0 !important;
+    }
+    
+    body.custom-dashboard .timeline-dot {
+        position: absolute !important;
+        left: -34px !important;
+        top: 4px !important;
+        width: 14px !important;
+        height: 14px !important;
+        border-radius: 50% !important;
+        background-color: #7d5fd2 !important;
+        border: 3px solid #f3f0ff !important;
+    }
+    
+    body.custom-dashboard .timeline-date {
+        font-size: 13px !important;
+        color: #6b7280 !important;
+        margin-bottom: 4px !important;
+    }
+    
+    body.custom-dashboard .timeline-title {
+        font-size: 15px !important;
+        font-weight: 600 !important;
+        color: #111827 !important;
+        margin-bottom: 4px !important;
+    }
+    
+    body.custom-dashboard .timeline-desc {
+        font-size: 14px !important;
+        color: #4b5563 !important;
+    }
+    
+    body.custom-dashboard .document-item {
+        display: flex !important;
+        align-items: center !important;
+        padding: 12px !important;
+        border-radius: 6px !important;
+        transition: all 0.2s !important;
+        margin-bottom: 8px !important;
+    }
+    
+    body.custom-dashboard .document-item:hover {
+        background-color: #f9fafb !important;
+    }
+    
+    body.custom-dashboard .document-icon {
+        width: 40px !important;
+        height: 40px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 6px !important;
+        margin-right: 12px !important;
+    }
+    
+    body.custom-dashboard .document-pdf {
+        background-color: #fee2e2 !important;
+        color: #dc2626 !important;
+    }
+    
+    body.custom-dashboard .document-doc {
+        background-color: #e0f2fe !important;
+        color: #0284c7 !important;
+    }
+    
+    body.custom-dashboard .document-img {
+        background-color: #f3f0ff !important;
+        color: #7d5fd2 !important;
+    }
+    
+    /* Additional style for primary colored buttons */
+    body.custom-dashboard .btn-primary {
+        background-color: #7d5fd2 !important;
+        border-color: #7d5fd2 !important;
+    }
+    
+    body.custom-dashboard .btn-primary:hover {
+        background-color: #6a4ec1 !important;
+        border-color: #6a4ec1 !important;
+    }
+    
+    body.custom-dashboard .btn-outline-primary {
+        color: #7d5fd2 !important;
+        border-color: #7d5fd2 !important;
+    }
+    
+    body.custom-dashboard .btn-outline-primary:hover {
+        background-color: #7d5fd2 !important;
+        color: white !important;
+    }
+    
+    body.custom-dashboard .text-primary {
+        color: #7d5fd2 !important;
+    }
+    
+    body.custom-dashboard .modal-section-title {
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        color: #7d5fd2 !important;
+        margin-bottom: 15px !important;
+        padding-bottom: 8px !important;
+        border-bottom: 1px solid #e5e7eb !important;
+    }
+    
+    /* Ensure the progress bars use the primary color */
+    body.custom-dashboard .progress-bar.bg-primary {
+        background-color: #7d5fd2 !important;
+    }
+</style>
+{% endblock %}
+
+{% block title %}Employee Profile | Jokoor Payroll{% endblock %}
+
+{% block header %}
+<!-- Override the header to remove Frappe's default header -->
+{% endblock %}
+
+{% block navbar %}
+<!-- Override navbar to remove Frappe's default navbar -->
+{% endblock %}
+
+{% block footer %}
+<!-- Override footer to remove Frappe's default footer -->
+{% endblock %}
+
+{% block content %}
+<div class="custom-dashboard">
+    <!-- Sidebar -->
+    {% include "templates/includes/dashboard/sidebar.html" %}
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Back Button and Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <a href="/dashboard/employees" class="btn btn-sm btn-outline-secondary me-2">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Employees
+                </a>
+                <div class="d-inline-block">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="/dashboard/employees">Employees</a></li>
+                        <li class="breadcrumb-item active">Employee Profile</li>
+                    </ol>
+                </div>
+            </div>
+            <div>
+                <button class="btn btn-sm btn-outline-primary me-2" id="editEmployeeBtn">
+                    <i class="fas fa-edit me-1"></i> Edit Employee
+                </button>
+                <div class="dropdown d-inline-block">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="employeeActionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-ellipsis-h"></i> Actions
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="employeeActionsDropdown">
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-envelope me-2"></i> Send Email</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-print me-2"></i> Print Profile</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-file-export me-2"></i> Export Data</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-user-slash me-2"></i> Deactivate Employee</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Header -->
+        <div class="profile-header d-md-flex align-items-center">
+            <div class="text-center text-md-start me-md-4">
+                <img src="https://randomuser.me/api/portraits/men/41.jpg" alt="Sandeep Lamichaane" class="profile-avatar mb-3">
+            </div>
+            <div class="text-center text-md-start flex-grow-1">
+                <h1 class="profile-name" id="employeeName">Sandeep Lamichaane</h1>
+                <div class="profile-title" id="employeeTitle">Senior Software Engineer</div>
+                <div class="mb-3">
+                    <span class="employee-status status-active">Active</span>
+                    <span class="badge badge-purple ms-2" id="employeeID">ID: 103-355</span>
+                </div>
+                <div class="d-flex flex-wrap justify-content-center justify-content-md-start">
+                    <div class="me-4 mb-3">
+                        <div class="text-muted small">Department</div>
+                        <div class="fw-medium" id="employeeDepartment">Engineering</div>
+                    </div>
+                    <div class="me-4 mb-3">
+                        <div class="text-muted small">Location</div>
+                        <div class="fw-medium" id="employeeLocation">Bangalore</div>
+                    </div>
+                    <div class="me-4 mb-3">
+                        <div class="text-muted small">Reports To</div>
+                        <div class="fw-medium" id="employeeManager">Vikram Sharma</div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="text-muted small">Employment Type</div>
+                        <div class="fw-medium" id="employmentType">Full Time</div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-3 mt-md-0 text-center text-md-end">
+                <div class="d-flex flex-column align-items-center align-items-md-end">
+                    <div class="mb-2">
+                        <i class="fas fa-envelope me-2"></i>
+                        <a href="mailto:sandeep.l@example.com" id="employeeEmail">sandeep.l@example.com</a>
+                    </div>
+                    <div class="mb-2">
+                        <i class="fas fa-phone me-2"></i>
+                        <a href="tel:+919876543210" id="employeePhone">+91 98765 43210</a>
+                    </div>
+                    <div>
+                        <i class="fas fa-calendar-alt me-2"></i>
+                        <span id="employeeJoinDate">Joined: Aug 12, 2021</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Tabs -->
+        <ul class="nav nav-tabs profile-tabs mb-4" id="employeeProfileTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">Overview</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="employment-tab" data-bs-toggle="tab" data-bs-target="#employment" type="button" role="tab" aria-controls="employment" aria-selected="false">Employment</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="compensation-tab" data-bs-toggle="tab" data-bs-target="#compensation" type="button" role="tab" aria-controls="compensation" aria-selected="false">Compensation</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents" type="button" role="tab" aria-controls="documents" aria-selected="false">Documents</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="attendance-tab" data-bs-toggle="tab" data-bs-target="#attendance" type="button" role="tab" aria-controls="attendance" aria-selected="false">Attendance</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">History</button>
+            </li>
+        </ul>
+        
+        <!-- Tab Content -->
+        <div class="tab-content" id="employeeProfileTabContent">
+            <!-- Overview Tab -->
+            <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                <div class="row">
+                    <!-- Personal Information -->
+                    <div class="col-lg-8">
+                        <div class="profile-section">
+                            <h3 class="section-title"><i class="fas fa-user"></i> Personal Information</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-label">Full Name</div>
+                                    <div class="info-value">Sandeep Lamichaane</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-label">Date of Birth</div>
+                                    <div class="info-value">April 15, 1990 (33 years)</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-label">Gender</div>
+                                    <div class="info-value">Male</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-label">Marital Status</div>
+                                    <div class="info-value">Married</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-label">Email Address</div>
+                                    <div class="info-value">sandeep.l@example.com</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-label">Phone Number</div>
+                                    <div class="info-value">+91 98765 43210</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-label">Personal Email</div>
+                                    <div class="info-value">sandeep.lamichaane@gmail.com</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-label">Emergency Contact</div>
+                                    <div class="info-value">Riya Lamichaane (Spouse) - +91 87654 32109</div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="info-label">Residential Address</div>
+                                    <div class="info-value">
+                                        14/B, Green Valley Apartments,<br>
+                                        Koramangala 4th Block,<br>
+                                        Bangalore - 560034
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Skills & Qualifications -->
+                        <div class="profile-section">
+                            <h3 class="section-title"><i class="fas fa-code-branch"></i> Skills & Qualifications</h3>
+                            <div class="mb-4">
+                                <div class="info-label">Skills</div>
+                                <div>
+                                    <span class="profile-badge badge-purple">JavaScript</span>
+                                    <span class="profile-badge badge-purple">React</span>
+                                    <span class="profile-badge badge-purple">Node.js</span>
+                                    <span class="profile-badge badge-purple">Python</span>
+                                    <span class="profile-badge badge-purple">Django</span>
+                                    <span class="profile-badge badge-purple">MongoDB</span>
+                                    <span class="profile-badge badge-purple">PostgreSQL</span>
+                                    <span class="profile-badge badge-purple">Docker</span>
+                                    <span class="profile-badge badge-purple">AWS</span>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="info-label">Education</div>
+                                <div class="info-value">
+                                    <div class="mb-2">
+                                        <div class="fw-semibold">Master of Computer Applications</div>
+                                        <div>Indian Institute of Technology, Delhi, 2014</div>
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">Bachelor of Computer Science</div>
+                                        <div>Tribhuvan University, Nepal, 2012</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="info-label">Certifications</div>
+                                <div class="info-value">
+                                    <div class="mb-2">
+                                        <div class="fw-semibold">AWS Certified Solutions Architect</div>
+                                        <div>Amazon Web Services, 2020 - 2023</div>
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">Professional Scrum Master I (PSM I)</div>
+                                        <div>Scrum.org, 2019 - Present</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Sidebar -->
+                    <div class="col-lg-4">
+                        <!-- Employment Summary -->
+                        <div class="profile-section">
+                            <h3 class="section-title"><i class="fas fa-briefcase"></i> Employment Summary</h3>
+                            <div class="mb-3">
+                                <div class="info-label">Current Position</div>
+                                <div class="info-value">Senior Software Engineer</div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="info-label">Department</div>
+                                <div class="info-value">Engineering</div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="info-label">Date of Joining</div>
+                                <div class="info-value">August 12, 2021</div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="info-label">Employment Type</div>
+                                <div class="info-value">Full Time</div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="info-label">Work Location</div>
+                                <div class="info-value">Bangalore</div>
+                            </div>
+                            <div>
+                                <div class="info-label">Employment Status</div>
+                                <div class="info-value"><span class="employee-status status-active">Active</span></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Upcoming Events -->
+                        <div class="profile-section">
+                            <h3 class="section-title"><i class="fas fa-calendar"></i> Upcoming Events</h3>
+                            <div class="mb-3">
+                                <div class="d-flex align-items-start mb-3">
+                                    <div class="me-3 text-center">
+                                        <div class="fw-bold text-primary">15</div>
+                                        <div class="small text-muted">Jun</div>
+                                    </div>
+                                    <div>
+                                        <div class="fw-medium">Performance Review</div>
+                                        <div class="small text-muted">Annual performance evaluation</div>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-start mb-3">
+                                    <div class="me-3 text-center">
+                                        <div class="fw-bold text-primary">22</div>
+                                        <div class="small text-muted">Jun</div>
+                                    </div>
+                                    <div>
+                                        <div class="fw-medium">Work Anniversary</div>
+                                        <div class="small text-muted">Completing 2 years at the company</div>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-start">
+                                    <div class="me-3 text-center">
+                                        <div class="fw-bold text-primary">15</div>
+                                        <div class="small text-muted">Jul</div>
+                                    </div>
+                                    <div>
+                                        <div class="fw-medium">Team Offsite</div>
+                                        <div class="small text-muted">Quarterly team building event</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Quick Links -->
+                        <div class="profile-section">
+                            <h3 class="section-title"><i class="fas fa-link"></i> Quick Links</h3>
+                            <div class="list-group list-group-flush">
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-file-alt me-2 text-primary"></i> View Salary Slips
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-file-medical me-2 text-primary"></i> Apply for Leave
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-chart-line me-2 text-primary"></i> Performance Dashboard
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-receipt me-2 text-primary"></i> Expense Claims
+                                </a>
+                                <a href="#" class="list-group-item list-group-item-action">
+                                    <i class="fas fa-clock me-2 text-primary"></i> Time Sheets
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Employment Tab -->
+            <div class="tab-pane fade" id="employment" role="tabpanel" aria-labelledby="employment-tab">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <!-- Current Position -->
+                        <div class="profile-section">
+                            <h3 class="section-title"><i class="fas fa-briefcase"></i> Current Position</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-label">Job Title</div>
+                                    <div class="info-value">Senior Software Engineer</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-label">Department</div>
+                                    <div class="info-value">Engineering</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-label">Reports To</div>
+                                    <div class="info-value">Vikram Sharma (Engineering Manager)</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-label">Work Location</div>
+                                    <div class="info-value">Bangalore</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-label">Start Date</div>
+                                    <div class="info-value">August 12, 2021</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-label">Employment Type</div>
+                                    <div class="info-value">Full Time</div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="info-label">Responsibilities</div>
+                                    <div class="info-value">
+                                        <ul class="ps-3 mb-0">
+                                            <li>Lead development of backend services using Node.js and Python</li>
+                                            <li>Collaborate with front-end team to integrate APIs</li>
+                                            <li>Design and optimize database schemas for high performance</li>
+                                            <li>Mentor junior developers and conduct code reviews</li>
+                                            <li>Implement scalable architecture for cloud deployments</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Work History -->
+                        <div class="profile-section">
+                            <h3 class="section-title"><i class="fas fa-history"></i> Work History</h3>
+                            <div class="timeline">
+                                <div class="timeline-item">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-date">August 2021 - Present</div>
+                                    <div class="timeline-title">Senior Software Engineer, XYZ Company</div>
+                                    <div class="timeline-desc">
+                                        Leading the backend development team, implementing microservices architecture, and optimizing system performance. Reduced API response times by 40% and implemented CI/CD pipelines.
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-date">January 2019 - July 2021</div>
+                                    <div class="timeline-title">Software Engineer, ABC Tech</div>
+                                    <div class="timeline-desc">
+                                        Developed web applications using React and Node.js. Worked on database optimization and implemented real-time features using WebSockets.
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-date">June 2016 - December 2018</div>
+                                    <div class="timeline-title">Junior Developer, TechStartup Inc.</div>
+                                    <div class="timeline-desc">
+                                        Built and maintained web applications, implemented responsive designs, and worked with REST APIs. Participated in agile development processes.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Skills Assessment -->
+                        <div class="profile-section">
+                            <h3 class="section-title"><i class="fas fa-chart-bar"></i> Skills Assessment</h3>
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="fw-medium">JavaScript</div>
+                                    <div>Expert</div>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-primary" role="progressbar" style="width: 95%;" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="fw-medium">Python</div>
+                                    <div>Advanced</div>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-primary" role="progressbar" style="width: 85%;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="fw-medium">React</div>
+                                    <div>Advanced</div>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-primary" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="fw-medium">Node.js</div>
+                                    <div>Expert</div>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-primary" role="progressbar" style="width: 90%;" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="fw-medium">Database Design</div>
+                                    <div>Intermediate</div>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-primary" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <!-- Job Details -->
+                        <div class="profile-section">
+                            <h3 class="section-title"><i class="fas fa-id-card"></i> Job Details</h3>
+                            <div class="mb-3">
+                                <div class="info-label">Employee ID</div>
+                                <div class="info-value">103-355</div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="info-label">Job Code</div>
+                                <div class="info-value">ENG-SE-03</div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="info-label">Level</div>
+                                <div class="info-value">L3</div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="info-label">Work Schedule</div>
+                                <div class="info-value">Monday - Friday, 9:00 AM - 6:00 PM</div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="info-label">Probation Period</div>
+                                <div class="info-value">Completed</div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="info-label">Notice Period</div>
+                                <div class="info-value">2 Months</div>
+                            </div>
+                            <div>
+                                <div class="info-label">Work Type</div>
+                                <div class="info-value">Hybrid (3 days office, 2 days remote)</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Direct Reports -->
+                        <div class="profile-section">
+                            <h3 class="section-title"><i class="fas fa-users"></i> Direct Reports</h3>
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item px-0">
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://randomuser.me/api/portraits/men/77.jpg" alt="Employee" class="rounded-circle me-3" width="40" height="40">
+                                        <div>
+                                            <div class="fw-medium">Amit Kumar</div>
+                                            <div class="small text-muted">Software Engineer</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="list-group-item px-0">
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://randomuser.me/api/portraits/women/54.jpg" alt="Employee" class="rounded-circle me-3" width="40" height="40">
+                                        <div>
+                                            <div class="fw-medium">Priya Singh</div>
+                                            <div class="small text-muted">Software Engineer</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="list-group-item px-0">
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="Employee" class="rounded-circle me-3" width="40" height="40">
+                                        <div>
+                                            <div class="fw-medium">Rahul Joshi</div>
+                                            <div class="small text-muted">Junior Developer</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compensation Tab -->
+            <div class="tab-pane fade" id="compensation" role="tabpanel" aria-labelledby="compensation-tab">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <!-- Salary Structure -->
+                        <div class="profile-section">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h3 class="section-title mb-0"><i class="fas fa-money-bill-wave"></i> Salary Structure</h3>
+                                <div>
+                                    <span class="badge bg-light text-dark">Last Updated: May 15, 2023</span>
+                                </div>
+                            </div>
+
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="section-title mb-0"><i class="fas fa-money-bill-wave"></i> Salary Structure</h3>
+    <div>
+        <span class="badge bg-light text-dark">Last Updated: May 15, 2023</span>
+    </div>
+</div>
+
+<div class="table-responsive mb-4">
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Component</th>
+                <th>Type</th>
+                <th class="text-end">Monthly</th>
+                <th class="text-end">Annual</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Basic Salary</td>
+                <td><span class="badge badge-blue">Earning</span></td>
+                <td class="text-end">₹ 85,000</td>
+                <td class="text-end">₹ 10,20,000</td>
+            </tr>
+            <tr>
+                <td>House Rent Allowance</td>
+                <td><span class="badge badge-blue">Earning</span></td>
+                <td class="text-end">₹ 34,000</td>
+                <td class="text-end">₹ 4,08,000</td>
+            </tr>
+            <tr>
+                <td>Special Allowance</td>
+                <td><span class="badge badge-blue">Earning</span></td>
+                <td class="text-end">₹ 26,000</td>
+                <td class="text-end">₹ 3,12,000</td>
+            </tr>
+            <tr>
+                <td>Transport Allowance</td>
+                <td><span class="badge badge-blue">Earning</span></td>
+                <td class="text-end">₹ 5,000</td>
+                <td class="text-end">₹ 60,000</td>
+            </tr>
+            <tr class="table-light fw-medium">
+                <td>Gross Salary</td>
+                <td></td>
+                <td class="text-end">₹ 1,50,000</td>
+                <td class="text-end">₹ 18,00,000</td>
+            </tr>
+            <tr>
+                <td>Provident Fund (Employee)</td>
+                <td><span class="badge badge-green">Deduction</span></td>
+                <td class="text-end">₹ 10,200</td>
+                <td class="text-end">₹ 1,22,400</td>
+            </tr>
+            <tr>
+                <td>Professional Tax</td>
+                <td><span class="badge badge-green">Deduction</span></td>
+                <td class="text-end">₹ 200</td>
+                <td class="text-end">₹ 2,400</td>
+            </tr>
+            <tr>
+                <td>Income Tax (TDS)</td>
+                <td><span class="badge badge-green">Deduction</span></td>
+                <td class="text-end">₹ 18,500</td>
+                <td class="text-end">₹ 2,22,000</td>
+            </tr>
+            <tr class="table-light fw-medium">
+                <td>Total Deductions</td>
+                <td></td>
+                <td class="text-end">₹ 28,900</td>
+                <td class="text-end">₹ 3,46,800</td>
+            </tr>
+            <tr class="table-primary fw-bold">
+                <td>Net Salary</td>
+                <td></td>
+                <td class="text-end">₹ 1,21,100</td>
+                <td class="text-end">₹ 14,53,200</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="mb-4">
+    <h5 class="mb-3">Employer Contributions</h5>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>Component</th>
+                    <th class="text-end">Monthly</th>
+                    <th class="text-end">Annual</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Provident Fund (Employer)</td>
+                    <td class="text-end">₹ 10,200</td>
+                    <td class="text-end">₹ 1,22,400</td>
+                </tr>
+                <tr>
+                    <td>Gratuity</td>
+                    <td class="text-end">₹ 4,087</td>
+                    <td class="text-end">₹ 49,044</td>
+                </tr>
+                <tr>
+                    <td>Health Insurance</td>
+                    <td class="text-end">₹ 2,500</td>
+                    <td class="text-end">₹ 30,000</td>
+                </tr>
+                <tr class="table-light fw-medium">
+                    <td>Total Employer Contribution</td>
+                    <td class="text-end">₹ 16,787</td>
+                    <td class="text-end">₹ 2,01,444</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="alert alert-info">
+    <div class="d-flex">
+        <div class="me-3">
+            <i class="fas fa-info-circle fa-lg"></i>
+        </div>
+        <div>
+            <div class="fw-medium mb-1">Cost to Company (CTC)</div>
+            <div>The total CTC is <strong>₹ 20,01,444</strong> per annum, which includes employer contributions and benefits.</div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Salary Revisions -->
+<div class="profile-section">
+<h3 class="section-title"><i class="fas fa-chart-line"></i> Salary Revisions</h3>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Effective Date</th>
+                <th>Previous CTC</th>
+                <th>Revised CTC</th>
+                <th>% Increase</th>
+                <th>Reason</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>April 01, 2023</td>
+                <td>₹ 18,50,000</td>
+                <td>₹ 20,01,444</td>
+                <td><span class="text-success">8.2%</span></td>
+                <td>Annual Appraisal</td>
+            </tr>
+            <tr>
+                <td>October 15, 2022</td>
+                <td>₹ 16,75,000</td>
+                <td>₹ 18,50,000</td>
+                <td><span class="text-success">10.4%</span></td>
+                <td>Promotion to Senior Role</td>
+            </tr>
+            <tr>
+                <td>April 01, 2022</td>
+                <td>₹ 15,25,000</td>
+                <td>₹ 16,75,000</td>
+                <td><span class="text-success">9.8%</span></td>
+                <td>Annual Appraisal</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</div>
+</div>
+
+<div class="col-lg-4">
+<!-- Salary Template -->
+<div class="profile-section">
+<h3 class="section-title"><i class="fas fa-file-invoice-dollar"></i> Salary Template</h3>
+<div class="mb-3">
+    <div class="info-label">Template Name</div>
+    <div class="info-value">Standard Senior Engineer</div>
+</div>
+<div class="mb-3">
+    <div class="info-label">Effective Since</div>
+    <div class="info-value">April 01, 2023</div>
+</div>
+<div class="mb-3">
+    <div class="info-label">Pay Frequency</div>
+    <div class="info-value">Monthly</div>
+</div>
+<div class="mb-3">
+    <div class="info-label">Salary Day</div>
+    <div class="info-value">Last working day of month</div>
+</div>
+<div class="mb-3">
+    <div class="info-label">Mode of Payment</div>
+    <div class="info-value">Bank Transfer</div>
+</div>
+<div>
+    <div class="info-label">Proration Basis</div>
+    <div class="info-value">Calendar Days</div>
+</div>
+</div>
+
+<!-- Bank Details -->
+<div class="profile-section">
+<h3 class="section-title"><i class="fas fa-university"></i> Bank Details</h3>
+<div class="mb-3">
+    <div class="info-label">Bank Name</div>
+    <div class="info-value">HDFC Bank</div>
+</div>
+<div class="mb-3">
+    <div class="info-label">Account Type</div>
+    <div class="info-value">Savings</div>
+</div>
+<div class="mb-3">
+    <div class="info-label">Account Number</div>
+    <div class="info-value">XXXX XXXX 4567</div>
+</div>
+<div class="mb-3">
+    <div class="info-label">IFSC Code</div>
+    <div class="info-value">HDFC0001234</div>
+</div>
+<div>
+    <div class="info-label">Branch</div>
+    <div class="info-value">Koramangala, Bangalore</div>
+</div>
+</div>
+
+<!-- Recent Payslips -->
+<div class="profile-section">
+<h3 class="section-title"><i class="fas fa-file-alt"></i> Recent Payslips</h3>
+<div class="list-group list-group-flush">
+    <a href="#" class="list-group-item list-group-item-action px-0 d-flex justify-content-between align-items-center">
+        <div>
+            <i class="fas fa-file-pdf me-2 text-danger"></i>
+            May 2023
+        </div>
+        <i class="fas fa-download text-primary"></i>
+    </a>
+    <a href="#" class="list-group-item list-group-item-action px-0 d-flex justify-content-between align-items-center">
+        <div>
+            <i class="fas fa-file-pdf me-2 text-danger"></i>
+            April 2023
+        </div>
+        <i class="fas fa-download text-primary"></i>
+    </a>
+    <a href="#" class="list-group-item list-group-item-action px-0 d-flex justify-content-between align-items-center">
+        <div>
+            <i class="fas fa-file-pdf me-2 text-danger"></i>
+            March 2023
+        </div>
+        <i class="fas fa-download text-primary"></i>
+    </a>
+    <a href="#" class="list-group-item list-group-item-action px-0 d-flex justify-content-between align-items-center">
+        <div>
+            <i class="fas fa-file-pdf me-2 text-danger"></i>
+            February 2023
+        </div>
+        <i class="fas fa-download text-primary"></i>
+    </a>
+    <a href="#" class="list-group-item list-group-item-action px-0 d-flex justify-content-between align-items-center">
+        <div>
+            <i class="fas fa-file-pdf me-2 text-danger"></i>
+            January 2023
+        </div>
+        <i class="fas fa-download text-primary"></i>
+    </a>
+</div>
+<div class="text-center mt-3">
+    <a href="#" class="btn btn-sm btn-outline-primary">View All Payslips</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Documents Tab -->
+<div class="tab-pane fade" id="documents" role="tabpanel" aria-labelledby="documents-tab">
+<div class="row">
+<div class="col-lg-8">
+<!-- Personal Documents -->
+<div class="profile-section">
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="section-title mb-0"><i class="fas fa-file"></i> Personal Documents</h3>
+    <button class="btn btn-sm btn-primary">
+        <i class="fas fa-upload me-1"></i> Upload Document
+    </button>
+</div>
+
+<div class="document-item">
+    <div class="document-icon document-pdf">
+        <i class="fas fa-file-pdf"></i>
+    </div>
+    <div class="flex-grow-1">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <div class="fw-medium">Aadhaar Card</div>
+                <div class="small text-muted">Uploaded on Jan 15, 2022 • 1.2 MB</div>
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="docAction1" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="docAction1">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i> Download</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i> View</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i> Rename</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> Delete</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="document-item">
+    <div class="document-icon document-pdf">
+        <i class="fas fa-file-pdf"></i>
+    </div>
+    <div class="flex-grow-1">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <div class="fw-medium">PAN Card</div>
+                <div class="small text-muted">Uploaded on Jan 15, 2022 • 856 KB</div>
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="docAction2" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="docAction2">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i> Download</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i> View</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i> Rename</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> Delete</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="document-item">
+    <div class="document-icon document-img">
+        <i class="fas fa-file-image"></i>
+    </div>
+    <div class="flex-grow-1">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <div class="fw-medium">Passport Size Photo</div>
+                <div class="small text-muted">Uploaded on Jan 16, 2022 • 245 KB</div>
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="docAction3" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="docAction3">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i> Download</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i> View</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i> Rename</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> Delete</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="document-item">
+    <div class="document-icon document-pdf">
+        <i class="fas fa-file-pdf"></i>
+    </div>
+    <div class="flex-grow-1">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <div class="fw-medium">Passport</div>
+                <div class="small text-muted">Uploaded on Jan 16, 2022 • 1.8 MB</div>
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="docAction4" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="docAction4">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i> Download</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i> View</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i> Rename</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> Delete</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Educational Documents -->
+<div class="profile-section">
+<h3 class="section-title"><i class="fas fa-graduation-cap"></i> Educational Documents</h3>
+
+<div class="document-item">
+    <div class="document-icon document-pdf">
+        <i class="fas fa-file-pdf"></i>
+    </div>
+    <div class="flex-grow-1">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <div class="fw-medium">Master's Degree Certificate</div>
+                <div class="small text-muted">Uploaded on Jan 20, 2022 • 2.3 MB</div>
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="docAction5" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="docAction5">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i> Download</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i> View</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i> Rename</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> Delete</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="document-item">
+    <div class="document-icon document-pdf">
+        <i class="fas fa-file-pdf"></i>
+    </div>
+    <div class="flex-grow-1">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <div class="fw-medium">Bachelor's Degree Certificate</div>
+                <div class="small text-muted">Uploaded on Jan 20, 2022 • 1.9 MB</div>
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="docAction6" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="docAction6">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i> Download</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i> View</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i> Rename</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> Delete</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="document-item">
+    <div class="document-icon document-pdf">
+        <i class="fas fa-file-pdf"></i>
+    </div>
+    <div class="flex-grow-1">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <div class="fw-medium">Master's Transcript</div>
+                <div class="small text-muted">Uploaded on Jan 20, 2022 • 1.7 MB</div>
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="docAction7" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="docAction7">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i> Download</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i> View</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i> Rename</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> Delete</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
+<div class="col-lg-4">
+<!-- Employment Documents -->
+<div class="profile-section">
+<h3 class="section-title"><i class="fas fa-briefcase"></i> Employment Documents</h3>
+
+<div class="document-item">
+    <div class="document-icon document-pdf">
+        <i class="fas fa-file-pdf"></i>
+    </div>
+    <div class="flex-grow-1">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <div class="fw-medium">Offer Letter</div>
+                <div class="small text-muted">Uploaded on Aug 10, 2021 • 1.1 MB</div>
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="docAction8" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="docAction8">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i> Download</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i> View</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i> Rename</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> Delete</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="document-item">
+    <div class="document-icon document-doc">
+        <i class="fas fa-file-word"></i>
+    </div>
+    <div class="flex-grow-1">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <div class="fw-medium">Employment Contract</div>
+                <div class="small text-muted">Uploaded on Aug 11, 2021 • 980 KB</div>
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="docAction9" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="docAction9">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i> Download</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i> View</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i> Rename</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> Delete</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="document-item">
+    <div class="document-icon document-pdf">
+        <i class="fas fa-file-pdf"></i>
+    </div>
+    <div class="flex-grow-1">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <div class="fw-medium">Experience Letter (Previous Company)</div>
+                <div class="small text-muted">Uploaded on Aug 12, 2021 • 845 KB</div>
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="docAction10" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="docAction10">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i> Download</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i> View</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i> Rename</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> Delete</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Document Categories -->
+<div class="profile-section">
+<h3 class="section-title"><i class="fas fa-folder"></i> Document Categories</h3>
+<div class="list-group list-group-flush">
+    <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-0">
+        <div>
+            <i class="fas fa-folder me-2 text-warning"></i>
+            Personal
+        </div>
+        <span class="badge bg-secondary rounded-pill">4</span>
+    </a>
+    <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-0">
+        <div>
+            <i class="fas fa-folder me-2 text-warning"></i>
+            Educational
+        </div>
+        <span class="badge bg-secondary rounded-pill">3</span>
+    </a>
+    <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-0">
+        <div>
+            <i class="fas fa-folder me-2 text-warning"></i>
+            Employment
+        </div>
+        <span class="badge bg-secondary rounded-pill">3</span>
+    </a>
+    <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-0">
+        <div>
+            <i class="fas fa-folder me-2 text-warning"></i>
+            Certifications
+        </div>
+        <span class="badge bg-secondary rounded-pill">2</span>
+    </a>
+    <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-0">
+        <div>
+            <i class="fas fa-folder me-2 text-warning"></i>
+            Bank & Tax
+        </div>
+        <span class="badge bg-secondary rounded-pill">2</span>
+    </a>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Attendance Tab -->
+<div class="tab-pane fade" id="attendance" role="tabpanel" aria-labelledby="attendance-tab">
+<div class="row">
+<div class="col-lg-8">
+<!-- Attendance Overview -->
+<div class="profile-section">
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="section-title mb-0"><i class="fas fa-calendar-check"></i> Attendance Overview</h3>
+    <div>
+        <select class="form-select form-select-sm" id="attendanceMonthFilter">
+            <option value="5">May 2023</option>
+            <option value="4">April 2023</option>
+            <option value="3">March 2023</option>
+            <option value="2">February 2023</option>
+            <option value="1">January 2023</option>
+        </select>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3 col-6 mb-3 mb-md-0">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="display-5 fw-bold text-success">21</div>
+                <div class="text-muted">Present Days</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6 mb-3 mb-md-0">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="display-5 fw-bold text-danger">1</div>
+                <div class="text-muted">Absent Days</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="display-5 fw-bold text-warning">2</div>
+                <div class="text-muted">Half Days</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="display-5 fw-bold text-primary">3</div>
+                <div class="text-muted">Leaves</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Attendance Calendar -->
+<div class="mb-4">
+    <h5 class="mb-3">Monthly Calendar</h5>
+    <div class="table-responsive">
+        <table class="table table-bordered text-center">
+            <thead class="table-light">
+                <tr>
+                    <th>Mon</th>
+                    <th>Tue</th>
+                    <th>Wed</th>
+                    <th>Thu</th>
+                    <th>Fri</th>
+                    <th>Sat</th>
+                    <th>Sun</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-muted">29</td>
+                    <td class="text-muted">30</td>
+                    <td>1 <i class="fas fa-check-circle text-success"></i></td>
+                    <td>2 <i class="fas fa-check-circle text-success"></i></td>
+                    <td>3 <i class="fas fa-check-circle text-success"></i></td>
+                    <td class="table-light">4</td>
+                    <td class="table-light">5</td>
+                </tr>
+                <tr>
+                    <td>6 <i class="fas fa-check-circle text-success"></i></td>
+                    <td>7 <i class="fas fa-check-circle text-success"></i></td>
+                    <td>8 <i class="fas fa-check-circle text-success"></i></td>
+                    <td>9 <i class="fas fa-check-circle text-success"></i></td>
+                    <td>10 <i class="fas fa-check-circle text-success"></i></td>
+                    <td class="table-light">11</td>
+                    <td class="table-light">12</td>
+                </tr>
+                <tr>
+                    <td>13 <i class="fas fa-check-circle text-success"></i></td>
+                    <td>14 <i class="fas fa-check-circle text-success"></i></td>
+                    <td>15 <i class="fas fa-minus-circle text-danger"></i></td>
+                    <td>16 <i class="fas fa-check-circle text-success"></i></td>
+                    <td>17 <i class="fas fa-check-circle text-success"></i></td>
+                    <td class="table-light">18</td>
+                    <td class="table-light">19</td>
+                </tr>
+                <tr>
+                    <td>20 <i class="fas fa-check-circle text-success"></i></td>
+                    <td>21 <i class="fas fa-check-circle text-success"></i></td>
+                    <td>22 <i class="fas fa-adjust text-warning"></i></td>
+                    <td>23 <i class="fas fa-adjust text-warning"></i></td>
+                    <td>24 <i class="fas fa-check-circle text-success"></i></td>
+                    <td class="table-light">25</td>
+                    <td class="table-light">26</td>
+                </tr>
+                <tr>
+                    <td>27 <i class="fas fa-check-circle text-success"></i></td>
+                    <td>28 <i class="fas fa-check-circle text-success"></i></td>
+                    <td>29 <i class="fas fa-check-circle text-success"></i></td>
+                    <td>30 <i class="fas fa-check-circle text-success"></i></td>
+                    <td>31 <i class="fas fa-check-circle text-success"></i></td>
+                    <td class="text-muted">1</td>
+                    <td class="text-muted">2</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="d-flex justify-content-center mt-2">
+        <div class="me-3 d-flex align-items-center">
+            <i class="fas fa-check-circle text-success me-1"></i> Present
+        </div>
+        <div class="me-3 d-flex align-items-center">
+            <i class="fas fa-minus-circle text-danger me-1"></i> Absent
+        </div>
+        <div class="me-3 d-flex align-items-center">
+            <i class="fas fa-adjust text-warning me-1"></i> Half Day
+        </div>
+        <div class="d-flex align-items-center">
+            <i class="fas fa-calendar-minus text-primary me-1"></i> Leave
+        </div>
+    </div>
+</div>
+
+<!-- Daily Log -->
+<div>
+    <h5 class="mb-3">Daily Attendance Log</h5>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Check In</th>
+                    <th>Check Out</th>
+                    <th>Hours Worked</th>
+                    <th>Status</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>May 31, 2023</td>
+                    <td>9:05 AM</td>
+                    <td>6:12 PM</td>
+                    <td>9 hrs 7 min</td>
+                    <td><span class="badge bg-success">Present</span></td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>May 30, 2023</td>
+                    <td>9:12 AM</td>
+                    <td>6:20 PM</td>
+                    <td>9 hrs 8 min</td>
+                    <td><span class="badge bg-success">Present</span></td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>May 29, 2023</td>
+                    <td>9:00 AM</td>
+                    <td>6:15 PM</td>
+                    <td>9 hrs 15 min</td>
+                    <td><span class="badge bg-success">Present</span></td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>May 26, 2023</td>
+                    <td>8:55 AM</td>
+                    <td>6:10 PM</td>
+                    <td>9 hrs 15 min</td>
+                    <td><span class="badge bg-success">Present</span></td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>May 25, 2023</td>
+                    <td>9:10 AM</td>
+                    <td>6:05 PM</td>
+                    <td>8 hrs 55 min</td>
+                    <td><span class="badge bg-success">Present</span></td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>May 24, 2023</td>
+                    <td>9:05 AM</td>
+                    <td>2:10 PM</td>
+                    <td>5 hrs 5 min</td>
+                    <td><span class="badge bg-warning text-dark">Half Day</span></td>
+                    <td>Doctor's appointment</td>
+                </tr>
+                <tr>
+                    <td>May 23, 2023</td>
+                    <td>9:15 AM</td>
+                    <td>1:30 PM</td>
+                    <td>4 hrs 15 min</td>
+                    <td><span class="badge bg-warning text-dark">Half Day</span></td>
+                    <td>Personal work</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="text-center mt-3">
+        <a href="#" class="btn btn-sm btn-outline-primary">View Full Attendance History</a>
+    </div>
+</div>
+</div>
+
+<div class="col-lg-4">
+    <!-- Leave Status -->
+    <div class="profile-section">
+        <h3 class="section-title"><i class="fas fa-calendar-alt"></i> Leave Status</h3>
+        <div>
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="fw-medium">Earned/Privilege Leave</div>
+                    <div>12 / 18</div>
+                </div>
+                <div class="progress" style="height: 10px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 66.67%;" aria-valuenow="12" aria-valuemin="0" aria-valuemax="18"></div>
+                </div>
+                <div class="small text-end text-muted mt-1">6 days remaining</div>
+            </div>
+            
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="fw-medium">Sick Leave</div>
+                    <div>3 / 8</div>
+                </div>
+                <div class="progress" style="height: 10px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 37.5%;" aria-valuenow="3" aria-valuemin="0" aria-valuemax="8"></div>
+                </div>
+                <div class="small text-end text-muted mt-1">5 days remaining</div>
+            </div>
+            
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="fw-medium">Casual Leave</div>
+                    <div>5 / 12</div>
+                </div>
+                <div class="progress" style="height: 10px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 41.67%;" aria-valuenow="5" aria-valuemin="0" aria-valuemax="12"></div>
+                </div>
+                <div class="small text-end text-muted mt-1">7 days remaining</div>
+            </div>
+            
+            <div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="fw-medium">Comp Off</div>
+                    <div>1 / 5</div>
+                </div>
+                <div class="progress" style="height: 10px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 20%;" aria-valuenow="1" aria-valuemin="0" aria-valuemax="5"></div>
+                </div>
+                <div class="small text-end text-muted mt-1">4 days remaining</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Leave Applications -->
+    <div class="profile-section">
+        <h3 class="section-title"><i class="fas fa-clipboard-list"></i> Recent Leave Applications</h3>
+        <div class="list-group list-group-flush">
+            <div class="list-group-item px-0">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <div class="fw-medium">Sick Leave</div>
+                    <span class="badge bg-success">Approved</span>
+                </div>
+                <div class="small text-muted mb-1">May 15, 2023 (1 day)</div>
+                <div class="small">Reason: Doctor's appointment for routine checkup</div>
+            </div>
+            
+            <div class="list-group-item px-0">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <div class="fw-medium">Privilege Leave</div>
+                    <span class="badge bg-warning text-dark">Pending</span>
+                </div>
+                <div class="small text-muted mb-1">June 5-9, 2023 (5 days)</div>
+                <div class="small">Reason: Family vacation</div>
+            </div>
+            
+            <div class="list-group-item px-0">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <div class="fw-medium">Casual Leave</div>
+                    <span class="badge bg-success">Approved</span>
+                </div>
+                <div class="small text-muted mb-1">April 18, 2023 (1 day)</div>
+                <div class="small">Reason: Personal work</div>
+            </div>
+            
+            <div class="list-group-item px-0">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <div class="fw-medium">Casual Leave</div>
+                    <span class="badge bg-success">Approved</span>
+                </div>
+                <div class="small text-muted mb-1">March 24, 2023 (1 day)</div>
+                <div class="small">Reason: Family function</div>
+            </div>
+        </div>
+        <div class="text-center mt-3">
+            <button class="btn btn-sm btn-primary">
+                <i class="fas fa-plus me-1"></i> Apply for Leave
+            </button>
+        </div>
+    </div>
+    
+    <!-- Time Analytics -->
+    <div class="profile-section">
+        <h3 class="section-title"><i class="fas fa-chart-pie"></i> Time Analytics</h3>
+        <div class="text-center mb-3">
+            <canvas id="attendanceChart" width="100%" height="200"></canvas>
+        </div>
+        <div class="row text-center">
+            <div class="col-6 mb-3">
+                <div class="fw-bold">9.2 hrs</div>
+                <div class="small text-muted">Avg. Daily Hours</div>
+            </div>
+            <div class="col-6 mb-3">
+                <div class="fw-bold">97%</div>
+                <div class="small text-muted">Attendance Rate</div>
+            </div>
+            <div class="col-6">
+                <div class="fw-bold">9:05 AM</div>
+                <div class="small text-muted">Avg. Check-in Time</div>
+            </div>
+            <div class="col-6">
+                <div class="fw-bold">6:15 PM</div>
+                <div class="small text-muted">Avg. Check-out Time</div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
+<!-- History Tab -->
+<div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+<div class="row">
+<div class="col-lg-8">
+    <!-- Employment History -->
+    <div class="profile-section">
+        <h3 class="section-title"><i class="fas fa-briefcase"></i> Employment Changes</h3>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">October 15, 2022</div>
+                <div class="timeline-title">Promotion</div>
+                <div class="timeline-desc">
+                    Promoted from <strong>Software Engineer</strong> to <strong>Senior Software Engineer</strong> due to exceptional performance and technical leadership skills.
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">April 01, 2022</div>
+                <div class="timeline-title">Salary Revision</div>
+                <div class="timeline-desc">
+                    Annual appraisal with a 9.8% increase in compensation based on performance review.
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">January 10, 2022</div>
+                <div class="timeline-title">Department Transfer</div>
+                <div class="timeline-desc">
+                    Transferred from <strong>Product Development</strong> to <strong>Platform Engineering</strong> team to work on core infrastructure projects.
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">November 15, 2021</div>
+                <div class="timeline-title">Probation Completion</div>
+                <div class="timeline-desc">
+                    Successfully completed 3-month probation period with excellent feedback from manager and team members.
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">August 12, 2021</div>
+                <div class="timeline-title">Joining</div>
+                <div class="timeline-desc">
+                    Joined the company as <strong>Software Engineer</strong> in the Product Development department.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Performance History -->
+    <div class="profile-section">
+        <h3 class="section-title"><i class="fas fa-star"></i> Performance Reviews</h3>
+        <div class="accordion" id="performanceAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="review2023Heading">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#review2023Collapse" aria-expanded="true" aria-controls="review2023Collapse">
+                        <div class="d-flex justify-content-between w-100 me-2">
+                            <div><strong>Annual Performance Review 2023</strong></div>
+                            <div class="text-muted">April 2023</div>
+                        </div>
+                    </button>
+                </h2>
+                <div id="review2023Collapse" class="accordion-collapse collapse show" aria-labelledby="review2023Heading" data-bs-parent="#performanceAccordion">
+                    <div class="accordion-body">
+                        <div class="mb-3">
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <div class="fw-medium">Overall Rating</div>
+                                    <div>4.7/5.0</div>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 94%;" aria-valuenow="94" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            <div class="small text-muted mb-3">Exceeds Expectations</div>
+                            
+                            <h6 class="mb-2">Key Strengths</h6>
+                            <ul class="mb-3">
+                                <li>Exceptional technical skills and problem-solving abilities</li>
+                                <li>Proactive approach to identifying and addressing system bottlenecks</li>
+                                <li>Strong mentorship of junior team members</li>
+                                <li>Effective communication with cross-functional teams</li>
+                            </ul>
+                            
+                            <h6 class="mb-2">Areas for Improvement</h6>
+                            <ul class="mb-3">
+                                <li>Further development of project management skills</li>
+                                <li>More documentation of complex systems for knowledge sharing</li>
+                            </ul>
+                            
+                            <h6 class="mb-2">Manager's Comments</h6>
+                            <blockquote class="blockquote-footer mb-0">
+                                Sandeep has been an outstanding contributor this year. His technical expertise and ability to solve complex problems have been instrumental in the success of our key projects. He has grown significantly in his leadership capabilities by mentoring junior engineers and providing technical guidance across teams.
+                            </blockquote>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="review2022Heading">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#review2022Collapse" aria-expanded="false" aria-controls="review2022Collapse">
+                        <div class="d-flex justify-content-between w-100 me-2">
+                            <div><strong>Annual Performance Review 2022</strong></div>
+                            <div class="text-muted">April 2022</div>
+                        </div>
+                    </button>
+                </h2>
+                <div id="review2022Collapse" class="accordion-collapse collapse" aria-labelledby="review2022Heading" data-bs-parent="#performanceAccordion">
+                    <div class="accordion-body">
+                        <div class="mb-3">
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <div class="fw-medium">Overall Rating</div>
+                                    <div>4.3/5.0</div>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 86%;" aria-valuenow="86" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            <div class="small text-muted mb-3">Exceeds Expectations</div>
+                            
+                            <h6 class="mb-2">Key Strengths</h6>
+                            <ul class="mb-3">
+                                <li>Strong technical capabilities and quick learning</li>
+                                <li>Consistent delivery of high-quality code</li>
+                                <li>Good collaboration with team members</li>
+                            </ul>
+                            
+                            <h6 class="mb-2">Areas for Improvement</h6>
+                            <ul class="mb-3">
+                                <li>Taking more ownership of larger initiatives</li>
+                                <li>Developing mentorship skills for junior engineers</li>
+                                <li>Knowledge sharing across the organization</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="reviewProbationHeading">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#reviewProbationCollapse" aria-expanded="false" aria-controls="reviewProbationCollapse">
+                        <div class="d-flex justify-content-between w-100 me-2">
+                            <div><strong>Probation Completion Review</strong></div>
+                            <div class="text-muted">November 2021</div>
+                        </div>
+                    </button>
+                </h2>
+                <div id="reviewProbationCollapse" class="accordion-collapse collapse" aria-labelledby="reviewProbationHeading" data-bs-parent="#performanceAccordion">
+                    <div class="accordion-body">
+                        <div class="mb-3">
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <div class="fw-medium">Overall Rating</div>
+                                    <div>4.2/5.0</div>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 84%;" aria-valuenow="84" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            <div class="small text-muted mb-3">Exceeds Expectations</div>
+                            
+                            <h6 class="mb-2">Key Observations</h6>
+                            <ul class="mb-3">
+                                <li>Quick onboarding and adaptation to company processes</li>
+                                <li>Strong technical foundation and problem-solving abilities</li>
+                                <li>Good team player with positive attitude</li>
+                            </ul>
+                            
+                            <h6 class="mb-2">Probation Decision</h6>
+                            <p class="mb-0">Confirmed as a permanent employee based on excellent performance during the probation period.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-lg-4">
+    <!-- Training History -->
+    <div class="profile-section">
+        <h3 class="section-title"><i class="fas fa-graduation-cap"></i> Training & Development</h3>
+        <div class="list-group list-group-flush">
+            <div class="list-group-item px-0">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                    <div class="fw-medium">Advanced System Architecture</div>
+                    <span class="badge bg-success">Completed</span>
+                </div>
+                <div class="small text-muted mb-1">March 12-15, 2023</div>
+                <div class="small">Internal training conducted by Architecture team</div>
+            </div>
+            
+            <div class="list-group-item px-0">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                    <div class="fw-medium">Leadership Skills Workshop</div>
+                    <span class="badge bg-success">Completed</span>
+                </div>
+                <div class="small text-muted mb-1">January 5-6, 2023</div>
+                <div class="small">External training by Leadership Institute</div>
+            </div>
+            
+            <div class="list-group-item px-0">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                    <div class="fw-medium">AWS Advanced Solutions</div>
+                    <span class="badge bg-warning text-dark">In Progress</span>
+                </div>
+                <div class="small text-muted mb-1">April 1 - June 30, 2023</div>
+                <div class="small">Online certification course (50% completed)</div>
+            </div>
+            
+            <div class="list-group-item px-0">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                    <div class="fw-medium">Microservices Architecture</div>
+                    <span class="badge bg-success">Completed</span>
+                </div>
+                <div class="small text-muted mb-1">October 10-12, 2022</div>
+                <div class="small">Internal workshop by Platform team</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Awards & Recognition -->
+    <div class="profile-section">
+        <h3 class="section-title"><i class="fas fa-trophy"></i> Awards & Recognition</h3>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">March 2023</div>
+                <div class="timeline-title">Star Performer of the Quarter</div>
+                <div class="timeline-desc">
+                    Awarded for exceptional contributions to the platform optimization project, which improved system performance by 40%.
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">December 2022</div>
+                <div class="timeline-title">Innovation Award</div>
+                <div class="timeline-desc">
+                    Recognized for developing an automated deployment pipeline that reduced deployment time by 70%.
+                </div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">September 2022</div>
+                <div class="timeline-title">Peer Recognition Award</div>
+                <div class="timeline-desc">
+                    Voted by team members for exceptional collaboration and support during the critical product launch.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- System Activity -->
+    <div class="profile-section">
+        <h3 class="section-title"><i class="fas fa-history"></i> Recent System Activity</h3>
+        <div class="list-group list-group-flush">
+            <div class="list-group-item px-0">
+                <div class="small text-muted mb-1">Today, 10:35 AM</div>
+                <div>Updated profile information</div>
+            </div>
+            <div class="list-group-item px-0">
+                <div class="small text-muted mb-1">Yesterday, 3:45 PM</div>
+                <div>Uploaded new document: "AWS Certification"</div>
+            </div>
+            <div class="list-group-item px-0">
+                <div class="small text-muted mb-1">May 27, 2023, 9:15 AM</div>
+                <div>Submitted leave application</div>
+            </div>
+            <div class="list-group-item px-0">
+                <div class="small text-muted mb-1">May 25, 2023, 5:30 PM</div>
+                <div>Updated emergency contact information</div>
+            </div>
+            <div class="list-group-item px-0">
+                <div class="small text-muted mb-1">May 20, 2023, 2:10 PM</div>
+                <div>Downloaded May 2023 salary slip</div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Edit Employee Modal -->
+<div class="modal fade" id="editEmployeeModal" tabindex="-1" aria-labelledby="editEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editEmployeeModalLabel">Edit Employee Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editEmployeeForm">
+                    <!-- Personal Information -->
+                    <div class="mb-4">
+                        <h6 class="modal-section-title">Personal Information</h6>
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label for="edit_fullName" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="edit_fullName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="edit_email" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_phone" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="edit_phone">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Employment Information -->
+                    <div class="mb-4">
+                        <h6 class="modal-section-title">Employment Details</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="edit_jobTitle" class="form-label">Job Title</label>
+                                <input type="text" class="form-control" id="edit_jobTitle" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_departmentSelect" class="form-label">Department</label>
+                                <select class="form-select" id="edit_departmentSelect">
+                                    <option value="engineering">Engineering</option>
+                                    <option value="marketing">Marketing</option>
+                                    <option value="finance">Finance</option>
+                                    <option value="hr">Human Resources</option>
+                                    <option value="product">Product</option>
+                                    <option value="sales">Sales</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_workLocation" class="form-label">Work Location</label>
+                                <select class="form-select" id="edit_workLocation">
+                                    <option value="bangalore">Bangalore</option>
+                                    <option value="mumbai">Mumbai</option>
+                                    <option value="delhi">Delhi</option>
+                                    <option value="hyderabad">Hyderabad</option>
+                                    <option value="remote">Remote</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit_status" class="form-label">Status</label>
+                                <select class="form-select" id="edit_status">
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                    <option value="onboarding">Onboarding</option>
+                                    <option value="offboarding">Offboarding</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveEmployeeChanges">
+                    <i class="fas fa-save me-1"></i> Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Add custom class to body to enable our custom styles
+    document.body.classList.add('custom-dashboard');
+    
+    $(document).ready(function() {
+        // Set the active menu item in the sidebar
+        const employeesMenuItem = document.querySelector('.sidebar-item[href*="employees"]');
+        if (employeesMenuItem) {
+            employeesMenuItem.classList.add('active');
+        }
+        
+        // Initialize attendance chart
+        const ctx = document.getElementById('attendanceChart').getContext('2d');
+        const attendanceChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Present', 'Absent', 'Half Day', 'Leave'],
+                datasets: [{
+                    data: [21, 1, 2, 3],
+                    backgroundColor: [
+                        '#10b981', // green for present
+                        '#ef4444', // red for absent
+                        '#f59e0b', // amber for half day
+                        '#3b82f6'  // blue for leave
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            boxWidth: 12
+                        }
+                    }
+                }
+            }
+        });
+        
+        // IMPORTANT: This is the key functionality to make the Edit button open the modal
+        $('#editEmployeeBtn').on('click', function() {
+            // Get current employee data to populate the modal
+            const employeeName = $('#employeeName').text();
+            const employeeTitle = $('#employeeTitle').text();
+            const employeeEmail = $('#employeeEmail').text();
+            const employeePhone = $('#employeePhone').text();
+            
+            // Pre-fill form fields with current employee data
+            $('#edit_fullName').val(employeeName);
+            $('#edit_jobTitle').val(employeeTitle);
+            $('#edit_email').val(employeeEmail);
+            $('#edit_phone').val(employeePhone);
+            
+            // Set department select (assuming value matches text)
+            const department = $('#employeeDepartment').text().toLowerCase();
+            $('#edit_departmentSelect').val(department);
+            
+            // Set location select (assuming value matches text)
+            const location = $('#employeeLocation').text().toLowerCase();
+            $('#edit_workLocation').val(location);
+            
+            // Finally open the modal
+            $('#editEmployeeModal').modal('show');
+        });
+        
+        // Handle saving employee changes
+        $('#saveEmployeeChanges').on('click', function() {
+            // Show loading state
+            const saveBtn = $(this);
+            saveBtn.html('<i class="fas fa-spinner fa-spin me-1"></i> Saving...');
+            saveBtn.prop('disabled', true);
+            
+            // Simulate saving with timeout
+            setTimeout(function() {
+                // Update visible information on the page
+                $('#employeeName').text($('#edit_fullName').val());
+                $('#employeeTitle').text($('#edit_jobTitle').val());
+                $('#employeeEmail').text($('#edit_email').val());
+                $('#employeePhone').text($('#edit_phone').val());
+                $('#employeeDepartment').text($('#edit_departmentSelect option:selected').text());
+                $('#employeeLocation').text($('#edit_workLocation option:selected').text());
+                
+                // Reset button and close modal
+                saveBtn.html('<i class="fas fa-save me-1"></i> Save Changes');
+                saveBtn.prop('disabled', false);
+                $('#editEmployeeModal').modal('hide');
+                
+                // Show success message
+                alert('Employee information updated successfully');
+            }, 1000);
+        });
+        
+        // Initialize popovers
+        const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+        popoverTriggerList.map(function (popoverTriggerEl) {
+            return new bootstrap.Popover(popoverTriggerEl);
+        });
+        
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+{% endblock %} 

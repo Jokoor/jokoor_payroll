@@ -1,830 +1,1009 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employees | Jokoor</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #fbfbfd;
-        }
-        
-        .sidebar {
-            width: 220px;
-            position: fixed;
-            height: 100vh;
-            background-color: #f5f7ff;
-            border-right: 1px solid #e8e9ec;
-        }
-        
-        .main-content {
-            margin-left: 220px;
-            padding: 20px 30px;
-        }
-        
-        .search-container {
-            position: relative;
-        }
-        
-        .search-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #666;
-        }
-        
-        .search-input {
-            padding-left: 40px !important;
-            background-color: #f5f5f9;
-            border: none;
-        }
-        
-        .profile-avatar img {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        
-        /* Stats card styles */
-        .stats-card {
-            border-radius: 12px;
-            padding: 20px;
-            height: 100%;
-            border: none;
-        }
-        
-        .total-employees-card {
-            background-color: #f5f0ff;
-        }
-        
-        .active-employees-card {
-            background-color: #e8f8f0;
-        }
-        
-        .inactive-employees-card {
-            background-color: #ffefef;
-        }
-        
-        .icon-circle {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10px;
-        }
-        
-        .icon-circle-total {
-            background-color: #7d5fd2;
-            color: white;
-        }
-        
-        .icon-circle-active {
-            background-color: #3bb878;
-            color: white;
-        }
-        
-        .icon-circle-inactive {
-            background-color: #ff5252;
-            color: white;
-        }
-        
-        /* Enhanced Table Styles */
-        .table {
-            margin-bottom: 0;
-        }
-        
-        .table thead th {
-            background-color: #f8f9fc;
-            color: #444;
-            font-weight: 600;
-            font-size: 13px;
-            padding: 15px 18px;
-            border-bottom: 1px solid #eaedf2;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-        }
-        
-        .table tbody td {
-            padding: 16px 18px;
-            vertical-align: middle;
-            border-bottom: 1px solid #eaedf2;
-            color: #333;
-            font-size: 14px;
-        }
-        
-        .table tbody tr:last-child td {
-            border-bottom: none;
-        }
-        
-        .table tbody tr {
-            transition: all 0.2s ease;
-            border-left: 3px solid transparent;
-        }
-        
-        .table tbody tr:hover {
-            background-color: #f5f7ff;
-            border-left-color: #7d5fd2;
-        }
-        
-        .employee-name {
-            font-weight: 600;
-            color: #333;
-            font-size: 14px;
-            line-height: 1.3;
-        }
-        
-        .employee-email {
-            color: #6c757d;
-            font-size: 12px;
-            line-height: 1.3;
-        }
-        
-        .status-pill {
-            border-radius: 30px;
-            padding: 6px 12px;
-            font-size: 12px;
-            font-weight: 500;
-            display: inline-block;
-            text-align: center;
-            min-width: 80px;
-        }
-        
-        .status-pill:contains("Active") {
-            background-color: rgba(59, 184, 120, 0.1);
-            color: #3bb878;
-        }
-        
-        .status-pill:contains("On Leave") {
-            background-color: rgba(255, 180, 64, 0.1);
-            color: #ffb440;
-        }
-        
-        .status-pill:contains("Inactive") {
-            background-color: rgba(255, 82, 82, 0.1);
-            color: #ff5252;
-        }
-        
-        .btn-light {
-            background-color: #f8f9fc;
-            border-color: #eaedf2;
-            color: #6c757d;
-            width: 32px;
-            height: 32px;
-            padding: 0;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .btn-light:hover {
-            background-color: #7d5fd2;
-            border-color: #7d5fd2;
-            color: white;
-        }
-        
-        .btn-outline-primary {
-            color: #7d5fd2;
-            border-color: #7d5fd2;
-        }
-        
-        .btn-outline-primary:hover {
-            background-color: #7d5fd2;
-            color: white;
-        }
-        
-        .search-container {
-            position: relative;
-            min-width: 250px;
-        }
-        
-        .search-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #6c757d;
-        }
-        
-        .search-input {
-            padding-left: 40px !important;
-            border-radius: 30px;
-            border: 1px solid #eaedf2;
-            font-size: 14px;
-            transition: all 0.2s;
-            background-color: #f8f9fc;
-        }
-        
-        .search-input:focus {
-            background-color: #fff;
-            box-shadow: 0 0 0 0.25rem rgba(125, 95, 210, 0.15);
-            border-color: #7d5fd2;
-        }
-        
-        .filter-button, .add-button {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #f8f9fc;
-            border: 1px solid #eaedf2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .filter-button:hover, .add-button:hover {
-            background-color: #7d5fd2;
-            border-color: #7d5fd2;
-        }
-        
-        .filter-button:hover i, .add-button:hover i {
-            color: white !important;
-        }
-        
-        .card-style {
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-        }
-        
-        .pagination .page-link {
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #6c757d;
-            border: 1px solid #eaedf2;
-            font-size: 12px;
-            margin: 0 3px;
-        }
-        
-        .pagination .page-item.active .page-link {
-            background-color: #7d5fd2;
-            border-color: #7d5fd2;
-            color: white;
-        }
-        
-        .pagination .page-link:hover:not(.active) {
-            background-color: #f8f9fc;
-            color: #7d5fd2;
-        }
-        
-        @media (max-width: 991.98px) {
-            .sidebar {
-                width: 0;
-                display: none;
-            }
-            
-            .main-content {
-                margin-left: 0;
-            }
-        }
-        
-        .fade-effect {
-            animation: fadeEffect 0.5s;
-        }
-        
-        @keyframes fadeEffect {
-            from { opacity: 0.5; }
-            to { opacity: 1; }
-        }
-        
-        tbody tr {
-            cursor: pointer;
-        }
-        
-        tbody tr:hover {
-            background-color: #f5f7ff;
-        }
-        
-        /* Enhanced row selection styling */
-        .row-selected {
-            background-color: #f0f4ff !important;
-            border-left: 3px solid #7d5fd2;
-        }
-        
-        tbody tr {
-            transition: all 0.2s ease;
-            border-left: 3px solid transparent;
-        }
-        
-        tbody tr:hover {
-            background-color: #f5f7ff;
-        }
-        
-        /* Modal Styling */
-        .employee-modal {
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-        
-        .employee-modal .modal-header {
-            padding: 20px 24px 0;
-        }
-        
-        .employee-modal .modal-body {
-            padding: 20px 24px;
-        }
-        
-        .employee-modal .modal-footer {
-            padding: 16px 24px 20px;
-        }
-        
-        /* Progress Indicator */
-        .progress-indicator {
-            padding: 20px 0;
-            position: relative;
-        }
-        
-        .progress-line {
-            position: absolute;
-            top: 24px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background-color: #eaedf2;
-            z-index: 1;
-        }
-        
-        .step-dot {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background-color: #f5f7ff;
-            border: 2px solid #eaedf2;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            z-index: 2;
-            transition: all 0.3s ease;
-        }
-        
-        .step-dot.active {
-            border-color: #7d5fd2;
-            background-color: #f0f4ff;
-        }
-        
-        .step-dot.completed {
-            border-color: #7d5fd2;
-            background-color: #7d5fd2;
-            color: white;
-        }
-        
-        .step-dot .step-number {
-            font-weight: 600;
-            font-size: 14px;
-        }
-        
-        .step-dot.completed .step-number {
-            display: none;
-        }
-        
-        .step-dot.completed:after {
-            content: '\f00c';
-            font-family: 'Font Awesome 5 Free';
-            font-weight: 900;
-            color: white;
-        }
-        
-        .step-label {
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            white-space: nowrap;
-            margin-top: 8px;
-            font-size: 12px;
-            color: #666;
-            font-weight: 500;
-        }
-        
-        .step-dot.active .step-label {
-            color: #7d5fd2;
-            font-weight: 600;
-        }
-        
-        /* Form styling */
-        .form-label {
-            font-weight: 500;
-            color: #555;
-            margin-bottom: 6px;
-        }
-        
-        .form-control, .form-select {
-            padding: 10px 14px;
-            border-radius: 8px;
-            border-color: #eaedf2;
-        }
-        
-        .form-control:focus, .form-select:focus {
-            border-color: #7d5fd2;
-            box-shadow: 0 0 0 0.25rem rgba(125, 95, 210, 0.15);
-        }
-        
-        /* Profile upload styling */
-        .profile-upload-container {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            position: relative;
-            overflow: hidden;
-            background-color: #f5f7ff;
-            border: 2px dashed #d0d9e8;
-            cursor: pointer;
-        }
-        
-        .profile-upload-placeholder {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
-        }
-        
-        .profile-upload-placeholder i {
-            font-size: 40px;
-            color: #c0c7d9;
-        }
-        
-        .profile-upload-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: rgba(125, 95, 210, 0.7);
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-        }
-        
-        /* Confirmation styling */
-        .confirmation-icon {
-            font-size: 60px;
-            color: #3bb878;
-        }
-        
-        /* Button styling */
-        .btn-primary {
-            background-color: #7d5fd2;
-            border-color: #7d5fd2;
-        }
-        
-        .btn-primary:hover {
-            background-color: #6a4ec3;
-            border-color: #6a4ec3;
-        }
-        
-        .btn-success {
-            background-color: #3bb878;
-            border-color: #3bb878;
-        }
-        
-        .btn-success:hover {
-            background-color: #34a369;
-            border-color: #34a369;
-        }
-    </style>
-</head>
-<body>
-    <div class="d-flex">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <aside>
-                {% include 'templates/includes/dashboard/sidebar.html' %}
-            </aside>
-        </div>
-        
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Header -->
-            <header class="mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h2 class="fw-bold mb-0">Our Employees</h2>
-                    </div>
-                    <br>
-                    <br>
+{% extends "templates/web.html" %}
+
+{% block head_include %}
+<!-- Link to global styles -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/dashboard/styles/global.css">
+<style>
+    /* Page-specific styling for employees list */
+    body.custom-dashboard .employee-status {
+        display: inline-block !important;
+        padding: 4px 10px !important;
+        border-radius: 6px !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+    }
+    
+    body.custom-dashboard .status-active {
+        background-color: #ecfdf3 !important;
+        color: #10b981 !important;
+    }
+    
+    body.custom-dashboard .status-inactive {
+        background-color: #f3f4f6 !important;
+        color: #6b7280 !important;
+    }
+    
+    body.custom-dashboard .status-onboarding {
+        background-color: #fffaeb !important;
+        color: #f59e0b !important;
+    }
+    
+    body.custom-dashboard .status-offboarding {
+        background-color: #fee2e2 !important;
+        color: #dc2626 !important;
+    }
+    
+    body.custom-dashboard .employee-card {
+        transition: all 0.2s !important;
+        border: 1px solid #e5e7eb !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+        height: 100% !important;
+    }
+    
+    body.custom-dashboard .employee-card:hover {
+        transform: translateY(-3px) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+    }
+    
+    body.custom-dashboard .employee-header {
+        background-color: #f9fafb !important;
+        padding: 16px !important;
+        border-bottom: 1px solid #e5e7eb !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+    
+    body.custom-dashboard .employee-avatar {
+        width: 48px !important;
+        height: 48px !important;
+        border-radius: 50% !important;
+        object-fit: cover !important;
+        margin-right: 12px !important;
+        background-color: #e5e7eb !important;
+    }
+    
+    body.custom-dashboard .employee-body {
+        padding: 16px !important;
+    }
+    
+    body.custom-dashboard .employee-name {
+        font-weight: 600 !important;
+        font-size: 16px !important;
+        color: #111827 !important;
+        margin-bottom: 0 !important;
+    }
+    
+    body.custom-dashboard .employee-title {
+        font-size: 13px !important;
+        color: #6b7280 !important;
+    }
+    
+    body.custom-dashboard .employee-info-label {
+        font-size: 12px !important;
+        color: #6b7280 !important;
+        margin-bottom: 2px !important;
+    }
+    
+    body.custom-dashboard .employee-info-value {
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        color: #111827 !important;
+        margin-bottom: 12px !important;
+    }
+    
+    body.custom-dashboard .department-badge {
+        display: inline-block !important;
+        padding: 3px 8px !important;
+        border-radius: 4px !important;
+        font-size: 12px !important;
+        background-color: #f3f0ff !important;
+        color: #7d5fd2 !important;
+        margin-top: 4px !important;
+    }
+    
+    body.custom-dashboard .view-profile {
+        color: #7d5fd2 !important;
+        text-decoration: none !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+    }
+    
+    body.custom-dashboard .view-profile:hover {
+        text-decoration: underline !important;
+    }
+    
+    body.custom-dashboard .filter-badge {
+        background-color: #f3f0ff !important;
+        color: #7d5fd2 !important;
+        font-size: 12px !important;
+        border-radius: 4px !important;
+        padding: 4px 10px !important;
+        margin-right: 6px !important;
+        margin-bottom: 8px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        transition: all 0.2s !important;
+    }
+    
+    body.custom-dashboard .filter-badge:hover {
+        background-color: #e9e1fb !important;
+    }
+    
+    body.custom-dashboard .filter-badge i {
+        margin-left: 6px !important;
+        font-size: 10px !important;
+        cursor: pointer !important;
+        opacity: 0.7 !important;
+    }
+    
+    body.custom-dashboard .filter-badge i:hover {
+        opacity: 1 !important;
+    }
+    
+    body.custom-dashboard .filter-count {
+        background-color: #7d5fd2 !important;
+        color: white !important;
+        border-radius: 50% !important;
+        width: 20px !important;
+        height: 20px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 11px !important;
+        margin-left: 8px !important;
+    }
+    
+    body.custom-dashboard .clear-all-filters {
+        color: #7d5fd2 !important;
+        text-decoration: none !important;
+        font-size: 12px !important;
+        cursor: pointer !important;
+    }
+    
+    body.custom-dashboard .clear-all-filters:hover {
+        text-decoration: underline !important;
+    }
+    
+    body.custom-dashboard .filter-section {
+        background-color: #f9fafb !important;
+        border-radius: 8px !important;
+        padding: 16px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    body.custom-dashboard .view-toggle-btn {
+        border-radius: 4px !important;
+        width: 40px !important;
+        height: 36px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background-color: #fff !important;
+        border: 1px solid #e5e7eb !important;
+        color: #6b7280 !important;
+        transition: all 0.2s !important;
+    }
+    
+    body.custom-dashboard .view-toggle-btn.active {
+        background-color: #f3f0ff !important;
+        color: #7d5fd2 !important;
+        border-color: #d4c5fa !important;
+    }
+    
+    body.custom-dashboard .quick-action-btn {
+        font-size: 13px !important;
+        padding: 6px 12px !important;
+    }
+    
+    body.custom-dashboard .tab-view {
+        display: none;
+    }
+    
+    body.custom-dashboard .tab-view.active {
+        display: block;
+    }
+    
+    body.custom-dashboard .role-chip {
+        display: inline-block !important;
+        padding: 2px 8px !important;
+        border-radius: 4px !important;
+        font-size: 11px !important;
+        background-color: #e0f2fe !important;
+        color: #0284c7 !important;
+        margin-right: 4px !important;
+    }
+    
+    body.custom-dashboard .employee-cell {
+        cursor: pointer !important;
+        transition: background-color 0.2s !important;
+    }
+    
+    body.custom-dashboard .employee-cell:hover {
+        background-color: #f9fafb !important;
+    }
+</style>
+{% endblock %}
+
+{% block title %}Employees | Jokoor Payroll{% endblock %}
+
+{% block header %}
+<!-- Override the header to remove Frappe's default header -->
+{% endblock %}
+
+{% block navbar %}
+<!-- Override navbar to remove Frappe's default navbar -->
+{% endblock %}
+
+{% block footer %}
+<!-- Override footer to remove Frappe's default footer -->
+{% endblock %}
+
+{% block content %}
+<div class="custom-dashboard">
+    <!-- Sidebar -->
+    {% include "templates/includes/dashboard/sidebar.html" %}
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="fw-bold mb-0">Employees</h2>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
+                    <i class="fas fa-plus me-2"></i> Add Employee
+                </button>
+            </div>
+        </header>
+        
+        <!-- Filters Section -->
+        <div class="filter-section mb-4">
+            <div class="row align-items-end">
+                <div class="col-md-2">
+                    <label for="statusFilter" class="form-label">Status</label>
+                    <select class="form-select" id="statusFilter">
+                        <option value="all" selected>All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="onboarding">Onboarding</option>
+                        <option value="offboarding">Offboarding</option>
+                    </select>
                 </div>
-            </header>
-            
-            <!-- Stats Cards -->
-            <div class="row mb-4">
-                <div class="col-md-4">
-                    <div class="stats-card total-employees-card">
-                        <div class="icon-circle icon-circle-total">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <h6 class="text-muted mb-2">Total Employees</h6>
-                        <h3 class="fw-bold mb-2">{{total_employees}}</h3>
-                        <p class="text-muted small mb-0">Total workforce registered, with payroll processing on track.</p>
+                <div class="col-md-2">
+                    <label for="departmentFilter" class="form-label">Department</label>
+                    <select class="form-select" id="departmentFilter">
+                        <option value="all" selected>All Departments</option>
+                        <option value="engineering">Engineering</option>
+                        <option value="marketing">Marketing</option>
+                        <option value="sales">Sales</option>
+                        <option value="hr">Human Resources</option>
+                        <option value="finance">Finance</option>
+                        <option value="operations">Operations</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="locationFilter" class="form-label">Location</label>
+                    <select class="form-select" id="locationFilter">
+                        <option value="all" selected>All Locations</option>
+                        <option value="bangalore">Bangalore</option>
+                        <option value="mumbai">Mumbai</option>
+                        <option value="delhi">Delhi</option>
+                        <option value="hyderabad">Hyderabad</option>
+                        <option value="remote">Remote</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="employmentTypeFilter" class="form-label">Employment Type</label>
+                    <select class="form-select" id="employmentTypeFilter">
+                        <option value="all" selected>All Types</option>
+                        <option value="full_time">Full Time</option>
+                        <option value="part_time">Part Time</option>
+                        <option value="contract">Contract</option>
+                        <option value="intern">Intern</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                        <input type="text" class="form-control border-start-0" id="searchEmployee" placeholder="Search by name, ID, or email">
                     </div>
                 </div>
-                
-                <div class="col-md-4">
-                    <div class="stats-card active-employees-card">
-                        <div class="icon-circle icon-circle-active">
-                            <i class="fas fa-user-check"></i>
-                        </div>
-                        <h6 class="text-muted mb-2">Active Employees</h6>
-                        <h3 class="fw-bold mb-2">{{active_employees}}</h3>
-                        <p class="text-muted small mb-0">Employees currently working, receiving payroll and benefits.</p>
-                    </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="stats-card inactive-employees-card">
-                        <div class="icon-circle icon-circle-inactive">
-                            <i class="fas fa-user-slash"></i>
-                        </div>
-                        <h6 class="text-muted mb-2">Inactive Employees</h6>
-                        <h3 class="fw-bold mb-2">{{inactive_employees}}</h3>
-                        <p class="text-muted small mb-0">Employees on leave or inactive, with payroll adjustments.</p>
+                <div class="col-md-1">
+                    <div class="d-flex">
+                        <button class="view-toggle-btn me-2" id="gridViewBtn" title="Grid View">
+                            <i class="fas fa-th-large"></i>
+                        </button>
+                        <button class="view-toggle-btn active" id="listViewBtn" title="List View">
+                            <i class="fas fa-list"></i>
+                        </button>
                     </div>
                 </div>
             </div>
             
-            <div class="row">
-                <!-- Employee List Table - Now Full Width -->
-                <div class="col-12 mb-4">
-                    <div class="card card-style">
-                        <div class="card-body p-4">
-                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                <div>
-                                <h5 class="fw-bold mb-0">Employee List</h5>
-                                    <p class="text-muted small mt-1 mb-0">Manage your employees efficiently</p>
-                                </div>
-                                <div class="d-flex align-items-center gap-3">
-                                    <!-- Search Field -->
-                                    <div class="search-container">
-                                        <i class="fas fa-search search-icon"></i>
-                                        <input type="text" class="form-control rounded-pill search-input" id="tableSearchInput" placeholder="Search employees...">
-                                    </div>
-                                    <!-- Filter & Add Buttons -->
-                                <div class="d-flex">
-                                        <div class="dropdown me-2">
-                                            <button class="filter-button" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fas fa-filter text-muted"></i>
-                                    </button>
-                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm p-3" aria-labelledby="filterDropdown" style="min-width: 240px;">
-                                                <li>
-                                                    <h6 class="dropdown-header">Filter Employees</h6>
-                                                </li>
-                                                <li class="mb-2">
-                                                    <label class="form-label small text-muted">Department</label>
-                                                    <select class="form-select form-select-sm" id="departmentFilter">
-                                                        <option value="">All Departments</option>
-                                                        <option value="IT">IT</option>
-                                                        <option value="HR">HR</option>
-                                                        <option value="Finance">Finance</option>
-                                                        <option value="Marketing">Marketing</option>
-                                                        <option value="Sales">Sales</option>
-                                                    </select>
-                                                </li>
-                                                <li class="mb-2">
-                                                    <label class="form-label small text-muted">Status</label>
-                                                    <select class="form-select form-select-sm" id="statusFilter">
-                                                        <option value="">All Statuses</option>
-                                                        <option value="Active">Active</option>
-                                                        <option value="On Leave">On Leave</option>
-                                                        <option value="Inactive">Inactive</option>
-                                                    </select>
-                                                </li>
-                                                <li>
-                                                    <label class="form-label small text-muted">Sort By</label>
-                                                    <select class="form-select form-select-sm" id="sortBy">
-                                                        <option value="name">Name (A-Z)</option>
-                                                        <option value="name_desc">Name (Z-A)</option>
-                                                        <option value="date_asc">Join Date (Oldest)</option>
-                                                        <option value="date_desc">Join Date (Newest)</option>
-                                                    </select>
-                                                </li>
-                                                <li><hr class="dropdown-divider my-3"></li>
-                                                <li class="text-center">
-                                                    <button class="btn btn-sm btn-outline-secondary w-100" id="resetFilters">
-                                                        <i class="fas fa-undo me-1"></i> Reset Filters
-                                                    </button>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <button class="add-button" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
-                                        <i class="fas fa-plus text-muted"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            </div>
-                            
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="section-title">Employee List</h5>
-                                <button id="addEmployeeBtn" class="btn btn-primary btn-sm" onclick="window.location.href='/dashboard/employees/add'">
-                                    <i class="fas fa-plus"></i> Add Employee
-                                </button>
-                            </div>
-                            
-                            <div class="table-responsive">
-                                <table class="table table-borderless" id="employeesTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Employee Name</th>
-                                            <th>Position</th>
-                                            <th>Department</th>
-                                            <th>Joining Date</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for employee in employee_list %}
-                                        <tr>
-                                            <a href="/dashboard/employees/view?id={{employee.name}}">  
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    <img src="{{employee.image}}" class="rounded-circle me-2" width="36" height="36" alt="">
-                                                    <div>
-                                                       <a href="/dashboard/employees/view?id={{employee.name}}"></a><div class="employee-name">{{employee.employee_name or ''}}</div></a>
-                                                        <div class="employee-email text-muted small">{{employee.email_id or ''}}</div>
-                                                </div>
-                                                </div>
-                                            </td>
-                                            <td>{{employee.designation or ''}}</td>
-                                            <td>{{employee.department or ''}}</td>
-                                            <td>{{employee.date_of_joining or ''}}</td>
-                                            <td><span class="status-pill">{{employee.status}}</span></td>
-                                           
-                                        </tr>
-                                        </a>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
+            <!-- Selected Filters -->
+            <div class="mt-3" id="selectedFiltersContainer">
+                <div id="selectedFilters">
+                    <!-- Will be populated dynamically -->
                 </div>
-                
-                            <!-- Pagination -->
-                            <div class="d-flex justify-content-between align-items-center mt-4">
-                                <div class="text-muted small">
-                                    Showing <span id="startRange">1</span>-<span id="endRange">{{employee_list|length}}</span> of <span id="totalEmployees">{{total_employees}}</span> employees
-                                </div>
-                                <nav aria-label="Page navigation">
-                                    <ul class="pagination pagination-sm mb-0">
-                                        <li class="page-item disabled">
-                                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
-                                                <i class="fas fa-chevron-left"></i>
-                                            </a>
-                                        </li>
-                                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                        <li class="page-item">
-                                            <a class="page-link" href="#">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </nav>
+            </div>
+            
+            <!-- Quick Filters -->
+            <div class="mt-3">
+                <button class="btn btn-sm btn-outline-secondary me-2 quick-action-btn">
+                    <i class="fas fa-user-check me-1"></i> Active Employees
+                </button>
+                <button class="btn btn-sm btn-outline-secondary me-2 quick-action-btn">
+                    <i class="fas fa-map-marker-alt me-1"></i> Bangalore Office
+                </button>
+                <button class="btn btn-sm btn-outline-secondary me-2 quick-action-btn">
+                    <i class="fas fa-code me-1"></i> Engineering Team
+                </button>
+                <button class="btn btn-sm btn-outline-secondary quick-action-btn">
+                    <i class="fas fa-user-tie me-1"></i> Full-Time Employees
+                </button>
+            </div>
+        </div>
+        
+        <!-- Filter Results Info -->
+
+        <div class="alert alert-info d-flex align-items-center mb-4" id="filterResultInfo">
+            <i class="fas fa-info-circle me-2"></i>
+            <div>
+                Showing <span id="filteredEmployeeCount">{{total_employees}}</span> employees out of <span id="totalEmployeeCount">{{total_employees}}</span> total employees.
+            </div>
+        </div>
+        
+        <!-- Grid View -->
+        <div class="tab-view" id="gridView">
+            <div class="row" id="employeesGrid">
+                {% for employee in employee_list %}
+                <!-- Employee Card 1 -->
+                <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
+                    <div class="employee-card">
+                        <div class="employee-header">
+                            {% if employee.image %}
+                            <img src="{{ employee.image }}" alt="" class="employee-avatar">
+                            {% else %}
+                            <img src="https://ui-avatars.com/api/?name={{ employee.first_name }} {{ employee.last_name }}&background=0D8ABC&color=fff" alt="" class="employee-avatar">
+                            {% endif %}
+                            <div>
+                                <h5 class="employee-name">{{ employee.first_name }} {{ employee.last_name }}</h5>
+                                <div class="employee-title">{{ employee.designation }}</div>
+                                <span class="department-badge">{{ employee.department }}</span>
                             </div>
                         </div>
-                                    </div>
-                                    </div>
-                                    </div>
+                        <div class="employee-body">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="employee-info-label">Employee ID</div>
+                                    <div class="employee-info-value">{{ employee.name }}</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="employee-info-label">Status</div>
+                                    <div class="employee-info-value">
+                                        <span class="employee-status status-active">{{ employee.status }}</span>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="employee-info-label">Email</div>
+                                    <div class="employee-info-value" style="word-break: break-word;">{{ employee.email }}</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="employee-info-label">Location</div>
+                                    <div class="employee-info-value">{{ employee.location }}</div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <a href="/dashboard/employees/view?id={{ employee.name }}" class="view-profile">
+                                    <i class="fas fa-user me-1"></i> View Profile
+                                </a>
                                 
-    <!-- Include the employee modal component -->
-    {% include 'templates/includes/dashboard/employee-modal.html' %}
-
-    <!-- Employee Creation Modal -->
-    <div class="modal fade" id="createEmployeeModal" tabindex="-1" aria-labelledby="createEmployeeModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <!-- Employee Card 2 -->
+                
+                
+                <!-- More employee cards would be added here -->
+            </div>
+        </div>
+        
+        <!-- List View (Default) -->
+        <div class="tab-view active" id="listView">
+            <div class="card card-style">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="dashboard-table" id="employeesTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 280px;">Employee</th>
+                                    <th>ID</th>
+                                    <th>Department</th>
+                                    <th>Location</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for employee in employee_list %}
+                                <tr>
+                                    <td class="employee-cell" data-employee-id="{{ employee.name }}">
+                                        <div class="d-flex align-items-center">
+                                            {% if employee.image %}
+                                                <img src="{{ employee.image }}" alt="" class="employee-avatar" style="width: 36px; height: 36px;">
+                                            {% else %}
+                                                <img src="https://ui-avatars.com/api/?name={{ employee.first_name }} {{ employee.last_name }}&background=0D8ABC&color=fff" alt="" class="employee-avatar" style="width: 36px; height: 36px;">
+                                            {% endif %}
+                                            <div class="ms-2">
+                                                <div class="fw-medium">{{ employee.first_name }} {{ employee.last_name }}</div>
+                                                <div class="text-muted small">{{ employee.designation }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ employee.name }}</td>
+                                    <td>{{ employee.department }}</td>
+                                    <td>{{ employee.location }}</td>
+                                    <td>{{ employee.phone }}</td>
+                                    <td><span class="employee-status status-active">{{ employee.status }}</span></td>
+                                </tr>
+                               
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="d-flex justify-content-between align-items-center mt-4 mb-5">
+            <div class="text-muted">Showing 1-{{total_employees}} of {{total_employees}} employees</div>
+            <nav aria-label="Employee pagination">
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    
+    <!-- Add Employee Modal -->
+     
+    <div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="createEmployeeModalLabel">Create New Employee</h5>
+                    <h5 class="modal-title" id="addEmployeeModalLabel">Add New Employee</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
+                </div>
                 <div class="modal-body">
-                    <form id="employeeForm">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="employeeName" class="form-label">Full Name *</label>
-                                <input type="text" class="form-control" id="employeeName" required>
-                                    </div>
-                            <div class="col-md-6">
-                                <label for="employeeEmail" class="form-label">Email Address *</label>
-                                <input type="email" class="form-control" id="employeeEmail" required>
-                                    </div>
-                            <div class="col-md-6">
-                                <label for="employeePhone" class="form-label">Phone Number</label>
-                                <input type="tel" class="form-control" id="employeePhone">
-                                    </div>
-                            <div class="col-md-6">
-                                <label for="employeePosition" class="form-label">Position *</label>
-                                <select class="form-select" id="employeePosition" required>
-                                    <option value="">Select Position</option>
-                                    {% for position in positions %}
-                                    <option value="{{ position }}">{{ position }}</option>
-                                    {% endfor %}
-                                </select>
+                    <form id="newEmployeeForm" action="/api/method/jokoor_payroll.api.create_employee" method="POST">
+                        <!-- Personal Information -->
+                        <div class="mb-4">
+                            <h6 class="modal-section-title">Personal Information</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="firstName" class="form-label">First Name</label>
+                                    <input type="text" name="first_name" class="form-control" id="firstName" required>
                                 </div>
-                            <div class="col-md-6">
-                                <label for="employeeDepartment" class="form-label">Department *</label>
-                                <select class="form-select" id="employeeDepartment" required>
-                                    <option value="">Select Department</option>
-                                    {% for department in departments %}
-                                    <option value="{{ department }}">{{ department }}</option>
-                                    {% endfor %}
-                                </select>
-                                    </div>
-                            <div class="col-md-6">
-                                <label for="employeeHireDate" class="form-label">Hire Date</label>
-                                <input type="date" class="form-control" id="employeeHireDate" value="{{ frappe.utils.today() }}">
-                                    </div>
-                            <div class="col-md-6">
-                                <label for="employeeSalary" class="form-label">Salary</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">$</span>
-                                    <input type="number" class="form-control" id="employeeSalary" step="1000">
+                                <div class="col-md-6">
+                                    <label for="lastName" class="form-label">Last Name</label>
+                                    <input type="text" name="last_name" class="form-control" id="lastName" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" name="email" class="form-control" id="email" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="phone" class="form-label">Phone Number</label>
+                                    <input type="tel" name="phone" class="form-control" id="phone">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="dateOfBirth" class="form-label">Date of Birth</label>
+                                    <input type="date" name="date_of_birth" class="form-control" id="dateOfBirth">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="gender" class="form-label">Gender</label>
+                                    <select name="gender" class="form-select" id="gender">
+                                        <option value="" selected disabled>Select gender</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                        <option value="prefer_not_to_say">Prefer not to say</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Employment Information -->
+                        <div class="mb-4">
+                            <h6 class="modal-section-title">Employment Details</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="employeeId" class="form-label">Employee ID</label>
+                                    <input type="text" name="employee_id" class="form-control" id="employeeId">
+                                    <div class="form-text">Leave blank for auto-generation</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="joinDate" class="form-label">Joining Date</label>
+                                    <input type="date" name="joining_date" class="form-control" id="joinDate" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="department" class="form-label">Department</label>
+                                    <select name="department" class="form-select" id="department" required>
+                                        <option value="" selected disabled>Select department</option>
+                                        <option value="engineering">Engineering</option>
+                                        <option value="marketing">Marketing</option>
+                                        <option value="sales">Sales</option>
+                                        <option value="hr">Human Resources</option>
+                                        <option value="finance">Finance</option>
+                                        <option value="operations">Operations</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="jobTitle" class="form-label">Job Title</label>
+                                    <input type="text" name="job_title" class="form-control" id="jobTitle" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="employmentType" class="form-label">Employment Type</label>
+                                    <select name="employment_type" class="form-select" id="employmentType" required>
+                                        <option value="" selected disabled>Select type</option>
+                                        <option value="full_time">Full Time</option>
+                                        <option value="part_time">Part Time</option>
+                                        <option value="contract">Contract</option>
+                                        <option value="intern">Intern</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="workLocation" class="form-label">Work Location</label>
+                                    <select name="work_location" class="form-select" id="workLocation">
+                                        <option value="" selected disabled>Select location</option>
+                                        <option value="bangalore">Bangalore</option>
+                                        <option value="mumbai">Mumbai</option>
+                                        <option value="delhi">Delhi</option>
+                                        <option value="hyderabad">Hyderabad</option>
+                                        <option value="remote">Remote</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Salary Information -->
+                        <div class="mb-4">
+                            <h6 class="modal-section-title">Salary Details</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="salaryTemplate" class="form-label">Salary Template</label>
+                                    <select name="salary_template" class="form-select" id="salaryTemplate">
+                                        <option value="" selected disabled>Select template</option>
+                                        <option value="standard">Standard Employee</option>
+                                        <option value="manager">Manager Level</option>
+                                        <option value="executive">Executive Level</option>
+                                        <option value="custom">Custom Template</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="ctc" class="form-label">CTC (Annual)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">₹</span>
+                                        <input type="number" name="ctc" class="form-control" id="ctc" placeholder="Enter CTC amount">
                                     </div>
                                 </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Employment Type</label>
-                                <div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="employmentType" id="fullTimeType" value="Full-time" checked>
-                                        <label class="form-check-label" for="fullTimeType">Full-time</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="employmentType" id="partTimeType" value="Part-time">
-                                        <label class="form-check-label" for="partTimeType">Part-time</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="employmentType" id="contractType" value="Contract">
-                                        <label class="form-check-label" for="contractType">Contract</label>
-                                    </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="mb-4">
+                            <h6 class="modal-section-title">Contact Information</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="personalEmail" class="form-label">Personal Email</label>
+                                    <input type="email" name="personal_email" class="form-control" id="personalEmail">
                                 </div>
-                                    </div>
-                            <div class="col-12">
-                                <label for="employeeAddress" class="form-label">Address</label>
-                                <textarea class="form-control" id="employeeAddress" rows="2"></textarea>
-                                    </div>
-                                    </div>
+                                <div class="col-md-6">
+                                    <label for="emergencyContact" class="form-label">Emergency Contact</label>
+                                    <input type="tel" name="emergency_contact" class="form-control" id="emergencyContact">
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="address" class="form-label">Residential Address</label>
+                                    <textarea name="address" class="form-control" id="address" rows="2"></textarea>
+                                </div>
+                            </div>
+                        </div>
                     </form>
-                                </div>
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" form="employeeForm" id="submitEmployeeBtn" class="btn btn-primary">Create Employee</button>
-                                    </div>
-                                            </div>
-                                    </div>
-                                </div>
+                    <button type="submit" class="btn btn-primary" id="saveEmployeeBtn">
+                        <i class="fas fa-save me-1"></i> Save Employee
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
 
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Add custom class to body to enable our custom styles
+document.body.classList.add('custom-dashboard');
 
-    <!-- Include the employee data handling script -->
-    
+$(document).ready(function() {
+// Set the active menu item in the sidebar
+const employeesMenuItem = document.querySelector('.sidebar-item[href*="employees"]');
+if (employeesMenuItem) {
+employeesMenuItem.classList.add('active');
+}
 
-    <!-- Include the modal component's JavaScript -->
-    <script src="../../templates/includes/dashboard/employee-modal.js"></script>
+// View toggle (with list view as default)
+$('#gridViewBtn').on('click', function() {
+$(this).addClass('active');
+$('#listViewBtn').removeClass('active');
+$('#gridView').addClass('active');
+$('#listView').removeClass('active');
+});
 
-    <!-- CSS for the modal component -->
-    <link rel="stylesheet" href="../../templates/includes/dashboard/employee-modal.css">
+$('#listViewBtn').on('click', function() {
+$(this).addClass('active');
+$('#gridViewBtn').removeClass('active');
+$('#listView').addClass('active');
+$('#gridView').removeClass('active');
+});
 
-    <!-- Add the script to the end of the HTML file -->
-    <script src="/assets/jokoor_payroll/js/employees/employee-list.js"></script>
+// Make employee cells clickable
+$(document).on('click', '.employee-cell', function() {
+const employeeId = $(this).data('employee-id');
+window.location.href = `/dashboard/employees/profile?id=${employeeId}`;
+});
 
-    <!-- At the end of your file, just before the closing </body> tag -->
-    <script>
-        // Pure JavaScript approach
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log("DOM loaded, setting up Add Employee button handler");
-            
-            var addEmployeeBtn = document.getElementById('addEmployeeBtn');
-            if (addEmployeeBtn) {
-                addEmployeeBtn.addEventListener('click', function() {
-                    console.log("Add Employee button clicked (vanilla JS)");
-                    window.location.href = '/dashboard/employees/add';
-                });
-                    } else {
-                console.error("Add Employee button not found in the DOM");
-            }
-        });
-    </script>
-</body>
-</html> 
+// Initialize selected filters
+updateSelectedFilters();
+
+// Handle filter dropdowns
+$('#statusFilter, #departmentFilter, #locationFilter, #employmentTypeFilter').on('change', function() {
+filterEmployees();
+updateSelectedFilters();
+});
+
+// Search functionality
+$('#searchEmployee').on('input', function() {
+filterEmployees();
+});
+
+// Quick filter buttons
+$('.quick-action-btn').on('click', function() {
+// Reset filters first
+$('#statusFilter, #departmentFilter, #locationFilter, #employmentTypeFilter').val('all');
+
+// Apply specific filter based on which button was clicked
+const buttonText = $(this).text().trim();
+
+if (buttonText.includes('Active')) {
+$('#statusFilter').val('active');
+} else if (buttonText.includes('Bangalore')) {
+$('#locationFilter').val('bangalore');
+} else if (buttonText.includes('Engineering')) {
+$('#departmentFilter').val('engineering');
+} else if (buttonText.includes('Full-Time')) {
+$('#employmentTypeFilter').val('full_time');
+}
+
+// Apply filters
+filterEmployees();
+updateSelectedFilters();
+});
+
+// Clear all filters
+$(document).on('click', '.clear-all-filters', function() {
+$('#statusFilter, #departmentFilter, #locationFilter, #employmentTypeFilter').val('all');
+$('#searchEmployee').val('');
+
+// Reset and show all employees
+filterEmployees();
+updateSelectedFilters();
+});
+
+// Remove individual filter
+$(document).on('click', '.filter-badge i', function() {
+const filterType = $(this).parent().data('filter-type');
+$(`#${filterType}Filter`).val('all');
+
+// Apply filters
+filterEmployees();
+updateSelectedFilters();
+});
+
+// Save employee button
+$('#saveEmployeeBtn').on('click', function() {
+if (!validateEmployeeForm()) {
+return;
+}
+
+// Show loading state
+const saveBtn = $('#saveEmployeeBtn');
+const originalText = saveBtn.html();
+saveBtn.html('<i class="fas fa-spinner fa-spin me-1"></i> Saving...');
+saveBtn.prop('disabled', true);
+
+// Simulate saving with timeout
+setTimeout(function() {
+saveBtn.html(originalText);
+saveBtn.prop('disabled', false);
+
+// Close modal
+$('#addEmployeeModal').modal('hide');
+
+// Show success message
+showToast('Employee saved successfully');
+
+// Add a new employee card to the grid (in a real app, you'd refresh data from server)
+addSampleEmployeeCard();
+
+}, 1500);
+});
+});
+
+// Update selected filters display
+function updateSelectedFilters() {
+const selectedFilters = $('#selectedFilters');
+selectedFilters.empty();
+
+let filterCount = 0;
+
+// Status filter
+const statusVal = $('#statusFilter').val();
+if (statusVal !== 'all' && statusVal) {
+const statusText = $('#statusFilter option:selected').text();
+selectedFilters.append(`
+<span class="filter-badge" data-filter-type="status">
+Status: ${statusText} <i class="fas fa-times"></i>
+</span>
+`);
+filterCount++;
+}
+
+// Department filter
+const departmentVal = $('#departmentFilter').val();
+if (departmentVal !== 'all' && departmentVal) {
+const departmentText = $('#departmentFilter option:selected').text();
+selectedFilters.append(`
+<span class="filter-badge" data-filter-type="department">
+Department: ${departmentText} <i class="fas fa-times"></i>
+</span>
+`);
+filterCount++;
+}
+
+// Location filter
+const locationVal = $('#locationFilter').val();
+if (locationVal !== 'all' && locationVal) {
+const locationText = $('#locationFilter option:selected').text();
+selectedFilters.append(`
+<span class="filter-badge" data-filter-type="location">
+Location: ${locationText} <i class="fas fa-times"></i>
+</span>
+`);
+filterCount++;
+}
+
+// Employment type filter
+const employmentTypeVal = $('#employmentTypeFilter').val();
+if (employmentTypeVal !== 'all' && employmentTypeVal) {
+const employmentTypeText = $('#employmentTypeFilter option:selected').text();
+selectedFilters.append(`
+<span class="filter-badge" data-filter-type="employmentType">
+Type: ${employmentTypeText} <i class="fas fa-times"></i>
+</span>
+`);
+filterCount++;
+}
+
+// Search term
+const searchTerm = $('#searchEmployee').val();
+if (searchTerm) {
+selectedFilters.append(`
+<span class="filter-badge" data-filter-type="search">
+Search: "${searchTerm}" <i class="fas fa-times"></i>
+</span>
+`);
+filterCount++;
+}
+
+// Add clear all if filters exist
+if (filterCount > 0) {
+selectedFilters.prepend(`
+<div class="d-flex justify-content-between align-items-center mb-2">
+<span class="text-muted small">Active filters</span>
+<a class="clear-all-filters">Clear all</a>
+</div>
+`);
+
+// Update the filter info text
+$('#filteredEmployeeCount').text('15'); // This would be dynamic in a real app
+} else {
+// If no filters, show default message
+selectedFilters.append(`<span class="text-muted">No filters applied</span>`);
+
+// Update the filter info text to show all
+$('#filteredEmployeeCount').text(''); // This would be dynamic in a real app
+}
+}
+
+// Filter employees function
+function filterEmployees() {
+// In a real app, this would filter the employees based on the selected criteria
+// For this demo, we'll just update the filter badges and counts
+
+// This is where you would typically make an API call or filter the data client-side
+
+// Demo code to simulate filtering
+const statusFilter = $('#statusFilter').val();
+const departmentFilter = $('#departmentFilter').val();
+const locationFilter = $('#locationFilter').val();
+const employmentTypeFilter = $('#employmentTypeFilter').val();
+const searchTerm = $('#searchEmployee').val().toLowerCase();
+
+let filteredCount = 28; // Default to all
+
+// Simple reduction based on filters applied
+if (statusFilter !== 'all' && statusFilter) filteredCount -= 5;
+if (departmentFilter !== 'all' && departmentFilter) filteredCount -= 4;
+if (locationFilter !== 'all' && locationFilter) filteredCount -= 3;
+if (employmentTypeFilter !== 'all' && employmentTypeFilter) filteredCount -= 2;
+if (searchTerm) filteredCount = Math.floor(filteredCount / 2);
+
+// Ensure we don't go below 0
+filteredCount = Math.max(0, filteredCount);
+
+// Update the counter
+$('#filteredEmployeeCount').text(filteredCount);
+
+// In a real app, you would hide/show the employee cards based on the filters
+}
+
+// Validate employee form
+function validateEmployeeForm() {
+const form = document.getElementById('newEmployeeForm');
+
+if (!form.checkValidity()) {
+// Trigger browser's built-in validation
+form.reportValidity();
+return false;
+}
+
+return true;
+}
+
+// Show toast message
+function showToast(message) {
+const toast = $(`
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
+<div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+<div class="toast-header">
+<i class="fas fa-check-circle text-success me-2"></i>
+<strong class="me-auto">Success</strong>
+<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+</div>
+<div class="toast-body">
+${message}
+</div>
+</div>
+</div>
+`);
+
+$('body').append(toast);
+
+setTimeout(function() {
+toast.remove();
+}, 3000);
+}
+
+// Add sample employee card (for demo)
+function addSampleEmployeeCard() {
+const newEmployee = `
+<div class="col-md-6 col-lg-4 col-xl-3 mb-4 fade-effect">
+<div class="employee-card">
+<div class="employee-header">
+<img src="https://randomuser.me/api/portraits/men/85.jpg" alt="New Employee" class="employee-avatar">
+<div>
+<h5 class="employee-name">${$('#firstName').val()} ${$('#lastName').val()}</h5>
+<div class="employee-title">${$('#jobTitle').val()}</div>
+<span class="department-badge">${$('#department option:selected').text()}</span>
+</div>
+</div>
+<div class="employee-body">
+<div class="row">
+<div class="col-6">
+<div class="employee-info-label">Employee ID</div>
+<div class="employee-info-value">NEW-${Math.floor(1000 + Math.random() * 9000)}</div>
+</div>
+<div class="col-6">
+<div class="employee-info-label">Status</div>
+<div class="employee-info-value">
+<span class="employee-status status-active">Active</span>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-6">
+<div class="employee-info-label">Email</div>
+<div class="employee-info-value" style="word-break: break-word;">${$('#email').val()}</div>
+</div>
+<div class="col-6">
+<div class="employee-info-label">Location</div>
+<div class="employee-info-value">${$('#workLocation option:selected').text()}</div>
+</div>
+</div>
+<div class="d-flex justify-content-between align-items-center mt-2">
+<a href="#" class="view-profile">
+<i class="fas fa-user me-1"></i> View Profile
+</a>
+<div class="dropdown">
+<button class="btn btn-sm btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+Actions
+</button>
+<ul class="dropdown-menu dropdown-menu-end">
+<li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i> Edit</a></li>
+<li><a class="dropdown-item" href="#"><i class="fas fa-envelope me-2"></i> Email</a></li>
+<li><hr class="dropdown-divider"></li>
+<li><a class="dropdown-item text-danger" href="#"><i class="fas fa-user-slash me-2"></i> Deactivate</a></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+`;
+
+$('#employeesGrid').prepend(newEmployee);
+
+// Update total count
+const currentTotal = parseInt($('#totalEmployeeCount').text());
+$('#totalEmployeeCount').text(currentTotal + 1);
+$('#filteredEmployeeCount').text(parseInt($('#filteredEmployeeCount').text()) + 1);
+
+// Also add to list view if it's the active view
+const newEmployeeRow = `
+<tr>
+    <td class="employee-cell" data-employee-id="NEW-${Math.floor(1000 + Math.random() * 9000)}">
+        <div class="d-flex align-items-center">
+            <img src="https://randomuser.me/api/portraits/men/85.jpg" alt="New Employee" class="employee-avatar" style="width: 36px; height: 36px;">
+            <div class="ms-2">
+                <div class="fw-medium">${$('#firstName').val()} ${$('#lastName').val()}</div>
+                <div class="text-muted small">${$('#jobTitle').val()}</div>
+            </div>
+        </div>
+    </td>
+    <td>NEW-${Math.floor(1000 + Math.random() * 9000)}</td>
+    <td>${$('#department option:selected').text()}</td>
+    <td>${$('#workLocation option:selected').text()}</td>
+    <td>${$('#phone').val() || '-'}</td>
+    <td><span class="employee-status status-active">Active</span></td>
+</tr>
+`;
+
+$('#employeesTable tbody').prepend(newEmployeeRow);
+
+// Update total count
+const currentTotalList = parseInt($('#totalEmployeeCount').text());
+$('#totalEmployeeCount').text(currentTotalList + 1);
+$('#filteredEmployeeCount').text(parseInt($('#filteredEmployeeCount').text()) + 1);
+}
+</script>
+{% endblock %}

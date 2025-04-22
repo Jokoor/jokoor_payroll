@@ -138,7 +138,7 @@
 </style>
 {% endblock %}
 
-{% block title %}Users & Roles | Jokoor Payroll{% endblock %}
+{% block title %}Users & Permissions | Jokoor Payroll{% endblock %}
 
 {% block header %}
 <!-- Override the header to remove Frappe's default header -->
@@ -167,15 +167,15 @@
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
                             <li class="breadcrumb-item"><a href="/dashboard/settings">Settings</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Users & Roles</li>
+                            <li class="breadcrumb-item active" aria-current="page">Users & Permissions</li>
                         </ol>
                     </nav>
-                    <h2 class="fw-bold mb-0">Users & Roles Management</h2>
+                    <h2 class="fw-bold mb-0">Users & Permissions Management</h2>
                 </div>
                 <div class="d-flex align-items-center">
                     <div class="search-container me-3">
                         <i class="fas fa-search search-icon"></i>
-                        <input type="text" class="form-control rounded-pill search-input" placeholder="Search users or roles">
+                        <input type="text" class="form-control rounded-pill search-input" placeholder="Search users">
                     </div>
                     <div class="d-flex align-items-center">
                         <div class="d-flex align-items-center justify-content-center bg-white rounded-circle me-3 shadow-sm" style="width: 38px; height: 38px;">
@@ -193,9 +193,6 @@
         <ul class="nav nav-tabs mb-4" id="usersRolesTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users-management" type="button" role="tab" aria-controls="users-management" aria-selected="true">Users</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="roles-tab" data-bs-toggle="tab" data-bs-target="#roles-management" type="button" role="tab" aria-controls="roles-management" aria-selected="false">Roles</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="permissions-tab" data-bs-toggle="tab" data-bs-target="#permissions-management" type="button" role="tab" aria-controls="permissions-management" aria-selected="false">Permissions</button>
@@ -412,211 +409,6 @@
                 </div>
             </div>
             
-            <!-- Roles Tab -->
-            <div class="tab-pane fade" id="roles-management" role="tabpanel" aria-labelledby="roles-tab">
-                <div class="card card-style">
-                    <div class="card-header">
-                        <div>
-                            <h5 class="card-title mb-1">
-                                <i class="fas fa-user-tag me-2 text-primary"></i>
-                                System Roles
-                            </h5>
-                            <p class="text-muted small mb-0">Manage roles and their permissions</p>
-                        </div>
-                        <div class="actions">
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRoleModal">
-                                <i class="fas fa-plus me-2"></i> Add Role
-                            </button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <!-- Admin Role Card -->
-                            <div class="col-md-6 col-lg-4 mb-4">
-                                <div class="card h-100">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between">
-                                            <h5 class="card-title">
-                                                <span class="role-badge role-admin">Admin</span>
-                                            </h5>
-                                            <div class="dropdown">
-                                                <button class="btn btn-sm btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="fas fa-ellipsis-v"></i>
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editRoleModal">Edit Role</a></li>
-                                                    <li><a class="dropdown-item text-danger" href="#">Delete Role</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <p class="card-text text-muted mb-3">
-                                            Full administrative access to all system features and settings.
-                                        </p>
-                                        <div class="mb-3">
-                                            <small class="text-muted d-block mb-2">Assigned to:</small>
-                                            <div class="d-flex">
-                                                <img src="https://randomuser.me/api/portraits/men/41.jpg" alt="User" class="user-avatar me-2" style="width: 30px; height: 30px;">
-                                                <img src="https://randomuser.me/api/portraits/women/29.jpg" alt="User" class="user-avatar me-2" style="width: 30px; height: 30px;">
-                                                <div class="d-flex align-items-center justify-content-center bg-light rounded-circle text-muted" style="width: 30px; height: 30px; font-size: 12px;">+3</div>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <small class="text-muted d-block mb-2">Key permissions:</small>
-                                            <ul class="list-unstyled mb-0">
-                                                <li><i class="fas fa-check-circle text-success me-2"></i> Manage Users & Roles</li>
-                                                <li><i class="fas fa-check-circle text-success me-2"></i> System Configuration</li>
-                                                <li><i class="fas fa-check-circle text-success me-2"></i> All Data Access</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <div class="card-footer bg-white">
-                                        <button class="btn btn-sm btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#viewRoleModal">
-                                            <i class="fas fa-eye me-1"></i> View Details
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Manager Role Card -->
-                            <div class="col-md-6 col-lg-4 mb-4">
-                                <div class="card h-100">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between">
-                                            <h5 class="card-title">
-                                                <span class="role-badge role-manager">Manager</span>
-                                            </h5>
-                                            <div class="dropdown">
-                                                <button class="btn btn-sm btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="fas fa-ellipsis-v"></i>
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editRoleModal">Edit Role</a></li>
-                                                    <li><a class="dropdown-item text-danger" href="#">Delete Role</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <p class="card-text text-muted mb-3">
-                                            Department or team management access to HR and payroll features.
-                                        </p>
-                                        <div class="mb-3">
-                                            <small class="text-muted d-block mb-2">Assigned to:</small>
-                                            <div class="d-flex">
-                                                <img src="https://randomuser.me/api/portraits/women/56.jpg" alt="User" class="user-avatar me-2" style="width: 30px; height: 30px;">
-                                                <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="User" class="user-avatar me-2" style="width: 30px; height: 30px;">
-                                                <div class="d-flex align-items-center justify-content-center bg-light rounded-circle text-muted" style="width: 30px; height: 30px; font-size: 12px;">+2</div>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <small class="text-muted d-block mb-2">Key permissions:</small>
-                                            <ul class="list-unstyled mb-0">
-                                                <li><i class="fas fa-check-circle text-success me-2"></i> Manage Department Staff</li>
-                                                <li><i class="fas fa-check-circle text-success me-2"></i> Approve/Reject Requests</li>
-                                                <li><i class="fas fa-check-circle text-success me-2"></i> View Department Reports</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <div class="card-footer bg-white">
-                                        <button class="btn btn-sm btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#viewRoleModal">
-                                            <i class="fas fa-eye me-1"></i> View Details
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Employee Role Card -->
-                            <div class="col-md-6 col-lg-4 mb-4">
-                                <div class="card h-100">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between">
-                                            <h5 class="card-title">
-                                                <span class="role-badge role-employee">Employee</span>
-                                            </h5>
-                                            <div class="dropdown">
-                                                <button class="btn btn-sm btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="fas fa-ellipsis-v"></i>
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editRoleModal">Edit Role</a></li>
-                                                    <li><a class="dropdown-item text-danger" href="#">Delete Role</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <p class="card-text text-muted mb-3">
-                                            Standard employee access to personal records and self-service features.
-                                        </p>
-                                        <div class="mb-3">
-                                            <small class="text-muted d-block mb-2">Assigned to:</small>
-                                            <div class="d-flex">
-                                                <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="User" class="user-avatar me-2" style="width: 30px; height: 30px;">
-                                                <div class="d-flex align-items-center justify-content-center bg-light rounded-circle text-muted" style="width: 30px; height: 30px; font-size: 12px;">+35</div>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <small class="text-muted d-block mb-2">Key permissions:</small>
-                                            <ul class="list-unstyled mb-0">
-                                                <li><i class="fas fa-check-circle text-success me-2"></i> View Personal Info</li>
-                                                <li><i class="fas fa-check-circle text-success me-2"></i> Submit Requests</li>
-                                                <li><i class="fas fa-check-circle text-success me-2"></i> Access Payslips</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <div class="card-footer bg-white">
-                                        <button class="btn btn-sm btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#viewRoleModal">
-                                            <i class="fas fa-eye me-1"></i> View Details
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Viewer Role Card -->
-                            <div class="col-md-6 col-lg-4 mb-4">
-                                <div class="card h-100">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between">
-                                            <h5 class="card-title">
-                                                <span class="role-badge role-viewer">Viewer</span>
-                                            </h5>
-                                            <div class="dropdown">  
-                                                <button class="btn btn-sm btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="fas fa-ellipsis-v"></i>
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editRoleModal">Edit Role</a></li>
-                                                    <li><a class="dropdown-item text-danger" href="#">Delete Role</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <p class="card-text text-muted mb-3">
-                                            Read-only access to specific system areas without modification rights.
-                                        </p>
-                                        <div class="mb-3">
-                                            <small class="text-muted d-block mb-2">Assigned to:</small>
-                                            <div class="d-flex">
-                                                <img src="https://randomuser.me/api/portraits/men/67.jpg" alt="User" class="user-avatar me-2" style="width: 30px; height: 30px;">
-                                                <div class="d-flex align-items-center justify-content-center bg-light rounded-circle text-muted" style="width: 30px; height: 30px; font-size: 12px;">+1</div>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <small class="text-muted d-block mb-2">Key permissions:</small>
-                                            <ul class="list-unstyled mb-0">
-                                                <li><i class="fas fa-check-circle text-success me-2"></i> View Reports</li>
-                                                <li><i class="fas fa-check-circle text-success me-2"></i> View Employee Directory</li>
-                                                <li><i class="fas fa-times-circle text-danger me-2"></i> No Edit Permissions</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <div class="card-footer bg-white">
-                                        <button class="btn btn-sm btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#viewRoleModal">
-                                            <i class="fas fa-eye me-1"></i> View Details
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
             <!-- Permissions Tab -->
             <div class="tab-pane fade" id="permissions-management" role="tabpanel" aria-labelledby="permissions-tab">
                 <div class="card card-style">
@@ -626,7 +418,7 @@
                                 <i class="fas fa-lock me-2 text-primary"></i>
                                 Permission Management
                             </h5>
-                            <p class="text-muted small mb-0">Configure access permissions for different roles</p>
+                            <p class="text-muted small mb-0">Configure access permissions for different system roles</p>
                         </div>
                     </div>
                     <div class="card-body">
@@ -690,7 +482,7 @@
                                         <tr>
                                             <td>
                                                 <div class="fw-medium">View User List</div>
-                                                <div class="text-muted small">Can view the list of all system users</div>
+                                                <div class="text-muted small">Can see all users in the system</div>
                                             </td>
                                             <td class="text-center">
                                                 <div class="form-check d-flex justify-content-center">
@@ -1124,154 +916,92 @@
     </div>
 </div>
 
-<!-- Add Role Modal -->
-<div class="modal fade" id="addRoleModal" tabindex="-1" aria-labelledby="addRoleModalLabel" aria-hidden="true">
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addRoleModalLabel">Create New Role</h5>
+                <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-4">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label for="roleName" class="form-label">Role Name</label>
-                            <input type="text" class="form-control" id="roleName" placeholder="E.g., Finance Manager">
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <label for="roleSlug" class="form-label">Role Identifier (Slug)</label>
-                            <input type="text" class="form-control" id="roleSlug" placeholder="E.g., finance-manager">
-                            <div class="form-text">Unique identifier for the role (no spaces)</div>
-                        </div>
-                        
-                        <div class="col-md-12">
-                            <label for="roleDescription" class="form-label">Description</label>
-                            <textarea class="form-control" id="roleDescription" rows="3" placeholder="Describe the purpose and responsibilities of this role"></textarea>
-                        </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="editFirstName" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="editFirstName" placeholder="Enter first name">
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="editLastName" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="editLastName" placeholder="Enter last name">
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="editEmail" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="editEmail" placeholder="Enter email address">
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="editUsername" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="editUsername" placeholder="Enter username">
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="editUserRole" class="form-label">Role</label>
+                        <select class="form-select" id="editUserRole">
+                            <option value="" disabled>Select a role</option>
+                            <option value="admin">Admin</option>
+                            <option value="manager">Manager</option>
+                            <option value="employee">Employee</option>
+                            <option value="viewer">Viewer</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="editUserStatus" class="form-label">Status</label>
+                        <select class="form-select" id="editUserStatus">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="pending">Pending</option>
+                        </select>
                     </div>
                 </div>
                 
                 <hr class="my-4">
                 
-                <h6 class="section-title mb-3">Configure Role Permissions</h6>
+                <div class="mb-3">
+                    <button type="button" class="btn btn-outline-secondary" id="resetPasswordBtn">
+                        <i class="fas fa-key me-1"></i> Reset Password
+                    </button>
+                </div>
                 
-                <div class="permission-section mb-4">
-                    <h6 class="d-flex align-items-center mb-3">
-                        <i class="fas fa-users me-2 text-primary"></i>
-                        User Management Permissions
-                    </h6>
+                <div id="resetPasswordSection" class="d-none">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="newPassword" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" placeholder="Enter new password">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="confirmNewPassword" class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirmNewPassword" placeholder="Confirm new password">
+                        </div>
+                    </div>
                     
-                    <div class="permission-list">
-                        <div class="permission-item">
-                            <div>
-                                <span class="fw-medium">View User List</span>
-                                <div class="text-muted small">Can see all users in the system</div>
-                            </div>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="perm_view_users">
-                            </div>
-                        </div>
-                        <div class="permission-item">
-                            <div>
-                                <span class="fw-medium">Create Users</span>
-                                <div class="text-muted small">Can add new users to the system</div>
-                            </div>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="perm_create_users">
-                            </div>
-                        </div>
-                        <div class="permission-item">
-                            <div>
-                                <span class="fw-medium">Manage Roles</span>
-                                <div class="text-muted small">Can create and modify role definitions</div>
-                            </div>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="perm_manage_roles">
-                            </div>
-                        </div>
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" id="requirePasswordChangeEdit" checked>
+                        <label class="form-check-label" for="requirePasswordChangeEdit">
+                            Require password change on next login
+                        </label>
                     </div>
                 </div>
                 
-                <div class="permission-section mb-4">
-                    <h6 class="d-flex align-items-center mb-3">
-                        <i class="fas fa-id-card me-2 text-primary"></i>
-                        Employee Management Permissions
-                    </h6>
-                    
-                    <div class="permission-list">
-                        <div class="permission-item">
-                            <div>
-                                <span class="fw-medium">View All Employees</span>
-                                <div class="text-muted small">Can view all employee records</div>
-                            </div>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="perm_view_employees">
-                            </div>
-                        </div>
-                        <div class="permission-item">
-                            <div>
-                                <span class="fw-medium">Add/Edit Employee Records</span>
-                                <div class="text-muted small">Can create and modify employee records</div>
-                            </div>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="perm_edit_employees">
-                            </div>
-                        </div>
-                        <div class="permission-item">
-                            <div>
-                                <span class="fw-medium">View Personal Information</span>
-                                <div class="text-muted small">Can view personal profile and details</div>
-                            </div>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="perm_view_personal_info" checked>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="permission-section mb-4">
-                    <h6 class="d-flex align-items-center mb-3">
-                        <i class="fas fa-money-bill-wave me-2 text-primary"></i>
-                        Payroll Permissions
-                    </h6>
-                    
-                    <div class="permission-list">
-                        <div class="permission-item">
-                            <div>
-                                <span class="fw-medium">Process Payroll</span>
-                                <div class="text-muted small">Can run payroll processing for employees</div>
-                            </div>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="perm_process_payroll">
-                            </div>
-                        </div>
-                        <div class="permission-item">
-                            <div>
-                                <span class="fw-medium">View Payslips</span>
-                                <div class="text-muted small">Can view salary slips for employees</div>
-                            </div>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="perm_view_payslips" checked>
-                            </div>
-                        </div>
-                        <div class="permission-item">
-                            <div>
-                                <span class="fw-medium">Modify Salary Components</span>
-                                <div class="text-muted small">Can edit salary structure and components</div>
-                            </div>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="perm_modify_salary">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <input type="hidden" id="editUserId">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary">
-                    <i class="fas fa-save me-1"></i> Create Role
+                <button type="button" class="btn btn-primary" id="saveUserChanges">
+                    <i class="fas fa-save me-1"></i> Save Changes
                 </button>
             </div>
         </div>
@@ -1641,7 +1371,7 @@
         }
         
         // Handle tab persistence on page reload
-        const activeTabID = sessionStorage.getItem('activeUsersRolesTab');
+        const activeTabID = sessionStorage.getItem('activeUsersPermissionsTab');
         if (activeTabID) {
             const tabElement = document.querySelector(`#usersRolesTabs button[data-bs-target="${activeTabID}"]`);
             if (tabElement) {
@@ -1653,17 +1383,7 @@
         // Store active tab
         $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
             const targetTab = $(e.target).data('bs-target');
-            sessionStorage.setItem('activeUsersRolesTab', targetTab);
-        });
-        
-        // Auto-generate role slug from name
-        $('#roleName').on('input', function() {
-            const slugValue = $(this).val()
-                .toLowerCase()
-                .replace(/[^\w\s-]/g, '')
-                .replace(/[\s_-]+/g, '-')
-                .replace(/^-+|-+$/g, '');
-            $('#roleSlug').val(slugValue);
+            sessionStorage.setItem('activeUsersPermissionsTab', targetTab);
         });
         
         // Search functionality for users
@@ -1698,27 +1418,7 @@
             
             console.log(`Permission changed: ${permission} for ${role} is now ${isChecked ? 'enabled' : 'disabled'}`);
             
-            // Here you would typically make an API call to update the permission
-            // For example:
-            /*
-            $.ajax({
-                url: '/api/permissions/update',
-                method: 'POST',
-                data: {
-                    role: role,
-                    permission: permission,
-                    enabled: isChecked
-                },
-                success: function(response) {
-                    console.log('Permission updated successfully');
-                },
-                error: function(error) {
-                    console.error('Error updating permission', error);
-                    // Revert the checkbox if there was an error
-                    $(this).prop('checked', !isChecked);
-                }
-            });
-            */
+            // API call code (commented) remains the same
             
             // Show a temporary success message
             const successMessage = $('<div class="alert alert-success position-fixed bottom-0 end-0 m-3" style="z-index: 9999;">'+
@@ -1731,24 +1431,117 @@
             }, 2000);
         });
         
-        // Optionally add a button to select/deselect all permissions for a column
-        $('#addSelectAllButtons').click(function() {
-            const headerRow = $('.dashboard-table thead tr');
-            headerRow.prepend('<th class="text-center" style="width: 80px;">Select All</th>');
+        // Handle edit user button clicks
+        $('.btn-icon[title="Edit User"]').on('click', function() {
+            const row = $(this).closest('tr');
+            const userId = row.find('td:first').text(); // Get user ID from first column
+            const userName = row.find('.fw-medium').text();
+            const userNameParts = userName.split(' ');
+            const firstName = userNameParts[0];
+            const lastName = userNameParts.length > 1 ? userNameParts.slice(1).join(' ') : '';
+            const username = row.find('.text-muted.small').text().replace('@', '');
+            const email = row.find('td:nth-child(3)').text();
+            const role = row.find('.role-badge').text().toLowerCase();
+            const status = row.find('.status-badge').text().toLowerCase();
             
-            $('.dashboard-table tbody tr').each(function() {
-                const checkboxCell = $('<td class="text-center"></td>');
-                const selectAllButton = $('<button class="btn btn-sm btn-outline-secondary select-all-row">Select All</button>');
-                checkboxCell.append(selectAllButton);
-                $(this).prepend(checkboxCell);
-            });
+            // Populate the edit modal fields
+            $('#editUserId').val(userId);
+            $('#editFirstName').val(firstName);
+            $('#editLastName').val(lastName);
+            $('#editEmail').val(email);
+            $('#editUsername').val(username);
+            $('#editUserRole').val(role);
+            $('#editUserStatus').val(status);
             
-            $('.select-all-row').on('click', function() {
-                const row = $(this).closest('tr');
-                const checkboxes = row.find('.permission-checkbox');
-                const allChecked = checkboxes.toArray().every(cb => $(cb).prop('checked'));
-                checkboxes.prop('checked', !allChecked);
-            });
+            // Reset the password section
+            $('#resetPasswordSection').addClass('d-none');
+            $('#newPassword').val('');
+            $('#confirmNewPassword').val('');
+            $('#requirePasswordChangeEdit').prop('checked', true);
+            
+            // Open the edit modal
+            $('#editUserModal').modal('show');
+        });
+        
+        // Toggle reset password section visibility
+        $('#resetPasswordBtn').on('click', function() {
+            $('#resetPasswordSection').toggleClass('d-none');
+        });
+        
+        // Handle save user changes
+        $('#saveUserChanges').on('click', function() {
+            const userId = $('#editUserId').val();
+            const firstName = $('#editFirstName').val();
+            const lastName = $('#editLastName').val();
+            const email = $('#editEmail').val();
+            const username = $('#editUsername').val();
+            const role = $('#editUserRole').val();
+            const status = $('#editUserStatus').val();
+            
+            // Validate required fields
+            if (!firstName || !lastName || !email || !username || !role || !status) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Check if password reset was requested
+            const resetPassword = !$('#resetPasswordSection').hasClass('d-none');
+            let passwordValid = true;
+            
+            if (resetPassword) {
+                const password = $('#newPassword').val();
+                const confirmPassword = $('#confirmNewPassword').val();
+                
+                if (!password || password !== confirmPassword) {
+                    alert('Passwords do not match or are empty');
+                    passwordValid = false;
+                    return;
+                }
+            }
+            
+            if (passwordValid) {
+                // Here you would typically make an API call to update the user
+                // For now, we'll simulate it with a timeout
+                
+                // Show loading state
+                const saveBtn = $('#saveUserChanges');
+                const originalText = saveBtn.html();
+                saveBtn.html('<i class="fas fa-spinner fa-spin me-1"></i> Saving...');
+                saveBtn.prop('disabled', true);
+                
+                setTimeout(function() {
+                    // Restore button state
+                    saveBtn.html(originalText);
+                    saveBtn.prop('disabled', false);
+                    
+                    // Update the user row in the table with the new values
+                    const userRow = $(`tr td:contains(${userId})`).closest('tr');
+                    userRow.find('.fw-medium').text(`${firstName} ${lastName}`);
+                    userRow.find('.text-muted.small').text(`@${username}`);
+                    userRow.find('td:nth-child(3)').text(email);
+                    userRow.find('.role-badge')
+                        .removeClass('role-admin role-manager role-employee role-viewer')
+                        .addClass(`role-${role}`)
+                        .text(role.charAt(0).toUpperCase() + role.slice(1));
+                    userRow.find('.status-badge')
+                        .removeClass('status-active status-inactive status-pending')
+                        .addClass(`status-${status}`)
+                        .text(status.charAt(0).toUpperCase() + status.slice(1));
+                    
+                    // Close the modal
+                    $('#editUserModal').modal('hide');
+                    
+                    // Show success message
+                    const successMessage = $('<div class="alert alert-success position-fixed bottom-0 end-0 m-3" style="z-index: 9999;">'+
+                        '<i class="fas fa-check-circle me-2"></i>User updated successfully</div>');
+                    $('body').append(successMessage);
+                    
+                    // Remove the message after 2 seconds
+                    setTimeout(function() {
+                        successMessage.fadeOut(300, function() { $(this).remove(); });
+                    }, 2000);
+                }, 1000);
+            }
         });
     });
 </script>

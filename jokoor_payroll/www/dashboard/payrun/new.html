@@ -1,0 +1,1304 @@
+{% extends "templates/web.html" %}
+
+{% block head_include %}
+<!-- Link to global styles -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    /* Pay Run page styling */
+    body {
+        background-color: #f5f7fa;
+        font-family: 'Inter', sans-serif;
+        color: #333;
+    }
+    
+    /* Main layout */
+    .main-content {
+        padding: 28px;
+    }
+    
+    /* Header section */
+    .pay-run-header {
+        margin-bottom: 32px;
+        position: relative;
+        background: white;
+        border-radius: 16px;
+        padding: 24px 30px;
+        color: #111827;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.04);
+        border: 1px solid rgba(0, 0, 0, 0.03);
+        overflow: hidden;
+    }
+    
+    .pay-run-header::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 6px;
+        height: 100%;
+        background: linear-gradient(to bottom, #7d5fd2, #9d85db);
+    }
+    
+    .pay-run-title {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 6px;
+        color: #111827;
+        display: flex;
+        align-items: center;
+    }
+    
+    .pay-run-subtitle {
+        font-size: 15px;
+        color: #6b7280;
+        margin-bottom: 0;
+    }
+    
+    .draft-badge {
+        background-color: #ede9fc;
+        color: #7d5fd2;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 6px;
+        margin-left: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Section styling */
+    .pay-run-section {
+        margin-bottom: 32px;
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.04);
+        border: 1px solid rgba(0, 0, 0, 0.03);
+        position: relative;
+    }
+    
+    .pay-run-section.active {
+        border: 1px solid rgba(125, 95, 210, 0.3);
+        box-shadow: 0 10px 20px rgba(125, 95, 210, 0.08), 0 2px 6px rgba(125, 95, 210, 0.08);
+    }
+    
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+    
+    .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 0;
+        position: relative;
+        padding-left: 15px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .section-title::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 6px;
+        height: 16px;
+        background: linear-gradient(to bottom, #7d5fd2, #9d85db);
+        border-radius: 3px;
+    }
+    
+    .section-subtitle {
+        font-size: 14px;
+        color: #6b7280;
+        margin-top: 4px;
+        margin-left: 15px;
+    }
+    
+    .section-number {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        background: linear-gradient(135deg, #7d5fd2 0%, #9d85db 100%);
+        color: white;
+        border-radius: 50%;
+        font-size: 14px;
+        font-weight: 600;
+        margin-right: 12px;
+    }
+    
+    /* Form styling */
+    .form-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 8px;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 8px;
+        padding: 10px 16px;
+        border: 1px solid #d1d5db;
+        background-color: #f9fafb;
+        font-size: 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #7d5fd2;
+        box-shadow: 0 0 0 3px rgba(125, 95, 210, 0.15);
+        background-color: white;
+    }
+    
+    /* Employee filter section */
+    .filter-tag {
+        display: inline-flex;
+        align-items: center;
+        background: #ede9fc;
+        color: #7d5fd2;
+        border-radius: 30px;
+        padding: 6px 12px;
+        font-size: 13px;
+        font-weight: 600;
+        margin-right: 8px;
+        margin-bottom: 8px;
+        transition: all 0.2s ease;
+    }
+    
+    .filter-tag i {
+        margin-left: 6px;
+        font-size: 11px;
+        cursor: pointer;
+        opacity: 0.7;
+    }
+    
+    .filter-tag i:hover {
+        opacity: 1;
+    }
+    
+    .filter-tag:hover {
+        background: #e4defc;
+    }
+    
+    /* Employee list section */
+    .employee-list {
+        max-height: 400px;
+        overflow-y: auto;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        margin-top: 16px;
+    }
+    
+    .employee-item {
+        display: flex;
+        align-items: center;
+        padding: 14px 16px;
+        border-bottom: 1px solid #e5e7eb;
+        transition: background-color 0.2s ease;
+    }
+    
+    .employee-item:last-child {
+        border-bottom: none;
+    }
+    
+    .employee-item:hover {
+        background-color: #f9fafb;
+    }
+    
+    .employee-info {
+        flex: 1;
+    }
+    
+    .employee-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 14px;
+        object-fit: cover;
+    }
+    
+    .employee-name {
+        font-size: 15px;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 2px;
+    }
+    
+    .employee-position {
+        font-size: 13px;
+        color: #6b7280;
+    }
+    
+    .employee-meta {
+        text-align: right;
+        margin-left: 16px;
+    }
+    
+    .employee-id {
+        font-size: 13px;
+        color: #6b7280;
+        margin-bottom: 4px;
+    }
+    
+    .employee-salary {
+        font-size: 14px;
+        font-weight: 600;
+        color: #111827;
+    }
+    
+    /* Action buttons */
+    .actions-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 32px;
+    }
+    
+    .btn {
+        font-weight: 600;
+        padding: 10px 20px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #7d5fd2 0%, #9d85db 100%);
+        border-color: #7d5fd2;
+        box-shadow: 0 4px 10px rgba(125, 95, 210, 0.25);
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #6a4ec1 0%, #8a72ca 100%);
+        border-color: #6a4ec1;
+        box-shadow: 0 6px 15px rgba(125, 95, 210, 0.35);
+        transform: translateY(-2px);
+    }
+    
+    .btn-outline-primary {
+        color: #7d5fd2;
+        border-color: #7d5fd2;
+        background: white;
+    }
+    
+    .btn-outline-primary:hover {
+        background: linear-gradient(135deg, #7d5fd2 0%, #9d85db 100%);
+        border-color: #7d5fd2;
+        color: white;
+        box-shadow: 0 4px 10px rgba(125, 95, 210, 0.25);
+        transform: translateY(-2px);
+    }
+    
+    .btn-secondary {
+        background-color: #f3f4f6;
+        border-color: #d1d5db;
+        color: #374151;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #e5e7eb;
+        border-color: #9ca3af;
+        color: #111827;
+        transform: translateY(-2px);
+    }
+    
+    /* Summary section */
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        font-size: 14px;
+    }
+    
+    .summary-label {
+        color: #6b7280;
+    }
+    
+    .summary-value {
+        font-weight: 600;
+        color: #111827;
+    }
+    
+    .summary-total {
+        border-top: 1px solid #e5e7eb;
+        margin-top: 8px;
+        padding-top: 12px;
+        font-size: 16px;
+    }
+    
+    .summary-total .summary-label {
+        font-weight: 600;
+        color: #111827;
+    }
+    
+    .summary-total .summary-value {
+        font-weight: 700;
+        color: #7d5fd2;
+        font-size: 18px;
+    }
+    
+    /* Calculation settings */
+    .calculation-option {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 16px;
+        padding: 16px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+    
+    .calculation-option:hover {
+        border-color: #7d5fd2;
+        background-color: #f9fafb;
+    }
+    
+    .calculation-option.selected {
+        border-color: #7d5fd2;
+        background-color: #f9f7ff;
+    }
+    
+    .option-radio {
+        margin-top: 2px;
+        margin-right: 14px;
+    }
+    
+    .option-content {
+        flex: 1;
+    }
+    
+    .option-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 4px;
+    }
+    
+    .option-description {
+        font-size: 14px;
+        color: #6b7280;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .main-content {
+            padding: 20px;
+        }
+        
+        .pay-run-header,
+        .pay-run-section {
+            padding: 20px;
+        }
+        
+        .pay-run-title {
+            font-size: 20px;
+        }
+        
+        .actions-section {
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .actions-section .btn-group {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .actions-section .btn {
+            flex: 1;
+        }
+    }
+
+    .employee-option {
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .employee-option:hover {
+        background-color: #f3f4f6;
+    }
+
+    .employee-option:last-child {
+        border-bottom: none !important;
+    }
+
+    /* Add to your existing CSS styles */
+    #employeeDropdownList {
+        position: absolute;
+        z-index: 1050;
+        width: 100%;
+        border: 1px solid #d1d5db;
+        border-radius: 0 0 8px 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        background: white;
+        margin-top: -1px;
+    }
+
+    .employee-option {
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .employee-option:hover {
+        background-color: #f3f4f6;
+    }
+
+    .employee-option:last-child {
+        border-bottom: none !important;
+    }
+
+    /* Toast styling for better feedback */
+    .toast-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1060;
+    }
+
+    .custom-toast {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        min-width: 300px;
+        max-width: 400px;
+        padding: 12px 16px;
+        margin-bottom: 12px;
+        border-left: 4px solid #7d5fd2;
+        display: flex;
+        align-items: center;
+    }
+
+    .custom-toast.success {
+        border-left-color: #10b981;
+    }
+
+    .custom-toast.warning {
+        border-left-color: #f59e0b;
+    }
+
+    .custom-toast.error {
+        border-left-color: #ef4444;
+    }
+
+    .toast-icon {
+        margin-right: 12px;
+        font-size: 18px;
+    }
+
+    .toast-content {
+        flex: 1;
+    }
+
+    .toast-title {
+        font-weight: 600;
+        margin-bottom: 2px;
+    }
+
+    .toast-message {
+        font-size: 14px;
+        color: #6b7280;
+    }
+
+    .toast-close {
+        color: #9ca3af;
+        cursor: pointer;
+        font-size: 14px;
+        padding: 4px;
+    }
+
+    .toast-close:hover {
+        color: #4b5563;
+    }
+</style>
+{% endblock %}
+
+{% block title %}New Pay Run | Jokoor Payroll{% endblock %}
+
+{% block header %}
+<!-- Override the header to remove Frappe's default header -->
+{% endblock %}
+
+{% block navbar %}
+<!-- Override navbar to remove Frappe's default navbar -->
+{% endblock %}
+
+{% block footer %}
+<!-- Override footer to remove Frappe's default footer -->
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+    <!-- Sidebar -->
+    {% include "templates/includes/dashboard/sidebar.html" %}
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="pay-run-header">
+            <h1 class="pay-run-title">
+                Create New Pay Run
+                <span class="draft-badge">Draft</span>
+            </h1>
+            <p class="pay-run-subtitle">Configure the pay run details, select employees, and review before processing</p>
+        </div>
+        
+        <!-- Pay Run Configuration Section -->
+        <div class="pay-run-section active">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">
+                        <span class="section-number">1</span>
+                        Pay Run Details
+                    </h2>
+                    <p class="section-subtitle">Define the pay period and basic pay run information</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="payRunName" class="form-label">Pay Run Name</label>
+                        <input type="text" class="form-control" id="payRunName" value="July 2023 Regular Payroll" placeholder="Enter a name for this pay run">
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="payRunType" class="form-label">Pay Run Type</label>
+                        <select class="form-select" id="payRunType">
+                            <option value="regular" selected>Regular Payroll</option>
+                            <option value="contract">Contract Payroll</option>
+                            <option value="bonus">Bonus Payroll</option>
+                            <option value="arrears">Arrears Payroll</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="startDate" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="startDate" value="2023-07-01">
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="endDate" class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="endDate" value="2023-07-31">
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="paymentDate" class="form-label">Payment Date</label>
+                        <input type="date" class="form-control" id="paymentDate" value="2023-08-01">
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="frequency" class="form-label">Pay Frequency</label>
+                        <select class="form-select" id="frequency">
+                            <option value="monthly" selected>Monthly</option>
+                            <option value="bi-weekly">Bi-weekly</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="semi-monthly">Semi-monthly</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Employee Selection Section -->
+        <div class="pay-run-section">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">
+                        <span class="section-number">2</span>
+                        Select Employees
+                    </h2>
+                    <p class="section-subtitle">Filter and select employees to include in this pay run</p>
+                </div>
+            </div>
+            
+            <!-- Filter Employees Section -->
+            <div class="card mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Filter Employees</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="branchFilter" class="form-label">Branch</label>
+                            <select class="form-select" id="branchFilter">
+                                <option value="" selected>All Branches</option>
+                                <option value="head_office">Head Office</option>
+                                <option value="branch_1">Branch 1</option>
+                                <option value="branch_2">Branch 2</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="designationFilter" class="form-label">Designation</label>
+                            <select class="form-select" id="designationFilter">
+                                <option value="" selected>All Designations</option>
+                                <option value="manager">Manager</option>
+                                <option value="developer">Developer</option>
+                                <option value="designer">Designer</option>
+                                <option value="analyst">Analyst</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="departmentFilter" class="form-label">Department</label>
+                            <select class="form-select" id="departmentFilter">
+                                <option value="" selected>All Departments</option>
+                                <option value="engineering">Engineering</option>
+                                <option value="marketing">Marketing</option>
+                                <option value="sales">Sales</option>
+                                <option value="finance">Finance</option>
+                                <option value="hr">Human Resources</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="gradeFilter" class="form-label">Grade</label>
+                            <select class="form-select" id="gradeFilter">
+                                <option value="" selected>All Grades</option>
+                                <option value="grade_a">Grade A</option>
+                                <option value="grade_b">Grade B</option>
+                                <option value="grade_c">Grade C</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-12 text-end">
+                            <button class="btn btn-primary" id="fetchEmployeesBtn">
+                                <i class="fas fa-users me-1"></i> Fetch Employees
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Employee Details Section -->
+            <div class="card mb-4">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Employee Details</h5>
+                    <div>
+                        <span id="selectedCount" class="badge bg-primary me-2">0 selected</span>
+                        <button class="btn btn-sm btn-outline-danger me-2" id="removeSelectedBtn" disabled>
+                            <i class="fas fa-user-minus me-1"></i> Remove Selected
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" id="selectAllBtn">
+                            <i class="fas fa-check-square me-1"></i> Select All
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="employeeTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 40px;">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="selectAllCheckbox">
+                                        </div>
+                                    </th>
+                                    <th>No.</th>
+                                    <th>Employee</th>
+                                    <th>Employee Name</th>
+                                    <th>Department</th>
+                                    <th>Designation</th>
+                                    <th>Is Salary Withheld</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="employeeTableBody">
+                                <!-- Employee rows will be inserted here after fetching -->
+                                <tr id="emptyState">
+                                    <td colspan="8" class="text-center py-4">
+                                        <div class="py-5">
+                                            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                                            <h5>No employees selected</h5>
+                                            <p class="text-muted">Use the filters above and click "Fetch Employees" to load employees</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Selected Employees Summary -->
+            <div class="alert alert-info d-flex align-items-center" role="alert" id="employeeSummary" style="display: none !important;">
+                <i class="fas fa-info-circle me-2"></i>
+                <div>
+                    <strong><span id="totalSelectedCount">0</span> employees</strong> will be included in this pay run.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pay Run Settings Section -->
+        <div class="pay-run-section">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">
+                        <span class="section-number">3</span>
+                        Calculation Settings
+                    </h2>
+                    <p class="section-subtitle">Configure how salary components will be calculated</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="mb-4">
+                        <label class="form-label">Calculation Method</label>
+                        
+                        <div class="calculation-option selected">
+                            <input type="radio" name="calculationMethod" id="useTemplate" class="option-radio" checked>
+                            <div class="option-content">
+                                <label for="useTemplate" class="option-title">Use salary template</label>
+                                <p class="option-description">Calculate using the assigned salary template for each employee</p>
+                            </div>
+                        </div>
+                        
+                        <div class="calculation-option">
+                            <input type="radio" name="calculationMethod" id="useLastRun" class="option-radio">
+                            <div class="option-content">
+                                <label for="useLastRun" class="option-title">Use last pay run as reference</label>
+                                <p class="option-description">Calculate based on the last processed payroll for each employee</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="prorationMethod" class="form-label">Proration Method</label>
+                        <select class="form-select" id="prorationMethod">
+                            <option value="calendar_days" selected>Calendar Days</option>
+                            <option value="working_days">Working Days</option>
+                            <option value="none">No Proration</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="roundingMethod" class="form-label">Rounding Method</label>
+                        <select class="form-select" id="roundingMethod">
+                            <option value="nearest_rupee" selected>Nearest Rupee</option>
+                            <option value="nearest_ten">Nearest Ten</option>
+                            <option value="round_down">Round Down</option>
+                            <option value="round_up">Round Up</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Include Additional Earnings</label>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" value="" id="includeOvertime" checked>
+                            <label class="form-check-label" for="includeOvertime">
+                                Include overtime
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" value="" id="includeBonus" checked>
+                            <label class="form-check-label" for="includeBonus">
+                                Include bonuses
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="includeReimbursement" checked>
+                            <label class="form-check-label" for="includeReimbursement">
+                                Include reimbursements
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Deductions to Apply</label>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" value="" id="applyTax" checked>
+                            <label class="form-check-label" for="applyTax">
+                                Apply tax deductions
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" value="" id="applyLoan" checked>
+                            <label class="form-check-label" for="applyLoan">
+                                Apply loan repayments
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="applyLeave" checked>
+                            <label class="form-check-label" for="applyLeave">
+                                Apply leave without pay deductions
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="attendanceCutoff" class="form-label">Attendance Cutoff Date</label>
+                        <input type="date" class="form-control" id="attendanceCutoff" value="2023-07-25">
+                        <small class="form-text text-muted">Attendance data after this date will not be included</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pay Run Summary Section -->
+        <div class="pay-run-section">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">
+                        <span class="section-number">4</span>
+                        Pay Run Summary
+                    </h2>
+                    <p class="section-subtitle">Review the pay run details before proceeding</p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card-like p-4 mb-4 border rounded">
+                        <h5 class="mb-3 fw-bold">Pay Run Overview</h5>
+                        <div class="summary-item">
+                            <div class="summary-label">Pay Run Name</div>
+                            <div class="summary-value">July 2023 Regular Payroll</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Pay Period</div>
+                            <div class="summary-value">July 1 - 31, 2023</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Payment Date</div>
+                            <div class="summary-value">August 1, 2023</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Total Employees</div>
+                            <div class="summary-value">149</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card-like p-4 mb-4 border rounded">
+                        <h5 class="mb-3 fw-bold">Payroll Summary (Estimated)</h5>
+                        <div class="summary-item">
+                            <div class="summary-label">Gross Salary</div>
+                            <div class="summary-value">₹ 2,31,50,000</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Total Deductions</div>
+                            <div class="summary-value">₹ 55,56,000</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Employer Contributions</div>
+                            <div class="summary-value">₹ 32,41,000</div>
+                        </div>
+                        <div class="summary-item summary-total">
+                            <div class="summary-label">Net Payable</div>
+                            <div class="summary-value">₹ 1,75,94,000</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="alert alert-info d-flex align-items-center mt-2" role="alert">
+                <i class="fas fa-info-circle me-2"></i>
+                <div>
+                    <strong>Note:</strong> These amounts are estimates. Final amounts will be calculated when the pay run is processed.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="actions-section">
+            <div>
+                <button class="btn btn-secondary me-2">
+                    <i class="fas fa-save me-1"></i> Save Draft
+                </button>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-outline-primary me-2">
+                    <i class="fas fa-calculator me-1"></i> Calculate
+                </button>
+                <button class="btn btn-primary">
+                    <i class="fas fa-check-circle me-1"></i> Process Pay Run
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Set active sidebar item
+        const payrollMenuItem = document.querySelector('.sidebar-item[href*="payroll"]');
+        if (payrollMenuItem) {
+            payrollMenuItem.classList.add('active');
+        }
+        
+        // Initialize datepickers if needed
+        
+        // Handle filter tags click (remove filter)
+        $('.filter-tag i').on('click', function() {
+            const filterTag = $(this).parent();
+            const filterText = filterTag.text().trim().replace(' ×', '');
+            
+            // Reset corresponding filter dropdown
+            if (filterText.includes('Department')) {
+                $('#departmentFilter').val('all');
+            } else if (filterText.includes('Location')) {
+                $('#locationFilter').val('all');
+            } else if (filterText.includes('Type')) {
+                $('#employmentTypeFilter').val('all');
+            }
+            
+            // Update filter tag text
+            filterTag.html('All ' + filterText.split(' ')[0] + 's <i class="fas fa-times-circle"></i>');
+        });
+        
+        // Apply filters button click
+        $('#applyFilters').on('click', function() {
+            // Show loading state
+            const button = $(this);
+            const originalText = button.html();
+            button.html('<i class="fas fa-spinner fa-spin me-1"></i> Filtering...');
+            button.prop('disabled', true);
+            
+            // Simulate filtering process
+            setTimeout(function() {
+                button.html(originalText);
+                button.prop('disabled', false);
+                
+                // Update filter tags based on selections
+                updateFilterTags();
+                
+                // Show success message
+                showToast('Filters applied successfully');
+            }, 800);
+        });
+        
+        // Update filter tags based on dropdown selections
+        function updateFilterTags() {
+            const departmentValue = $('#departmentFilter').val();
+            const locationValue = $('#locationFilter').val();
+            const employmentTypeValue = $('#employmentTypeFilter').val();
+            
+            // Update department filter tag
+            let departmentTag = $('.filter-tag').eq(0);
+            if (departmentValue !== 'all') {
+                const departmentText = $('#departmentFilter option:selected').text();
+                departmentTag.html(`${departmentText} <i class="fas fa-times-circle"></i>`);
+            } else {
+                departmentTag.html(`All Departments <i class="fas fa-times-circle"></i>`);
+            }
+            
+            // Update location filter tag
+            let locationTag = $('.filter-tag').eq(1);
+            if (locationValue !== 'all') {
+                const locationText = $('#locationFilter option:selected').text();
+                locationTag.html(`${locationText} <i class="fas fa-times-circle"></i>`);
+            } else {
+                locationTag.html(`All Locations <i class="fas fa-times-circle"></i>`);
+            }
+            
+            // Update employment type filter tag
+            let typeTag = $('.filter-tag').eq(2);
+            if (employmentTypeValue !== 'all') {
+                const typeText = $('#employmentTypeFilter option:selected').text();
+                typeTag.html(`${typeText} <i class="fas fa-times-circle"></i>`);
+            } else {
+                typeTag.html(`All Types <i class="fas fa-times-circle"></i>`);
+            }
+        }
+        
+        // Handle Fetch Employees button click
+        $('#fetchEmployeesBtn').on('click', function() {
+            // Show loading state
+            const button = $(this);
+            const originalText = button.html();
+            button.html('<i class="fas fa-spinner fa-spin me-1"></i> Fetching...');
+            button.prop('disabled', true);
+            
+            // Get filter values
+            const branch = $('#branchFilter').val();
+            const designation = $('#designationFilter').val();
+            const department = $('#departmentFilter').val();
+            const grade = $('#gradeFilter').val();
+            
+            // Simulate API call with timeout
+            setTimeout(function() {
+                // Reset button
+                button.html(originalText);
+                button.prop('disabled', false);
+                
+                // Load employees based on filters
+                loadEmployees(branch, designation, department, grade);
+                
+                // Show success message
+                showToast('Employees fetched successfully', 'success');
+            }, 1000);
+        });
+        
+        // Load employees based on filters
+        function loadEmployees(branch, designation, department, grade) {
+            // Remove empty state message
+            $('#emptyState').remove();
+            
+            // Clear existing employee rows
+            $('#employeeTableBody').empty();
+            
+            // Generate sample employee data based on filters (in a real app, this would be an API call)
+            let employees = generateSampleEmployees();
+            
+            // Apply filters (simple filtering for demo)
+            if (branch) {
+                employees = employees.filter(e => e.branch.toLowerCase().includes(branch.toLowerCase()));
+            }
+            if (designation) {
+                employees = employees.filter(e => e.designation.toLowerCase().includes(designation.toLowerCase()));
+            }
+            if (department) {
+                employees = employees.filter(e => e.department.toLowerCase().includes(department.toLowerCase()));
+            }
+            if (grade) {
+                employees = employees.filter(e => e.grade.toLowerCase().includes(grade.toLowerCase()));
+            }
+            
+            // Display employees or show empty message
+            if (employees.length > 0) {
+                employees.forEach((employee, index) => {
+                    addEmployeeRow(employee, index + 1);
+                });
+                
+                // Show the employee summary
+                $('#employeeSummary').show();
+                $('#totalSelectedCount').text(employees.length);
+            } else {
+                $('#employeeTableBody').html(`
+                    <tr id="emptyState">
+                        <td colspan="8" class="text-center py-4">
+                            <div class="py-3">
+                                <i class="fas fa-search fa-2x text-muted mb-3"></i>
+                                <h5>No matching employees found</h5>
+                                <p class="text-muted">Try adjusting your filters to find employees</p>
+                            </div>
+                        </td>
+                    </tr>
+                `);
+                
+                // Hide the employee summary
+                $('#employeeSummary').hide();
+            }
+            
+            // Update selected count
+            updateSelectedCount();
+        }
+        
+        // Add employee row to the table
+        function addEmployeeRow(employee, index) {
+            const row = `
+                <tr data-employee-id="${employee.id}">
+                    <td>
+                        <div class="form-check">
+                            <input class="form-check-input employee-checkbox" type="checkbox" checked>
+                        </div>
+                    </td>
+                    <td>${index}</td>
+                    <td>${employee.id}</td>
+                    <td>${employee.name}</td>
+                    <td>${employee.department}</td>
+                    <td>${employee.designation}</td>
+                    <td>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="withholdSwitch-${employee.id}">
+                        </div>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary btn-edit-employee" data-employee-id="${employee.id}">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+            
+            $('#employeeTableBody').append(row);
+        }
+        
+        // Generate sample employees for demo
+        function generateSampleEmployees() {
+            return [
+                { id: 'EMP-001', name: 'Rahul Sharma', department: 'Engineering', designation: 'Developer', branch: 'Head Office', grade: 'Grade A' },
+                { id: 'EMP-002', name: 'Priya Singh', department: 'Marketing', designation: 'Manager', branch: 'Branch 1', grade: 'Grade A' },
+                { id: 'EMP-003', name: 'Vikram Mehta', department: 'Finance', designation: 'Analyst', branch: 'Head Office', grade: 'Grade B' },
+                { id: 'EMP-004', name: 'Neha Patel', department: 'Engineering', designation: 'Designer', branch: 'Branch 2', grade: 'Grade B' },
+                { id: 'EMP-005', name: 'Amit Kumar', department: 'Sales', designation: 'Manager', branch: 'Branch 1', grade: 'Grade A' },
+                { id: 'EMP-006', name: 'Shalini Gupta', department: 'Human Resources', designation: 'Manager', branch: 'Head Office', grade: 'Grade A' },
+                { id: 'EMP-007', name: 'Rajesh Verma', department: 'Engineering', designation: 'Developer', branch: 'Branch 2', grade: 'Grade C' },
+                { id: 'EMP-008', name: 'Anjali Desai', department: 'Finance', designation: 'Analyst', branch: 'Head Office', grade: 'Grade B' }
+            ];
+        }
+        
+        // Handle select all checkbox
+        $(document).on('change', '#selectAllCheckbox', function() {
+            const isChecked = $(this).prop('checked');
+            $('.employee-checkbox').prop('checked', isChecked);
+            updateSelectedCount();
+            updateRemoveButtonState();
+        });
+        
+        // Handle employee checkboxes
+        $(document).on('change', '.employee-checkbox', function() {
+            updateSelectedCount();
+            updateRemoveButtonState();
+            
+            // Update header checkbox state
+            const allChecked = $('.employee-checkbox:checked').length === $('.employee-checkbox').length;
+            $('#selectAllCheckbox').prop('checked', allChecked);
+        });
+        
+        // Handle select all button
+        $('#selectAllBtn').on('click', function() {
+            $('.employee-checkbox').prop('checked', true);
+            $('#selectAllCheckbox').prop('checked', true);
+            updateSelectedCount();
+            updateRemoveButtonState();
+        });
+        
+        // Handle remove selected button
+        $('#removeSelectedBtn').on('click', function() {
+            const selectedRows = $('.employee-checkbox:checked').closest('tr');
+            
+            if (selectedRows.length > 0) {
+                if (confirm(`Are you sure you want to remove ${selectedRows.length} employee(s) from this pay run?`)) {
+                    selectedRows.remove();
+                    updateSelectedCount();
+                    updateRemoveButtonState();
+                    
+                    // Show success message
+                    showToast(`${selectedRows.length} employee(s) removed from pay run`, 'success');
+                    
+                    // If no employees left, show empty state
+                    if ($('#employeeTableBody tr').length === 0) {
+                        $('#employeeTableBody').html(`
+                            <tr id="emptyState">
+                                <td colspan="8" class="text-center py-4">
+                                    <div class="py-3">
+                                        <i class="fas fa-users fa-2x text-muted mb-3"></i>
+                                        <h5>No employees selected</h5>
+                                        <p class="text-muted">Use the filters above and click "Fetch Employees" to load employees</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        `);
+                        
+                        // Hide the employee summary
+                        $('#employeeSummary').hide();
+                        
+                        // Update the total count in summary for the Pay Run
+                        $('.summary-item:nth-child(4) .summary-value').text('0');
+                    }
+                }
+            }
+        });
+        
+        // Handle edit employee button
+        $(document).on('click', '.btn-edit-employee', function() {
+            const employeeId = $(this).data('employee-id');
+            
+            // In a real app, you would open an edit modal or navigate to an edit page
+            // For demo, just show a toast
+            showToast(`Editing employee ${employeeId}`, 'info');
+        });
+        
+        // Update selected count
+        function updateSelectedCount() {
+            const count = $('.employee-checkbox:checked').length;
+            $('#selectedCount').text(`${count} selected`);
+            
+            // Update the total count in summary for the Pay Run
+            const totalEmployees = count;
+            $('#totalSelectedCount').text(totalEmployees);
+            $('.summary-item:nth-child(4) .summary-value').text(totalEmployees);
+        }
+        
+        // Update remove button state
+        function updateRemoveButtonState() {
+            const count = $('.employee-checkbox:checked').length;
+            $('#removeSelectedBtn').prop('disabled', count === 0);
+        }
+
+        // Sample employee data
+        const allEmployees = [
+            { id: 'KBF-EMP-00060', name: 'KELUNTANG SAHOR', department: 'Engineering', designation: 'Developer', branch: 'Head Office', grade: 'Grade A' },
+            { id: 'KBF-EMP-00110', name: 'TIDA JUWARA', department: 'Marketing', designation: 'Manager', branch: 'Branch 1', grade: 'Grade A' },
+            { id: 'KBF-EMP-00062', name: 'MAIMUNA SAYE PANNEH', department: 'Finance', designation: 'Analyst', branch: 'Head Office', grade: 'Grade B' },
+            { id: 'KBF-EMP-00005', name: 'ADIATOU SAHOR', department: 'Engineering', designation: 'Designer', branch: 'Branch 2', grade: 'Grade B' },
+            { id: 'KBF-EMP-00009', name: 'AMIE SANO', department: 'Sales', designation: 'Manager', branch: 'Branch 1', grade: 'Grade A' },
+            { id: 'KBF-EMP-00055', name: 'BUBACARR FOFANA', department: 'Human Resources', designation: 'Manager', branch: 'Head Office', grade: 'Grade A' }
+        ];
+    });
+
+    // Make sure this function is defined in your JavaScript 
+    // Add it if it doesn't exist
+    function showToast(message, type = 'info') {
+        // Create toast container if it doesn't exist
+        if ($('.toast-container').length === 0) {
+            $('body').append('<div class="toast-container"></div>');
+        }
+        
+        // Set icon based on type
+        let icon = 'info-circle';
+        if (type === 'success') icon = 'check-circle';
+        if (type === 'warning') icon = 'exclamation-triangle';
+        if (type === 'error') icon = 'times-circle';
+        
+        // Create toast element
+        const toast = $(`
+            <div class="custom-toast ${type}">
+                <div class="toast-icon">
+                    <i class="fas fa-${icon}"></i>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-message">${message}</div>
+                </div>
+                <div class="toast-close">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+        `);
+        
+        // Add to container
+        $('.toast-container').append(toast);
+        
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+            toast.fadeOut(300, function() {
+                $(this).remove();
+            });
+        }, 3000);
+        
+        // Handle close button
+        toast.find('.toast-close').on('click', function() {
+            toast.fadeOut(300, function() {
+                $(this).remove();
+            });
+        });
+    }
+</script>
+{% endblock %}

@@ -9,14 +9,15 @@ def get_context(context):
     # Get the company name from query parameters
     employee_id = frappe.form_dict.id
     if frappe.session.user == "Guest":
-        frappe.local.flags.redirect_location = "/login?/dashboard/employees/view?id=" + employee_id
-        raise frappe.Redirect
+        frappe.local.response["type"] = "redirect"
+        frappe.local.response["location"] = "/login?/dashboard/employees"
 
     # Debug output to frappe logs
     frappe.logger().info(f"Looking up employee with id: {employee_id}")
 
-    if not employee_id:
-        frappe.throw("No employee id provided")
+    if not frappe.db.exists("Employee", employee_id):
+        frappe.local.response["type"] = "redirect"
+        frappe.local.response["location"] = "/dashboard/employees"
 
     # Generate the company data - in a real-world app, you would query your database here
     context.employee = get_employee_by_id(employee_id)

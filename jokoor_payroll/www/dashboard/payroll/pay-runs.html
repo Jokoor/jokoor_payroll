@@ -1,0 +1,1317 @@
+{% extends "templates/web.html" %}
+
+{% block head_include %}
+<!-- Link to global styles -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/dashboard/styles/global.css">
+<style>
+    /* Page-specific styling for pay runs list */
+    body.custom-dashboard .payroll-status {
+        display: inline-block !important;
+        padding: 4px 10px !important;
+        border-radius: 6px !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+    }
+    
+    body.custom-dashboard .status-draft {
+        background-color: #f3f4f6 !important;
+        color: #6b7280 !important;
+    }
+    
+    body.custom-dashboard .status-processing {
+        background-color: #fffaeb !important;
+        color: #f59e0b !important;
+    }
+    
+    body.custom-dashboard .status-completed {
+        background-color: #ecfdf3 !important;
+        color: #10b981 !important;
+    }
+    
+    body.custom-dashboard .status-canceled {
+        background-color: #fee2e2 !important;
+        color: #dc2626 !important;
+    }
+    
+    body.custom-dashboard .pay-run-card {
+        transition: all 0.2s !important;
+        border: 1px solid #e5e7eb !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+    }
+    
+    body.custom-dashboard .pay-run-card:hover {
+        transform: translateY(-3px) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+    }
+    
+    body.custom-dashboard .pay-run-header {
+        background-color: #f9fafb !important;
+        padding: 16px !important;
+        border-bottom: 1px solid #e5e7eb !important;
+    }
+    
+    body.custom-dashboard .pay-run-body {
+        padding: 16px !important;
+    }
+    
+    body.custom-dashboard .pay-run-title {
+        font-weight: 600 !important;
+        font-size: 16px !important;
+        color: #111827 !important;
+        margin-bottom: 0 !important;
+    }
+    
+    body.custom-dashboard .pay-run-period {
+        font-size: 13px !important;
+        color: #6b7280 !important;
+    }
+    
+    body.custom-dashboard .pay-run-value {
+        font-size: 18px !important;
+        font-weight: 600 !important;
+        color: #111827 !important;
+        margin-bottom: 4px !important;
+    }
+    
+    body.custom-dashboard .pay-run-label {
+        font-size: 13px !important;
+        color: #6b7280 !important;
+    }
+    
+    body.custom-dashboard .pay-run-info {
+        margin-bottom: 12px !important;
+    }
+    
+    body.custom-dashboard .modal-section-title {
+        font-size: 15px !important;
+        font-weight: 600 !important;
+        color: #374151 !important;
+        margin-bottom: 12px !important;
+        border-bottom: 1px solid #e5e7eb !important;
+        padding-bottom: 8px !important;
+    }
+    
+    body.custom-dashboard .filter-badge {
+        background-color: #f3f0ff !important;
+        color: #7d5fd2 !important;
+        font-size: 12px !important;
+        border-radius: 4px !important;
+        padding: 4px 10px !important;
+        margin-right: 6px !important;
+        margin-bottom: 8px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        transition: all 0.2s !important;
+    }
+    
+    body.custom-dashboard .filter-badge:hover {
+        background-color: #e9e1fb !important;
+    }
+    
+    body.custom-dashboard .filter-badge i {
+        margin-left: 6px !important;
+        font-size: 10px !important;
+        cursor: pointer !important;
+        opacity: 0.7 !important;
+    }
+    
+    body.custom-dashboard .filter-badge i:hover {
+        opacity: 1 !important;
+    }
+    
+    body.custom-dashboard .filter-count {
+        background-color: #7d5fd2 !important;
+        color: white !important;
+        border-radius: 50% !important;
+        width: 20px !important;
+        height: 20px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 11px !important;
+        margin-left: 8px !important;
+    }
+    
+    body.custom-dashboard .clear-all-filters {
+        color: #7d5fd2 !important;
+        text-decoration: none !important;
+        font-size: 12px !important;
+        cursor: pointer !important;
+    }
+    
+    body.custom-dashboard .clear-all-filters:hover {
+        text-decoration: underline !important;
+    }
+    
+    body.custom-dashboard .multi-select-container {
+        position: relative !important;
+    }
+    
+    body.custom-dashboard .selected-count {
+        position: absolute !important;
+        right: 10px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        font-size: 12px !important;
+        color: #7d5fd2 !important;
+        font-weight: 500 !important;
+    }
+    
+    body.custom-dashboard .pay-run-action {
+        color: #7d5fd2 !important;
+        margin-right: 10px !important;
+        font-size: 14px !important;
+        text-decoration: none !important;
+    }
+    
+    body.custom-dashboard .pay-run-action:hover {
+        text-decoration: underline !important;
+    }
+    
+    body.custom-dashboard .filter-section {
+        background-color: #f9fafb !important;
+        border-radius: 8px !important;
+        padding: 16px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    body.custom-dashboard .pay-type-selector {
+        border: 1px solid #e5e7eb !important;
+        border-radius: 8px !important;
+        padding: 12px !important;
+        margin-bottom: 8px !important;
+        cursor: pointer !important;
+        transition: all 0.2s !important;
+    }
+    
+    body.custom-dashboard .pay-type-selector:hover {
+        background-color: #f3f0ff !important;
+        border-color: #d4c5fa !important;
+    }
+    
+    body.custom-dashboard .pay-type-selector.selected {
+        background-color: #f3f0ff !important;
+        border-color: #7d5fd2 !important;
+    }
+    
+    body.custom-dashboard .pay-type-selector .title {
+        font-weight: 600 !important;
+        color: #111827 !important;
+    }
+    
+    body.custom-dashboard .pay-type-selector .description {
+        font-size: 13px !important;
+        color: #6b7280 !important;
+    }
+</style>
+{% endblock %}
+
+{% block title %}Pay Runs | Jokoor Payroll{% endblock %}
+
+{% block header %}
+<!-- Override the header to remove Frappe's default header -->
+{% endblock %}
+
+{% block navbar %}
+<!-- Override navbar to remove Frappe's default navbar -->
+{% endblock %}
+
+{% block footer %}
+<!-- Override footer to remove Frappe's default footer -->
+{% endblock %}
+
+{% block content %}
+<div class="custom-dashboard">
+    <!-- Sidebar -->
+    {% include "templates/includes/dashboard/sidebar.html" %}
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="fw-bold mb-0">Pay Runs</h2>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newPayRunModal">
+                    <i class="fas fa-plus me-2"></i> New Pay Run
+                </button>
+            </div>
+        </header>
+        
+        <!-- Filters Section -->
+        <div class="filter-section mb-4">
+            <div class="row">
+                <div class="col-md-3">
+                    <label for="statusFilter" class="form-label">Status</label>
+                    <select class="form-select" id="statusFilter">
+                        <option value="all" selected>All Statuses</option>
+                        <option value="draft">Draft</option>
+                        <option value="processing">Processing</option>
+                        <option value="completed">Completed</option>
+                        <option value="canceled">Canceled</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="periodFilter" class="form-label">Period</label>
+                    <select class="form-select" id="periodFilter">
+                        <option value="all" selected>All Periods</option>
+                        <option value="current">Current Month</option>
+                        <option value="previous">Previous Month</option>
+                        <option value="q1">Q1 2023</option>
+                        <option value="q2">Q2 2023</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="typeFilter" class="form-label">Pay Run Type</label>
+                    <select class="form-select" id="typeFilter">
+                        <option value="all" selected>All Types</option>
+                        <option value="regular">Regular Payroll</option>
+                        <option value="bonus">Bonus Payroll</option>
+                        <option value="off-cycle">Off-Cycle Payroll</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="searchPayRun" class="form-label">Search</label>
+                    <input type="text" class="form-control" id="searchPayRun" placeholder="Search pay runs...">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Add this after the filters section -->
+        <div class="alert alert-info d-flex align-items-center mt-3" id="filterResultInfo">
+            <i class="fas fa-info-circle me-2"></i>
+            <div>
+                <span id="filteredEmployeeCount">0</span> employees match your filters out of <span id="totalEmployeeCount">0</span> total employees.
+            </div>
+        </div>
+        
+        <!-- Pay Runs List -->
+        <div class="row" id="payRunsList">
+            <!-- Pay Run Card - Regular Payroll -->
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="pay-run-card">
+                    <div class="pay-run-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="pay-run-title">Regular Payroll</h5>
+                            <div class="pay-run-period">December 2022</div>
+                        </div>
+                        <span class="payroll-status status-draft">Draft</span>
+                    </div>
+                    <div class="pay-run-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="pay-run-info">
+                                    <div class="pay-run-value">₹1.79 Cr</div>
+                                    <div class="pay-run-label">Payroll Cost</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="pay-run-info">
+                                    <div class="pay-run-value">₹1.17 Cr</div>
+                                    <div class="pay-run-label">Net Pay</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="pay-run-info">
+                                    <div class="pay-run-value">28</div>
+                                    <div class="pay-run-label">Employees</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="pay-run-info">
+                                    <div class="pay-run-value">Dec 30</div>
+                                    <div class="pay-run-label">Pay Date</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-2">
+                            <a href="/dashboard/payroll/pay-run" class="pay-run-action">
+                                <i class="fas fa-eye me-1"></i> View
+                            </a>
+                            <a href="#" class="pay-run-action">
+                                <i class="fas fa-ellipsis-h me-1"></i> More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pay Run Card - Regular Payroll (Completed) -->
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="pay-run-card">
+                    <div class="pay-run-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="pay-run-title">Regular Payroll</h5>
+                            <div class="pay-run-period">November 2022</div>
+                        </div>
+                        <span class="payroll-status status-completed">Completed</span>
+                    </div>
+                    <div class="pay-run-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="pay-run-info">
+                                    <div class="pay-run-value">₹1.72 Cr</div>
+                                    <div class="pay-run-label">Payroll Cost</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="pay-run-info">
+                                    <div class="pay-run-value">₹1.12 Cr</div>
+                                    <div class="pay-run-label">Net Pay</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="pay-run-info">
+                                    <div class="pay-run-value">27</div>
+                                    <div class="pay-run-label">Employees</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="pay-run-info">
+                                    <div class="pay-run-value">Nov 30</div>
+                                    <div class="pay-run-label">Pay Date</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-2">
+                            <a href="/dashboard/payroll/pay-run" class="pay-run-action">
+                                <i class="fas fa-eye me-1"></i> View
+                            </a>
+                            <a href="#" class="pay-run-action">
+                                <i class="fas fa-ellipsis-h me-1"></i> More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pay Run Card - Bonus Payroll -->
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="pay-run-card">
+                    <div class="pay-run-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="pay-run-title">Bonus Payroll</h5>
+                            <div class="pay-run-period">Q4 2022</div>
+                        </div>
+                        <span class="payroll-status status-processing">Processing</span>
+                    </div>
+                    <div class="pay-run-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="pay-run-info">
+                                    <div class="pay-run-value">₹35.6 L</div>
+                                    <div class="pay-run-label">Payroll Cost</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="pay-run-info">
+                                    <div class="pay-run-value">₹24.8 L</div>
+                                    <div class="pay-run-label">Net Pay</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="pay-run-info">
+                                    <div class="pay-run-value">15</div>
+                                    <div class="pay-run-label">Employees</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="pay-run-info">
+                                    <div class="pay-run-value">Dec 15</div>
+                                    <div class="pay-run-label">Pay Date</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-2">
+                            <a href="/dashboard/payroll/pay-run" class="pay-run-action">
+                                <i class="fas fa-eye me-1"></i> View
+                            </a>
+                            <a href="#" class="pay-run-action">
+                                <i class="fas fa-ellipsis-h me-1"></i> More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pay Run Card - Off-Cycle Payroll -->
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="pay-run-card">
+                    <div class="pay-run-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="pay-run-title">Off-Cycle Payroll</h5>
+                            <div class="pay-run-period">October 2022</div>
+                        </div>
+                        <span class="payroll-status status-completed">Completed</span>
+                    </div>
+                    <div class="pay-run-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="pay-run-info">
+                                    <div class="pay-run-value">₹8.5 L</div>
+                                    <div class="pay-run-label">Payroll Cost</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="pay-run-info">
+                                    <div class="pay-run-value">₹6.2 L</div>
+                                    <div class="pay-run-label">Net Pay</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="pay-run-info">
+                                    <div class="pay-run-value">3</div>
+                                    <div class="pay-run-label">Employees</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="pay-run-info">
+                                    <div class="pay-run-value">Oct 20</div>
+                                    <div class="pay-run-label">Pay Date</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-2">
+                            <a href="/dashboard/payroll/pay-run" class="pay-run-action">
+                                <i class="fas fa-eye me-1"></i> View
+                            </a>
+                            <a href="#" class="pay-run-action">
+                                <i class="fas fa-ellipsis-h me-1"></i> More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pay Run Card - Regular Payroll (Canceled) -->
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="pay-run-card">
+                    <div class="pay-run-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="pay-run-title">Regular Payroll</h5>
+                            <div class="pay-run-period">October 2022</div>
+                        </div>
+                        <span class="payroll-status status-canceled">Canceled</span>
+                    </div>
+                    <div class="pay-run-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="pay-run-info">
+                                    <div class="pay-run-value">₹1.68 Cr</div>
+                                    <div class="pay-run-label">Payroll Cost</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="pay-run-info">
+                                    <div class="pay-run-value">₹1.08 Cr</div>
+                                    <div class="pay-run-label">Net Pay</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="pay-run-info">
+                                    <div class="pay-run-value">27</div>
+                                    <div class="pay-run-label">Employees</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="pay-run-info">
+                                    <div class="pay-run-value">Oct 30</div>
+                                    <div class="pay-run-label">Pay Date</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-2">
+                            <a href="/dashboard/payroll/pay-run" class="pay-run-action">
+                                <i class="fas fa-eye me-1"></i> View
+                            </a>
+                            <a href="#" class="pay-run-action">
+                                <i class="fas fa-ellipsis-h me-1"></i> More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="d-flex justify-content-between align-items-center mt-4 mb-5">
+            <div class="text-muted">Showing 5 of 15 pay runs</div>
+            <nav aria-label="Pay runs pagination">
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    
+    <!-- New Pay Run Modal -->
+    <div class="modal fade" id="newPayRunModal" tabindex="-1" aria-labelledby="newPayRunModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newPayRunModalLabel">Create New Pay Run</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newPayRunForm">
+                        <!-- Pay Run Type Section -->
+                        <div class="mb-4">
+                            <h6 class="modal-section-title">Pay Run Type</h6>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <div class="pay-type-selector selected" data-type="regular">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <i class="fas fa-calendar-check text-primary me-2"></i>
+                                            <div class="title">Regular Payroll</div>
+                                        </div>
+                                        <div class="description">Standard monthly or bi-weekly payroll process</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="pay-type-selector" data-type="bonus">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <i class="fas fa-award text-warning me-2"></i>
+                                            <div class="title">Bonus Payroll</div>
+                                        </div>
+                                        <div class="description">Process bonuses and variable pay components</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="pay-type-selector" data-type="off-cycle">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <i class="fas fa-sync-alt text-info me-2"></i>
+                                            <div class="title">Off-Cycle Payroll</div>
+                                        </div>
+                                        <div class="description">Special and one-time payments</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pay Period Section -->
+                        <div class="mb-4">
+                            <h6 class="modal-section-title">Pay Period</h6>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="payPeriodStart" class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" id="payPeriodStart" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="payPeriodEnd" class="form-label">End Date</label>
+                                    <input type="date" class="form-control" id="payPeriodEnd" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="payDate" class="form-label">Pay Date</label>
+                                    <input type="date" class="form-control" id="payDate" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="baseDays" class="form-label">Base Days</label>
+                                    <input type="number" class="form-control" id="baseDays" min="1" max="31" value="30" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pay Run Information -->
+                        <div class="mb-4">
+                            <h6 class="modal-section-title">Pay Run Information</h6>
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="payRunName" class="form-label">Pay Run Name</label>
+                                    <input type="text" class="form-control" id="payRunName" placeholder="E.g., Regular Payroll - January 2023" required>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label for="payRunDescription" class="form-label">Description (Optional)</label>
+                                    <textarea class="form-control" id="payRunDescription" rows="2" placeholder="Add notes or description for this pay run"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Employee Selection -->
+                        <div class="mb-4">
+                            <h6 class="modal-section-title">Employee Selection</h6>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="employeeSelection" id="allEmployees" value="all" checked>
+                                    <label class="form-check-label" for="allEmployees">
+                                        All Employees
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="employeeSelection" id="filteredEmployees" value="filtered">
+                                    <label class="form-check-label" for="filteredEmployees">
+                                        Filtered Employees
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- Add this before the employee filters -->
+                            <div class="mb-3">
+                                <label class="form-label">Quick Filters</label>
+                                <div>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary me-2 mb-2" data-filter-preset="new-hires">
+                                        <i class="fas fa-user-plus me-1"></i> New Hires
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary me-2 mb-2" data-filter-preset="full-time">
+                                        <i class="fas fa-business-time me-1"></i> Full-Time Only
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary me-2 mb-2" data-filter-preset="bangalore">
+                                        <i class="fas fa-map-marker-alt me-1"></i> Bangalore Office
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Employee Filters (initially hidden) -->
+                            <div id="employeeFiltersSection" class="d-none">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="departmentFilter" class="form-label">Department</label>
+                                        <select class="form-select" id="departmentFilter" multiple>
+                                            <option value="engineering">Engineering</option>
+                                            <option value="marketing">Marketing</option>
+                                            <option value="sales">Sales</option>
+                                            <option value="hr">Human Resources</option>
+                                            <option value="finance">Finance</option>
+                                            <option value="operations">Operations</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="locationFilter" class="form-label">Location</label>
+                                        <select class="form-select" id="locationFilter" multiple>
+                                            <option value="bangalore">Bangalore</option>
+                                            <option value="mumbai">Mumbai</option>
+                                            <option value="delhi">Delhi</option>
+                                            <option value="hyderabad">Hyderabad</option>
+                                            <option value="remote">Remote</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="employmentTypeFilter" class="form-label">Employment Type</label>
+                                        <select class="form-select" id="employmentTypeFilter" multiple>
+                                            <option value="full_time">Full Time</option>
+                                            <option value="part_time">Part Time</option>
+                                            <option value="contract">Contract</option>
+                                            <option value="intern">Intern</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="joiningDateFilter" class="form-label">Joining Date</label>
+                                        <select class="form-select" id="joiningDateFilter">
+                                            <option value="all" selected>All</option>
+                                            <option value="before_period">Before Pay Period</option>
+                                            <option value="during_period">During Pay Period</option>
+                                            <option value="custom">Custom Date Range</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <!-- Custom Date Range (initially hidden) -->
+                                <div id="customDateRange" class="row d-none">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="joiningDateFrom" class="form-label">From</label>
+                                        <input type="date" class="form-control" id="joiningDateFrom">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="joiningDateTo" class="form-label">To</label>
+                                        <input type="date" class="form-control" id="joiningDateTo">
+                                    </div>
+                                </div>
+                                
+                                <!-- Selected Filters Display -->
+                                <div class="mt-3">
+                                    <label class="form-label">Selected Filters</label>
+                                    <div id="selectedFilters">
+                                        <!-- Will be populated dynamically with filter badges -->
+                                    </div>
+                                </div>
+                                
+                                <!-- Preview Filtered Employees -->
+                                <div class="mt-3">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" id="previewEmployeesBtn">
+                                        <i class="fas fa-users me-1"></i> Preview Filtered Employees
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Advanced Options -->
+                        <div class="mb-3">
+                            <h6 class="modal-section-title">Advanced Options</h6>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="includeAttendance" checked>
+                                <label class="form-check-label" for="includeAttendance">
+                                    Include attendance data
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="includeLeaves" checked>
+                                <label class="form-check-label" for="includeLeaves">
+                                    Include leave deductions
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="includeTaxes" checked>
+                                <label class="form-check-label" for="includeTaxes">
+                                    Calculate taxes
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="notifyEmployees">
+                                <label class="form-check-label" for="notifyEmployees">
+                                    Notify employees when pay run is completed
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="createPayRunBtn">
+                        <i class="fas fa-plus me-1"></i> Create Pay Run
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Preview Employees Modal -->
+    <div class="modal fade" id="previewEmployeesModal" tabindex="-1" aria-labelledby="previewEmployeesModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="previewEmployeesModalLabel">Preview Filtered Employees</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Employee ID</th>
+                                    <th>Name</th>
+                                    <th>Department</th>
+                                    <th>Location</th>
+                                    <th>Employment Type</th>
+                                </tr>
+                            </thead>
+                            <tbody id="filteredEmployeesList">
+                                <!-- Will be populated dynamically -->
+                                <tr>
+                                    <td>103-355</td>
+                                    <td>Sandeep Lamichaane</td>
+                                    <td>Engineering</td>
+                                    <td>Bangalore</td>
+                                    <td>Full Time</td>
+                                </tr>
+                                <tr>
+                                    <td>PER-111</td>
+                                    <td>Kenneth Parker</td>
+                                    <td>Marketing</td>
+                                    <td>Mumbai</td>
+                                    <td>Full Time</td>
+                                </tr>
+                                <tr>
+                                    <td>PER-6756</td>
+                                    <td>Sagar Elias Jacky</td>
+                                    <td>Sales</td>
+                                    <td>Delhi</td>
+                                    <td>Full Time</td>
+                                </tr>
+                                <tr>
+                                    <td>PER-5634</td>
+                                    <td>Rachel Greene</td>
+                                    <td>Human Resources</td>
+                                    <td>Bangalore</td>
+                                    <td>Full Time</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div class="text-muted">Showing 4 employees</div>
+                        <button type="button" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-file-export me-1"></i> Export to Excel
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="applyFiltersBtn">
+                        <i class="fas fa-check me-1"></i> Apply Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Add custom class to body to enable our custom styles
+    document.body.classList.add('custom-dashboard');
+    
+    $(document).ready(function() {
+        // Set the active menu item in the sidebar
+        const payrollMenuItem = document.querySelector('.sidebar-item[href*="payroll"]');
+        if (payrollMenuItem) {
+            payrollMenuItem.classList.add('active');
+        }
+        
+        // Initialize dates with current month
+        initializePayPeriodDates();
+        
+        // Pay type selector handling
+        $('.pay-type-selector').on('click', function() {
+            $('.pay-type-selector').removeClass('selected');
+            $(this).addClass('selected');
+            
+            // Update pay run name based on selected type
+            updatePayRunName();
+        });
+        
+        // Employee selection toggle
+        $('input[name="employeeSelection"]').on('change', function() {
+            if ($('#filteredEmployees').is(':checked')) {
+                $('#employeeFiltersSection').removeClass('d-none');
+            } else {
+                $('#employeeFiltersSection').addClass('d-none');
+            }
+        });
+        
+        // Joining date filter change
+        $('#joiningDateFilter').on('change', function() {
+            if ($(this).val() === 'custom') {
+                $('#customDateRange').removeClass('d-none');
+            } else {
+                $('#customDateRange').addClass('d-none');
+            }
+        });
+        
+        // Preview employees button
+        $('#previewEmployeesBtn').on('click', function() {
+            // Here you would typically make an API call to get filtered employees
+            // For now, we'll just show the modal with sample data
+            $('#previewEmployeesModal').modal('show');
+        });
+        
+        // Apply filters from preview modal
+        $('#applyFiltersBtn').on('click', function() {
+            // Apply the filters and close the modal
+            $('#previewEmployeesModal').modal('hide');
+            
+            // Add selected filters as badges
+            updateSelectedFilters();
+        });
+        
+        // Create pay run button
+        $('#createPayRunBtn').on('click', function() {
+            if (!validatePayRunForm()) {
+                return;
+            }
+            
+            // Show loading state
+            const createBtn = $('#createPayRunBtn');
+            const originalText = createBtn.html();
+            createBtn.html('<i class="fas fa-spinner fa-spin me-1"></i> Creating...');
+            createBtn.prop('disabled', true);
+            
+            // Simulate API call to create pay run
+            setTimeout(function() {
+                createBtn.html(originalText);
+                createBtn.prop('disabled', false);
+                
+                // Close modal
+                $('#newPayRunModal').modal('hide');
+                
+                // Show success message
+                showToast('Pay run created successfully');
+                
+                // In a real app, you would redirect to the new pay run
+                // or refresh the list to include the new pay run
+                setTimeout(function() {
+                    // For demo, simulate a page redirect
+                    window.location.href = '/dashboard/payroll/pay-run';
+                }, 1000);
+            }, 1500);
+        });
+        
+        // Filter pay runs
+        $('#statusFilter, #periodFilter, #typeFilter').on('change', function() {
+            filterPayRuns();
+        });
+        
+        // Search pay runs
+        $('#searchPayRun').on('input', function() {
+            filterPayRuns();
+        });
+        
+        // Department, location, and employment type multi-select handling
+        $('#departmentFilter, #locationFilter, #employmentTypeFilter').on('change', function() {
+            updateSelectedFilters();
+        });
+        
+        // Remove filter badges
+        $(document).on('click', '.filter-badge i', function() {
+            const filterType = $(this).parent().data('filter-type');
+            const filterValue = $(this).parent().data('filter-value');
+            
+            // Remove the selection from the appropriate filter dropdown
+            $(`#${filterType}Filter option[value="${filterValue}"]`).prop('selected', false);
+            
+            // Update the selected filters display
+            updateSelectedFilters();
+        });
+        
+        // Pay period date changes
+        $('#payPeriodStart, #payPeriodEnd').on('change', function() {
+            // Update pay date based on period end date
+            if ($('#payPeriodEnd').val()) {
+                const endDate = new Date($('#payPeriodEnd').val());
+                const payDate = new Date(endDate);
+                payDate.setDate(payDate.getDate() + 5);  // Default to 5 days after period end
+                
+                $('#payDate').val(payDate.toISOString().split('T')[0]);
+            }
+            
+            // Update pay run name
+            updatePayRunName();
+            
+            // Calculate base days
+            calculateBaseDays();
+        });
+        
+        // Enhanced filter handling
+        updateFilterCount();
+        
+        // Add clear all filters functionality
+        $(document).on('click', '.clear-all-filters', function() {
+            $('#departmentFilter option, #locationFilter option, #employmentTypeFilter option').prop('selected', false);
+            $('#joiningDateFilter').val('all');
+            $('#customDateRange').addClass('d-none');
+            $('#joiningDateFrom, #joiningDateTo').val('');
+            
+            updateSelectedFilters();
+            updateFilterCount();
+        });
+        
+        // Show selected count in multi-select dropdowns
+        $('#departmentFilter, #locationFilter, #employmentTypeFilter').on('change', function() {
+            const selectId = $(this).attr('id');
+            const selectedCount = $(`#${selectId} option:selected`).length;
+            
+            // Update or create the count element
+            if (selectedCount > 0) {
+                if ($(`#${selectId}`).next('.selected-count').length) {
+                    $(`#${selectId}`).next('.selected-count').text(`${selectedCount} selected`);
+                } else {
+                    $(`#${selectId}`).after(`<span class="selected-count">${selectedCount} selected</span>`);
+                }
+            } else {
+                $(`#${selectId}`).next('.selected-count').remove();
+            }
+            
+            updateFilterCount();
+        });
+    });
+    
+    // Initialize pay period dates with current month
+    function initializePayPeriodDates() {
+        const today = new Date();
+        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        const payDate = new Date(lastDayOfMonth);
+        payDate.setDate(payDate.getDate() + 5);  // Default to 5 days after month end
+        
+        $('#payPeriodStart').val(firstDayOfMonth.toISOString().split('T')[0]);
+        $('#payPeriodEnd').val(lastDayOfMonth.toISOString().split('T')[0]);
+        $('#payDate').val(payDate.toISOString().split('T')[0]);
+        
+        // Set base days
+        const days = (lastDayOfMonth - firstDayOfMonth) / (1000 * 60 * 60 * 24) + 1;
+        $('#baseDays').val(days);
+        
+        // Set default pay run name
+        updatePayRunName();
+    }
+    
+    // Update pay run name based on period and type
+    function updatePayRunName() {
+        const payType = $('.pay-type-selector.selected').data('type');
+        let payTypeName = 'Regular Payroll';
+        
+        if (payType === 'bonus') {
+            payTypeName = 'Bonus Payroll';
+        } else if (payType === 'off-cycle') {
+            payTypeName = 'Off-Cycle Payroll';
+        }
+        
+        // Get month and year from period start
+        let periodName = '';
+        if ($('#payPeriodStart').val()) {
+            const startDate = new Date($('#payPeriodStart').val());
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            periodName = `${monthNames[startDate.getMonth()]} ${startDate.getFullYear()}`;
+        }
+        
+        // Set the pay run name
+        $('#payRunName').val(`${payTypeName} - ${periodName}`);
+    }
+    
+    // Calculate base days between start and end dates
+    function calculateBaseDays() {
+        if ($('#payPeriodStart').val() && $('#payPeriodEnd').val()) {
+            const startDate = new Date($('#payPeriodStart').val());
+            const endDate = new Date($('#payPeriodEnd').val());
+            const days = (endDate - startDate) / (1000 * 60 * 60 * 24) + 1;
+            $('#baseDays').val(days);
+        }
+    }
+    
+    // Update selected filters display
+    function updateSelectedFilters() {
+        const selectedFilters = $('#selectedFilters');
+        selectedFilters.empty();
+        
+        // Department filters
+        $('#departmentFilter option:selected').each(function() {
+            const value = $(this).val();
+            const text = $(this).text();
+            selectedFilters.append(`
+                <span class="filter-badge" data-filter-type="department" data-filter-value="${value}">
+                    Department: ${text} <i class="fas fa-times"></i>
+                </span>
+            `);
+        });
+        
+        // Location filters
+        $('#locationFilter option:selected').each(function() {
+            const value = $(this).val();
+            const text = $(this).text();
+            selectedFilters.append(`
+                <span class="filter-badge" data-filter-type="location" data-filter-value="${value}">
+                    Location: ${text} <i class="fas fa-times"></i>
+                </span>
+            `);
+        });
+        
+        // Employment type filters
+        $('#employmentTypeFilter option:selected').each(function() {
+            const value = $(this).val();
+            const text = $(this).text();
+            selectedFilters.append(`
+                <span class="filter-badge" data-filter-type="employmentType" data-filter-value="${value}">
+                    Type: ${text} <i class="fas fa-times"></i>
+                </span>
+            `);
+        });
+        
+        // Joining date filter
+        const joiningDateFilter = $('#joiningDateFilter').val();
+        if (joiningDateFilter !== 'all') {
+            let filterText = '';
+            switch (joiningDateFilter) {
+                case 'before_period':
+                    filterText = 'Before Pay Period';
+                    break;
+                case 'during_period':
+                    filterText = 'During Pay Period';
+                    break;
+                case 'custom':
+                    const fromDate = $('#joiningDateFrom').val();
+                    const toDate = $('#joiningDateTo').val();
+                    if (fromDate && toDate) {
+                        filterText = `${fromDate} to ${toDate}`;
+                    }
+                    break;
+            }
+            
+            if (filterText) {
+                selectedFilters.append(`
+                    <span class="filter-badge" data-filter-type="joiningDate" data-filter-value="${joiningDateFilter}">
+                        Joining Date: ${filterText} <i class="fas fa-times"></i>
+                    </span>
+                `);
+            }
+        }
+        
+        // If no filters selected, show a message
+        if (selectedFilters.children().length === 0) {
+            selectedFilters.append(`<span class="text-muted">No filters applied</span>`);
+        }
+    }
+    
+    // Filter pay runs based on selected filters
+    function filterPayRuns() {
+        const statusFilter = $('#statusFilter').val();
+        const periodFilter = $('#periodFilter').val();
+        const typeFilter = $('#typeFilter').val();
+        const searchTerm = $('#searchPayRun').val().toLowerCase();
+        
+        $('.pay-run-card').each(function() {
+            let show = true;
+            
+            // Status filter
+            if (statusFilter !== 'all') {
+                const status = $(this).find('.payroll-status').text().toLowerCase();
+                if (!status.includes(statusFilter)) {
+                    show = false;
+                }
+            }
+            
+            // Period filter (simplified for demo)
+            if (periodFilter !== 'all' && show) {
+                const period = $(this).find('.pay-run-period').text().toLowerCase();
+                
+                if (periodFilter === 'current' && !period.includes('december')) {
+                    show = false;
+                } else if (periodFilter === 'previous' && !period.includes('november')) {
+                    show = false;
+                } else if (periodFilter === 'q1' && !period.includes('q1')) {
+                    show = false;
+                } else if (periodFilter === 'q2' && !period.includes('q2')) {
+                    show = false;
+                }
+            }
+            
+            // Type filter
+            if (typeFilter !== 'all' && show) {
+                const type = $(this).find('.pay-run-title').text().toLowerCase();
+                if (!type.includes(typeFilter)) {
+                    show = false;
+                }
+            }
+            
+            // Search term
+            if (searchTerm && show) {
+                const cardText = $(this).text().toLowerCase();
+                if (!cardText.includes(searchTerm)) {
+                    show = false;
+                }
+            }
+            
+            // Show or hide based on filters
+            $(this).closest('.col-md-6').toggle(show);
+        });
+        
+        // Update showing count
+        const visibleCards = $('.pay-run-card:visible').length;
+        const totalCards = $('.pay-run-card').length;
+        $('.text-muted:contains("Showing")').text(`Showing ${visibleCards} of ${totalCards} pay runs`);
+    }
+    
+    // Validate pay run form
+    function validatePayRunForm() {
+        const form = document.getElementById('newPayRunForm');
+        
+        if (!form.checkValidity()) {
+            // Trigger browser's built-in validation
+            form.reportValidity();
+            return false;
+        }
+        
+        // Custom validations
+        const startDate = new Date($('#payPeriodStart').val());
+        const endDate = new Date($('#payPeriodEnd').val());
+        const payDate = new Date($('#payDate').val());
+        
+        if (endDate < startDate) {
+            alert('End date cannot be before start date');
+            return false;
+        }
+        
+        if (payDate < endDate) {
+            alert('Pay date should be after the period end date');
+            return false;
+        }
+        
+        return true;
+    }
+    
+    // Show toast message
+    function showToast(message) {
+        const toast = $(`
+            <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
+                <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="toast-header">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <strong class="me-auto">Success</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                </div>
+            </div>
+        `);
+        
+        $('body').append(toast);
+        
+        setTimeout(function() {
+            toast.remove();
+        }, 3000);
+    }
+    
+    // Add this new function to your script section
+    function updateFilterCount() {
+        // Count total applied filters
+        const departmentCount = $('#departmentFilter option:selected').length;
+        const locationCount = $('#locationFilter option:selected').length;
+        const employmentTypeCount = $('#employmentTypeFilter option:selected').length;
+        
+        // Count joining date filter if applied
+        const joiningDateFilter = $('#joiningDateFilter').val();
+        const joiningDateCount = (joiningDateFilter !== 'all') ? 1 : 0;
+        
+        const totalCount = departmentCount + locationCount + employmentTypeCount + joiningDateCount;
+        
+        // Update preview button with count if filters applied
+        if (totalCount > 0) {
+            $('#previewEmployeesBtn').html(`
+                <i class="fas fa-users me-1"></i> Preview Filtered Employees 
+                <span class="filter-count">${totalCount}</span>
+            `);
+            
+            // Add clear all link if not exists
+            if ($('#selectedFilters').find('.clear-all-filters').length === 0) {
+                $('#selectedFilters').prepend(`
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted small">Active filters</span>
+                        <a class="clear-all-filters">Clear all</a>
+                    </div>
+                `);
+            }
+        } else {
+            $('#previewEmployeesBtn').html(`<i class="fas fa-users me-1"></i> Preview Filtered Employees`);
+            $('#selectedFilters').find('.clear-all-filters').parent().remove();
+        }
+    }
+    
+    // Update the existing updateSelectedFilters function to call updateFilterCount
+    const originalUpdateSelectedFilters = updateSelectedFilters;
+    updateSelectedFilters = function() {
+        originalUpdateSelectedFilters();
+        updateFilterCount();
+    };
+</script>
+{% endblock %} 
