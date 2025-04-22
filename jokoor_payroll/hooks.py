@@ -196,7 +196,7 @@ app_license = "mit"
 
 # Request Events
 # ----------------
-# before_request = ["jokoor_payroll.utils.before_request"]
+# before_request = ["jokoor_payroll.api.before_request"]
 # after_request = ["jokoor_payroll.utils.after_request"]
 
 # Job Events

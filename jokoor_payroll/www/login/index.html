@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jokoor Payroll | Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #7d5fd2;
+            --primary-light: #a289e2;
+            --secondary-color: #3B82F6;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-container {
+            background-color: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            max-width: 1000px;
+            width: 95%;
+            display: flex;
+            height: 580px;
+        }
+        
+        .login-form {
+            flex: 0 0 40%;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .login-top {
+            margin-bottom: 10px;
+        }
+        
+        .login-form h2 {
+            font-weight: 700;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .login-welcome {
+            color: #6B7280;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            color: #374151;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+        
+        .form-control {
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid #D1D5DB;
+            margin-bottom: 15px;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(125, 95, 210, 0.15);
+        }
+        
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .form-check-label {
+            font-size: 14px;
+            color: #4B5563;
+        }
+        
+        .forgot-link {
+            font-size: 14px;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(125, 95, 210, 0.3);
+        }
+        
+        .separator {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 15px 0;
+            color: #9CA3AF;
+            font-size: 14px;
+        }
+        
+        .separator::before,
+        .separator::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        
+        .separator:not(:empty)::before {
+            margin-right: 10px;
+        }
+        
+        .separator:not(:empty)::after {
+            margin-left: 10px;
+        }
+        
+        .social-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        
+        .btn-social {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #E5E7EB;
+            background: white;
+            color: #4B5563;
+            font-weight: 500;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        
+        .btn-social:hover {
+            background-color: #F9FAFB;
+        }
+        
+        .btn-social i {
+            margin-right: 8px;
+            font-size: 14px;
+        }
+        
+        .logo {
+            margin-bottom: 20px;
+        }
+        
+        .logo img {
+            height: 45px;
+            max-width: 100%;
+        }
+        
+        .signup-prompt {
+            font-size: 14px;
+            color: #6B7280;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .signup-link {
+            color: var(--primary-color);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        
+        .signup-link:hover {
+            text-decoration: underline;
+        }
+        
+        .banner {
+            flex: 0 0 60%;
+            background: var(--primary-color);
+            color: white;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .banner-content {
+            position: relative;
+            z-index: 1;
+            max-width: 450px;
+        }
+        
+        .banner h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        
+        .banner p {
+            font-size: 16px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .chart-container {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            margin-top: 20px;
+            position: relative;
+        }
+        
+        .chart-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .chart-title h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1F2937;
+            margin: 0;
+        }
+        
+        .chart-tabs {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chart-tab {
+            color: #9CA3AF;
+            font-size: 13px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        
+        .chart-tab.active {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .chart {
+            height: 170px;
+            margin-bottom: 15px;
+        }
+        
+        .payroll-stat {
+            position: absolute;
+            right: 20px;
+            top: 40px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 8px 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-title {
+            font-size: 12px;
+            color: #6B7280;
+        }
+        
+        .stat-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1F2937;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #6B7280;
+        }
+        
+        .legend-color {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .login-form, .banner {
+                flex: 0 0 100%;
+            }
+            
+            .banner {
+                padding: 30px;
+                order: -1;
+            }
+            
+            .chart-container {
+                margin-top: 20px;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-form">
+            <div class="login-top">
+                <div class="logo">
+                    <img src="https://ucarecdn.com/bb9ad745-564d-400a-a2da-d0971f5605a8/-/preview/743x243/" alt="Jokoor">
+                </div>
+                
+                <h2>Sign In</h2>
+                <p class="login-welcome">Welcome back! Please enter your details</p>
+                <!-- rediret to /dashboard after login -->
+
+                <form id="login-form" method="POST" action="/api/method/login">
+                    <div>
+                        <label for="usr" class="form-label">Email</label>
+                        <input type="text" class="form-control" id="usr" name="usr" placeholder="Enter your email">
+                    </div>
+                    
+                    <div>
+                        <label for="pwd" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="pwd" name="pwd" placeholder="••••••••">
+                    </div>
+                    
+                    <div class="remember-forgot">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="remember" name="remember_me" value="1">
+                            <label class="form-check-label" for="remember">
+                                Remember for 30 Days
+                            </label>
+                        </div>
+                        <a href="/login" class="forgot-link">Forgot password</a>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100">Sign In</button>
+                </form>
+            </div>
+            
+            <div class="login-bottom">
+                <div class="separator">OR</div>
+                
+                <div class="social-buttons">
+                    <button class="btn-social">
+                        <i class="fab fa-google"></i>
+                        Sign in with Google
+                    </button>
+                    <button class="btn-social">
+                        <i class="fab fa-facebook-f"></i>
+                        Sign in with Facebook
+                    </button>
+                </div>
+                
+                <div class="signup-prompt">
+                    Don't have an account? <a href="/login" class="signup-link">Sign up</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="banner">
+            <div class="banner-content">
+                <h1>Welcome back!</h1>
+                <p>Please sign in to your Jokoor Payroll account</p>
+                
+                <div class="chart-container">
+                    <div class="chart-title">
+                        <h3>Payroll Summary</h3>
+                        <div class="chart-tabs">
+                            <div class="chart-tab active">Monthly</div>
+                            <div class="chart-tab">Quarterly</div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart">
+                        <!-- We'll use a simple static chart for now -->
+                        <svg width="100%" height="100%" viewBox="0 0 400 180">
+                            <!-- Light grid lines -->
+                            <line x1="0" y1="150" x2="400" y2="150" stroke="#E5E7EB" stroke-width="1"/>
+                            <line x1="0" y1="120" x2="400" y2="120" stroke="#E5E7EB" stroke-width="1"/>
+                            <line x1="0" y1="90" x2="400" y2="90" stroke="#E5E7EB" stroke-width="1"/>
+                            <line x1="0" y1="60" x2="400" y2="60" stroke="#E5E7EB" stroke-width="1"/>
+                            <line x1="0" y1="30" x2="400" y2="30" stroke="#E5E7EB" stroke-width="1"/>
+                            
+                            <!-- Months -->
+                            <text x="25" y="170" font-size="10" fill="#9CA3AF" text-anchor="middle">Jan</text>
+                            <text x="75" y="170" font-size="10" fill="#9CA3AF" text-anchor="middle">Feb</text>
+                            <text x="125" y="170" font-size="10" fill="#9CA3AF" text-anchor="middle">Mar</text>
+                            <text x="175" y="170" font-size="10" fill="#9CA3AF" text-anchor="middle">Apr</text>
+                            <text x="225" y="170" font-size="10" fill="#9CA3AF" text-anchor="middle">May</text>
+                            <text x="275" y="170" font-size="10" fill="#9CA3AF" text-anchor="middle">Jun</text>
+                            <text x="325" y="170" font-size="10" fill="#9CA3AF" text-anchor="middle">Jul</text>
+                            <text x="375" y="170" font-size="10" fill="#9CA3AF" text-anchor="middle">Aug</text>
+                            
+                            <!-- Expenses bars (light gray) -->
+                            <rect x="10" y="70" width="30" height="80" fill="#E5E7EB" rx="3"/>
+                            <rect x="60" y="60" width="30" height="90" fill="#E5E7EB" rx="3"/>
+                            <rect x="110" y="55" width="30" height="95" fill="#E5E7EB" rx="3"/>
+                            <rect x="160" y="80" width="30" height="70" fill="#E5E7EB" rx="3"/>
+                            <rect x="210" y="50" width="30" height="100" fill="#E5E7EB" rx="3"/>
+                            <rect x="260" y="65" width="30" height="85" fill="#E5E7EB" rx="3"/>
+                            <rect x="310" y="75" width="30" height="75" fill="#E5E7EB" rx="3"/>
+                            <rect x="360" y="45" width="30" height="105" fill="#E5E7EB" rx="3"/>
+                            
+                            <!-- Payroll bars (purple) -->
+                            <rect x="10" y="100" width="30" height="50" fill="#7d5fd2" rx="3"/>
+                            <rect x="60" y="90" width="30" height="60" fill="#7d5fd2" rx="3"/>
+                            <rect x="110" y="80" width="30" height="70" fill="#7d5fd2" rx="3"/>
+                            <rect x="160" y="110" width="30" height="40" fill="#7d5fd2" rx="3"/>
+                            <rect x="210" y="70" width="30" height="80" fill="#7d5fd2" rx="3"/>
+                            <rect x="260" y="105" width="30" height="45" fill="#7d5fd2" rx="3"/>
+                            <rect x="310" y="95" width="30" height="55" fill="#7d5fd2" rx="3"/>
+                            <rect x="360" y="75" width="30" height="75" fill="#7d5fd2" rx="3"/>
+                        </svg>
+                    </div>
+                    
+                    <div class="payroll-stat">
+                        <div class="stat-title">Total Payroll (Aug)</div>
+                        <div class="stat-value">GMD 198,265</div>
+                    </div>
+                    
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #E5E7EB;"></div>
+                            <span>Budget</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #7d5fd2;"></div>
+                            <span>Actual</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('login-form');
+            
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(loginForm);
+                
+                fetch('/api/method/login', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message === "Logged In") {
+                        // redirect to to the url redirect parameter or /dashboard
+                        // sample /login?redirect=/dashboard/profile 
+                        window.location.href = window.location.href.split('?')[1] || '/dashboard';
+                    } else {
+                        console.error('Login failed:', data);
+                        alert('Login failed. Please check your credentials.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error during login:', error);
+                    alert('An error occurred during login. Please try again.');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

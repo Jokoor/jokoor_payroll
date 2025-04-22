@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jokoor Payroll | Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #7d5fd2;
+            --primary-light: #a289e2;
+            --secondary-color: #3B82F6;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .profile-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #EDE9F8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-right: 1.5rem;
+            position: relative;
+        }
+        
+        .avatar-upload {
+            position: absolute;
+            right: -5px;
+            bottom: -5px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .profile-info h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: #111827;
+        }
+        
+        .profile-info p {
+            font-size: 0.95rem;
+            color: #6B7280;
+            margin: 0;
+        }
+        
+        .profile-tabs {
+            display: flex;
+            border-bottom: 1px solid #E5E7EB;
+            margin-bottom: 2rem;
+        }
+        
+        .profile-tab {
+            padding: 0.75rem 1.5rem;
+            margin-right: 1rem;
+            font-weight: 500;
+            color: #6B7280;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+        
+        .profile-tab:hover {
+            color: var(--primary-color);
+        }
+        
+        .profile-tab.active {
+            color: var(--primary-color);
+        }
+        
+        .profile-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary-color);
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            font-weight: 500;
+            color: #374151;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        .form-control {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #D1D5DB;
+            width: 100%;
+            font-size: 0.95rem;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(125, 95, 210, 0.15);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border: none;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(125, 95, 210, 0.3);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #D1D5DB;
+            color: #4B5563;
+        }
+        
+        .btn-outline:hover {
+            background-color: #F9FAFB;
+        }
+        
+        .button-group {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .setting-card {
+            background-color: #F9FAFB;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .setting-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .setting-title {
+            font-weight: 600;
+            color: #111827;
+            font-size: 1rem;
+            margin: 0;
+        }
+        
+        .setting-description {
+            color: #6B7280;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #D1D5DB;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-avatar {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+        }
+        
+        /* Page header styles */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #111827;
+            margin: 0;
+        }
+        
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .user-info:hover {
+            background-color: #F9FAFB;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #EDE9F8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-right: 0.75rem;
+        }
+        
+        .user-name {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #111827;
+        }
+        
+        .user-role {
+            font-size: 0.8rem;
+            color: #6B7280;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Include the sidebar -->
+            <div class="sidebar">
+                <aside>
+                    {% include 'templates/includes/dashboard/sidebar.html' %}
+                </aside>
+            </div>
+            
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                
+                
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <span>{{ user_initials }}</span>
+                            <div class="avatar-upload">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-info">
+                            <h2>{{ user_info.full_name }}</h2>
+                            <p>{{ user_info.name }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-tabs">
+                        <div class="profile-tab active" data-tab="personal">Personal Information</div>
+                        <div class="profile-tab" data-tab="security">Security</div>
+                        <div class="profile-tab" data-tab="preferences">Preferences</div>
+                    </div>
+                    
+                    <div class="tab-content" id="personal-tab">
+                        <div class="section-title">Basic Information</div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="firstName" value="{{ user_info.first_name }}">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="lastName" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="lastName" value="{{ user_info.last_name  or ''}}">
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="gender" class="form-label">Gender</label>
+                                <input type="text" class="form-control" id="gender" value="{{ user_info.gender or '' }}">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="phone" class="form-label">Phone</label>
+                                <input type="text" class="form-control" id="phone" value="{{ user_info.phone or '' }}">
+                            </div>
+                        </div>
+                        
+                      
+                        
+                        <div class="form-group">
+                            <label for="bio" class="form-label">Bio</label>
+                            <textarea class="form-control" id="bio" rows="4">{{ user_info.bio or '' }}</textarea>
+                        </div>
+                        
+                        <div class="button-group">
+                            <button type="button" class="btn btn-primary">Save Changes</button>
+                            <button type="button" class="btn btn-outline">Cancel</button>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="security-tab" style="display: none;">
+                        <div class="section-title">Change Password</div>
+                        
+                        <div class="form-group">
+                            <label for="currentPassword" class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="currentPassword">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="newPassword" class="form-label">New Password</label>
+                                <input type="password" class="form-control" id="newPassword">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                                <input type="password" class="form-control" id="confirmPassword">
+                            </div>
+                        </div>
+                        
+                        <div class="section-title">Two-Factor Authentication</div>
+                        
+                        <div class="setting-card">
+                            <div class="setting-header">
+                                <h4 class="setting-title">Two-Factor Authentication</h4>
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <p class="setting-description">Add an extra layer of security to your account by requiring a verification code in addition to your password.</p>
+                        </div>
+                        
+                        <div class="section-title">Session Management</div>
+                        
+                        <div class="setting-card">
+                            <div class="setting-header">
+                                <h4 class="setting-title">Active Sessions</h4>
+                            </div>
+                            <p class="setting-description">You're currently logged in on 2 devices</p>
+                            <button type="button" class="btn btn-outline">Sign out from all devices</button>
+                        </div>
+                        
+                        <div class="button-group">
+                            <button type="button" class="btn btn-primary">Update Password</button>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="preferences-tab" style="display: none;">
+                        <div class="section-title">Notifications</div>
+                        
+                        <div class="setting-card">
+                            <div class="setting-header">
+                                <h4 class="setting-title">Email Notifications</h4>
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <p class="setting-description">Receive email notifications for payroll processing, employee updates, and system alerts.</p>
+                        </div>
+                        
+                        <div class="setting-card">
+                            <div class="setting-header">
+                                <h4 class="setting-title">In-App Notifications</h4>
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <p class="setting-description">Receive notifications within the application for employee actions and payroll updates.</p>
+                        </div>
+                        
+                        <div class="section-title">Display Preferences</div>
+                        
+                        <div class="form-group">
+                            <label for="dateFormat" class="form-label">Date Format</label>
+                            <select class="form-control" id="dateFormat">
+                                <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                                <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="timeFormat" class="form-label">Time Format</label>
+                            <select class="form-control" id="timeFormat">
+                                <option value="12h">12 Hour (1:30 PM)</option>
+                                <option value="24h">24 Hour (13:30)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="language" class="form-label">Language</label>
+                            <select class="form-control" id="language">
+                                <option value="en">English</option>
+                                <option value="fr">French</option>
+                                <option value="es">Spanish</option>
+                                <option value="ar">Arabic</option>
+                            </select>
+                        </div>
+                        
+                        <div class="button-group">
+                            <button type="button" class="btn btn-primary">Save Preferences</button>
+                            <button type="button" class="btn btn-outline">Reset to Default</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching functionality
+            const tabs = document.querySelectorAll('.profile-tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Hide all tab contents
+                    tabContents.forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    
+                    // Show corresponding tab content
+                    const tabId = this.getAttribute('data-tab') + '-tab';
+                    document.getElementById(tabId).style.display = 'block';
+                });
+            });
+            
+            // Avatar upload functionality
+            const avatarUpload = document.querySelector('.avatar-upload');
+            
+            avatarUpload.addEventListener('click', function() {
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.accept = 'image/*';
+                fileInput.style.display = 'none';
+                
+                fileInput.addEventListener('change', function(e) {
+                    if (e.target.files.length > 0) {
+                        const file = e.target.files[0];
+                        const reader = new FileReader();
+                        
+                        reader.onload = function(event) {
+                            // Display uploaded image (in a real app, you would handle file upload to server)
+                            alert('Image selected successfully! In a real app, this would be uploaded to the server.');
+                        };
+                        
+                        reader.readAsDataURL(file);
+                    }
+                });
+                
+                document.body.appendChild(fileInput);
+                fileInput.click();
+                
+                // Clean up
+                setTimeout(() => {
+                    document.body.removeChild(fileInput);
+                }, 1000);
+            });
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,167 @@
+<!-- Employee Creation Modal Template -->
+<div class="modal fade" id="addEmployeeModal" tabindex="-1" aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 employee-modal">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="addEmployeeModalLabel">Add New Employee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-0">
+                <!-- Progress Indicator -->
+                <div class="progress-indicator mb-4">
+                    <div class="steps-container d-flex justify-content-between align-items-center position-relative">
+                        <div class="progress-line"></div>
+                        <div class="step-dot active" data-step="1">
+                            <div class="step-number">1</div>
+                            <div class="step-label">Basic Info</div>
+                        </div>
+                        <div class="step-dot" data-step="2">
+                            <div class="step-number">2</div>
+                            <div class="step-label">Employment Details</div>
+                        </div>
+                        <div class="step-dot" data-step="3">
+                            <div class="step-number">3</div>
+                            <div class="step-label">Contact Info</div>
+                        </div>
+                        <div class="step-dot" data-step="4">
+                            <div class="step-number">4</div>
+                            <div class="step-label">Confirmation</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <form id="employeeForm">
+                    <!-- Step 1: Basic Information -->
+                    <div class="form-step" id="step1">
+                        <div class="row mb-4">
+                            <div class="col-md-4 text-center">
+                                <div class="profile-upload-container mx-auto mb-3">
+                                    <div class="profile-upload-placeholder">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="profile-upload-overlay">
+                                        <i class="fas fa-camera"></i>
+                                    </div>
+                                    <input type="file" id="profile-upload" class="d-none">
+                                </div>
+                                <label for="profile-upload" class="btn btn-sm btn-light">Upload Photo</label>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="firstName" class="form-label">First Name</label>
+                                    <input type="text" class="form-control" id="firstName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="lastName" class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" id="lastName" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="position" class="form-label">Position</label>
+                            <input type="text" class="form-control" id="position" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="department" class="form-label">Department</label>
+                            <select class="form-select" id="department" required>
+                                <option value="" selected disabled>Select Department</option>
+                                <option value="HR">HR</option>
+                                <option value="IT">IT</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Sales">Sales</option>
+                                <option value="Marketing">Marketing</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2: Employment Details -->
+                    <div class="form-step d-none" id="step2">
+                        <div class="mb-3">
+                            <label for="joiningDate" class="form-label">Joining Date</label>
+                            <input type="date" class="form-control" id="joiningDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="employmentType" class="form-label">Employment Type</label>
+                            <select class="form-select" id="employmentType" required>
+                                <option value="" selected disabled>Select Employment Type</option>
+                                <option value="Full-time">Full-time</option>
+                                <option value="Part-time">Part-time</option>
+                                <option value="Contract">Contract</option>
+                                <option value="Internship">Internship</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="salary" class="form-label">Salary</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="salary" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" required>
+                                <option value="Active">Active</option>
+                                <option value="On Leave">On Leave</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Contact Information -->
+                    <div class="form-step d-none" id="step3">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <textarea class="form-control" id="address" rows="2" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="emergencyContact" class="form-label">Emergency Contact</label>
+                            <input type="tel" class="form-control" id="emergencyContact" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 4: Confirmation -->
+                    <div class="form-step d-none" id="step4">
+                        <div class="confirmation-message text-center py-4">
+                            <div class="confirmation-icon mb-3">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <h4 class="mb-3">Ready to Create Employee</h4>
+                            <p class="text-muted">Please review the information and confirm to create the new employee record.</p>
+                        </div>
+                        <div class="card bg-light border-0 mb-3">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="mb-1"><strong>Name:</strong> <span id="confirm-name"></span></p>
+                                        <p class="mb-1"><strong>Position:</strong> <span id="confirm-position"></span></p>
+                                        <p class="mb-1"><strong>Department:</strong> <span id="confirm-department"></span></p>
+                                        <p class="mb-1"><strong>Joining Date:</strong> <span id="confirm-joiningDate"></span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="mb-1"><strong>Status:</strong> <span id="confirm-status"></span></p>
+                                        <p class="mb-1"><strong>Salary:</strong> <span id="confirm-salary"></span></p>
+                                        <p class="mb-1"><strong>Email:</strong> <span id="confirm-email"></span></p>
+                                        <p class="mb-1"><strong>Phone:</strong> <span id="confirm-phone"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-outline-secondary" id="prevBtn" disabled>Previous</button>
+                <button type="button" class="btn btn-primary" id="nextBtn">Next</button>
+                <button type="button" class="btn btn-success d-none" id="submitBtn">Create Employee</button>
+            </div>
+        </div>
+    </div>
+</div> 

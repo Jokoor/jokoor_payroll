@@ -1,0 +1,1383 @@
+{% extends "templates/web.html" %}
+
+{% block head_include %}
+<!-- Override Frappe's styling with your own -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    /* Custom styling for payroll schedule page */
+    body.custom-payroll-schedule-page {
+        font-family: 'Inter', sans-serif !important;
+        background-color: #fbfbfd !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    body.custom-payroll-schedule-page .sidebar {
+        width: 220px !important;
+        position: fixed !important;
+        height: 100vh !important;
+        background-color: #f5f7ff !important;
+        border-right: 1px solid #e8e9ec !important;
+        z-index: 1000 !important;
+    }
+    
+    body.custom-payroll-schedule-page .main-content {
+        margin-left: 220px !important;
+        padding: 20px 30px !important;
+        width: calc(100% - 220px) !important;
+    }
+    
+    body.custom-payroll-schedule-page .search-container {
+        position: relative !important;
+    }
+    
+    body.custom-payroll-schedule-page .search-icon {
+        position: absolute !important;
+        left: 15px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        color: #666 !important;
+        z-index: 5 !important;
+    }
+    
+    body.custom-payroll-schedule-page .search-input {
+        padding-left: 40px !important;
+        background-color: #f5f5f9 !important;
+        border: none !important;
+        height: 42px !important;
+        font-size: 14px !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05) !important;
+    }
+    
+    body.custom-payroll-schedule-page .profile-avatar img {
+        width: 42px !important;
+        height: 42px !important;
+        border-radius: 50% !important;
+        object-fit: cover !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important;
+    }
+    
+    body.custom-payroll-schedule-page .card-style {
+        border-radius: 12px !important;
+        border: none !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+        overflow: hidden !important;
+        background-color: #fff !important;
+        margin-bottom: 20px !important;
+    }
+    
+    body.custom-payroll-schedule-page .card-header {
+        padding: 20px 24px !important;
+        background-color: #fff !important;
+        border-bottom: 1px solid #f0f0f5 !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+    }
+    
+    body.custom-payroll-schedule-page .card-title {
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        color: #344054 !important;
+        margin-bottom: 0 !important;
+    }
+    
+    body.custom-payroll-schedule-page .card-body {
+        padding: 24px !important;
+    }
+    
+    body.custom-payroll-schedule-page .breadcrumb-custom {
+        background-color: transparent !important;
+        padding: 0 !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    body.custom-payroll-schedule-page .breadcrumb-custom .breadcrumb-item a {
+        color: #7d5fd2 !important;
+        text-decoration: none !important;
+        font-weight: 500 !important;
+    }
+    
+    body.custom-payroll-schedule-page .breadcrumb-custom .breadcrumb-item.active {
+        color: #6c757d !important;
+    }
+    
+    body.custom-payroll-schedule-page .breadcrumb-custom .breadcrumb-item+.breadcrumb-item::before {
+        content: ">" !important;
+        color: #adb5bd !important;
+    }
+    
+    body.custom-payroll-schedule-page .form-label {
+        font-weight: 600 !important;
+        color: #344054 !important;
+        margin-bottom: 6px !important;
+        font-size: 14px !important;
+    }
+    
+    body.custom-payroll-schedule-page .form-text {
+        color: #6c757d !important;
+        font-size: 12px !important;
+        margin-top: 4px !important;
+    }
+    
+    body.custom-payroll-schedule-page .form-control, 
+    body.custom-payroll-schedule-page .form-select {
+        height: 45px !important;
+        padding: 12px 16px !important;
+        font-size: 14px !important;
+        border-radius: 8px !important;
+        border: 1px solid #d0d5dd !important;
+        background-color: #fff !important;
+        box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05) !important;
+        transition: all 0.2s ease-in-out !important;
+        color: #333 !important;
+    }
+    
+    body.custom-payroll-schedule-page .form-control:focus, 
+    body.custom-payroll-schedule-page .form-select:focus {
+        border-color: #7d5fd2 !important;
+        box-shadow: 0 0 0 4px rgba(125, 95, 210, 0.1) !important;
+        outline: none !important;
+    }
+    
+    body.custom-payroll-schedule-page .form-control::placeholder {
+        color: #98a2b3 !important;
+        opacity: 1 !important;
+    }
+    
+    body.custom-payroll-schedule-page textarea.form-control {
+        min-height: 80px !important;
+        resize: vertical !important;
+    }
+    
+    body.custom-payroll-schedule-page .input-group-text {
+        background-color: #f9fafb !important;
+        border: 1px solid #d0d5dd !important;
+        border-right: none !important;
+        color: #667085 !important;
+        font-size: 14px !important;
+        padding: 12px 16px !important;
+        border-top-left-radius: 8px !important;
+        border-bottom-left-radius: 8px !important;
+    }
+    
+    body.custom-payroll-schedule-page .input-group .form-control {
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+    }
+    
+    body.custom-payroll-schedule-page .btn {
+        padding: 10px 18px !important;
+        font-weight: 500 !important;
+        font-size: 14px !important;
+        border-radius: 8px !important;
+        transition: all 0.2s !important;
+    }
+    
+    body.custom-payroll-schedule-page .btn-primary {
+        background-color: #7d5fd2 !important;
+        border-color: #7d5fd2 !important;
+        color: #fff !important;
+        box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05) !important;
+    }
+    
+    body.custom-payroll-schedule-page .btn-primary:hover {
+        background-color: #6a4ec3 !important;
+        border-color: #6a4ec3 !important;
+        box-shadow: 0 2px 4px rgba(16, 24, 40, 0.1) !important;
+    }
+    
+    body.custom-payroll-schedule-page .btn-secondary {
+        background-color: #f9fafb !important;
+        border-color: #d0d5dd !important;
+        color: #344054 !important;
+    }
+    
+    body.custom-payroll-schedule-page .btn-secondary:hover {
+        background-color: #f0f2f5 !important;
+        border-color: #c0c7d9 !important;
+        color: #1d2739 !important;
+    }
+    
+    body.custom-payroll-schedule-page h2.fw-bold {
+        color: #101828 !important;
+        font-size: 24px !important;
+        font-weight: 600 !important;
+    }
+    
+    body.custom-payroll-schedule-page .section-title {
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        margin-bottom: 20px !important;
+        color: #101828 !important;
+        padding-bottom: 12px !important;
+        border-bottom: 1px solid #eaecf0 !important;
+    }
+    
+    body.custom-payroll-schedule-page .navbar,
+    body.custom-payroll-schedule-page .web-footer,
+    body.custom-payroll-schedule-page .breadcrumb-container {
+        display: none !important;
+    }
+    
+    body.custom-payroll-schedule-page .page-content-wrapper {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    body.custom-payroll-schedule-page .page-card {
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+    }
+    
+    body.custom-payroll-schedule-page .page_content {
+        padding: 0 !important;
+    }
+    
+    body.custom-payroll-schedule-page .container {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    /* Payroll Schedule page specific styles */
+    body.custom-payroll-schedule-page .nav-tabs {
+        border-bottom: 1px solid #eaecf0 !important;
+    }
+    
+    body.custom-payroll-schedule-page .nav-tabs .nav-link {
+        padding: 12px 20px !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        color: #667085 !important;
+        border: none !important;
+        border-bottom: 2px solid transparent !important;
+        background-color: transparent !important;
+    }
+    
+    body.custom-payroll-schedule-page .nav-tabs .nav-link:hover {
+        color: #7d5fd2 !important;
+    }
+    
+    body.custom-payroll-schedule-page .nav-tabs .nav-link.active {
+        color: #7d5fd2 !important;
+        border-bottom: 2px solid #7d5fd2 !important;
+        font-weight: 600 !important;
+    }
+    
+    body.custom-payroll-schedule-page .schedule-table {
+        width: 100% !important;
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+    }
+    
+    body.custom-payroll-schedule-page .schedule-table th {
+        background-color: #f9fafb !important;
+        padding: 12px 16px !important;
+        font-size: 13px !important;
+        font-weight: 600 !important;
+        color: #344054 !important;
+        border-bottom: 1px solid #eaecf0 !important;
+        text-align: left !important;
+    }
+    
+    body.custom-payroll-schedule-page .schedule-table td {
+        padding: 16px !important;
+        font-size: 14px !important;
+        color: #475467 !important;
+        border-bottom: 1px solid #eaecf0 !important;
+        vertical-align: middle !important;
+    }
+    
+    body.custom-payroll-schedule-page .schedule-table tr:hover {
+        background-color: #f9f7ff !important;
+    }
+    
+    body.custom-payroll-schedule-page .schedule-status {
+        display: inline-block !important;
+        padding: 4px 10px !important;
+        border-radius: 16px !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+    }
+    
+    body.custom-payroll-schedule-page .status-scheduled {
+        background-color: #eff6ff !important;
+        color: #3b82f6 !important;
+    }
+    
+    body.custom-payroll-schedule-page .status-processing {
+        background-color: #fffaeb !important;
+        color: #f59e0b !important;
+    }
+    
+    body.custom-payroll-schedule-page .status-paid {
+        background-color: #ecfdf3 !important;
+        color: #10b981 !important;
+    }
+    
+    body.custom-payroll-schedule-page .status-error {
+        background-color: #fff1f2 !important;
+        color: #f43f5e !important;
+    }
+    
+    body.custom-payroll-schedule-page .btn-icon {
+        width: 36px !important;
+        height: 36px !important;
+        padding: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 8px !important;
+        background-color: transparent !important;
+        border: none !important;
+        color: #667085 !important;
+        transition: all 0.2s !important;
+    }
+    
+    body.custom-payroll-schedule-page .btn-icon:hover {
+        background-color: #f2f4f7 !important;
+        color: #344054 !important;
+    }
+    
+    body.custom-payroll-schedule-page .btn-icon-primary {
+        color: #7d5fd2 !important;
+    }
+    
+    body.custom-payroll-schedule-page .btn-icon-primary:hover {
+        background-color: #f5f0ff !important;
+        color: #6a4ec3 !important;
+    }
+    
+    body.custom-payroll-schedule-page .btn-icon-danger {
+        color: #f43f5e !important;
+    }
+    
+    body.custom-payroll-schedule-page .btn-icon-danger:hover {
+        background-color: #fff1f2 !important;
+        color: #e11d48 !important;
+    }
+    
+    body.custom-payroll-schedule-page .calendar-view {
+        border: 1px solid #eaecf0 !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+    }
+    
+    body.custom-payroll-schedule-page .calendar-header {
+        background-color: #f9fafb !important;
+        padding: 16px 20px !important;
+        border-bottom: 1px solid #eaecf0 !important;
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+    }
+    
+    body.custom-payroll-schedule-page .calendar-title {
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        color: #344054 !important;
+    }
+    
+    body.custom-payroll-schedule-page .calendar-nav {
+        display: flex !important;
+        align-items: center !important;
+    }
+    
+    body.custom-payroll-schedule-page .calendar-nav-btn {
+        width: 32px !important;
+        height: 32px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background-color: #fff !important;
+        border: 1px solid #d0d5dd !important;
+        border-radius: 6px !important;
+        color: #344054 !important;
+        margin: 0 4px !important;
+        cursor: pointer !important;
+    }
+    
+    body.custom-payroll-schedule-page .calendar-nav-btn:hover {
+        background-color: #f5f7fa !important;
+        border-color: #c0c7d9 !important;
+    }
+    
+    body.custom-payroll-schedule-page .calendar-grid {
+        display: grid !important;
+        grid-template-columns: repeat(7, 1fr) !important;
+        border-collapse: collapse !important;
+    }
+    
+    body.custom-payroll-schedule-page .calendar-day-header {
+        padding: 10px !important;
+        text-align: center !important;
+        font-weight: 500 !important;
+        font-size: 13px !important;
+        color: #667085 !important;
+        background-color: #f9fafb !important;
+        border-bottom: 1px solid #eaecf0 !important;
+    }
+    
+    body.custom-payroll-schedule-page .calendar-day {
+        height: 100px !important;
+        border: 1px solid #eaecf0 !important;
+        padding: 8px !important;
+        vertical-align: top !important;
+        position: relative !important;
+    }
+    
+    body.custom-payroll-schedule-page .calendar-day.current-month {
+        background-color: #fff !important;
+    }
+    
+    body.custom-payroll-schedule-page .calendar-day.other-month {
+        background-color: #f9fafb !important;
+        color: #98a2b3 !important;
+    }
+    
+    body.custom-payroll-schedule-page .calendar-day.today {
+        background-color: #f5f0ff !important;
+    }
+    
+    body.custom-payroll-schedule-page .calendar-day-number {
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        color: #344054 !important;
+        margin-bottom: 6px !important;
+    }
+    
+    body.custom-payroll-schedule-page .calendar-day.other-month .calendar-day-number {
+        color: #98a2b3 !important;
+    }
+    
+    body.custom-payroll-schedule-page .calendar-event {
+        font-size: 11px !important;
+        padding: 2px 8px !important;
+        border-radius: 4px !important;
+        margin-bottom: 4px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        cursor: pointer !important;
+    }
+    
+    body.custom-payroll-schedule-page .calendar-event.event-payday {
+        background-color: #ecfdf3 !important;
+        color: #10b981 !important;
+    }
+    
+    body.custom-payroll-schedule-page .calendar-event.event-cutoff {
+        background-color: #eff6ff !important;
+        color: #3b82f6 !important;
+    }
+    
+    body.custom-payroll-schedule-page .calendar-event.event-processing {
+        background-color: #fffaeb !important;
+        color: #f59e0b !important;
+    }
+    
+    body.custom-payroll-schedule-page .recurring-rule {
+        background-color: #f9fafb !important;
+        border-radius: 8px !important;
+        padding: 16px !important;
+        margin-bottom: 16px !important;
+        border: 1px solid #eaecf0 !important;
+    }
+    
+    body.custom-payroll-schedule-page .recurring-rule-title {
+        font-size: 15px !important;
+        font-weight: 600 !important;
+        color: #344054 !important;
+        margin-bottom: 8px !important;
+    }
+    
+    body.custom-payroll-schedule-page .recurring-rule-desc {
+        font-size: 13px !important;
+        color: #667085 !important;
+        margin-bottom: 0 !important;
+    }
+    
+    @media (max-width: 991.98px) {
+        body.custom-payroll-schedule-page .sidebar {
+            width: 0 !important;
+            display: none !important;
+        }
+        
+        body.custom-payroll-schedule-page .main-content {
+            margin-left: 0 !important;
+            width: 100% !important;
+            padding: 20px 16px !important;
+        }
+        
+        body.custom-payroll-schedule-page .calendar-day {
+            height: 80px !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block title %}Payroll Schedule | Jokoor Payroll{% endblock %}
+
+{% block header %}
+<!-- Override the header to remove Frappe's default header -->
+{% endblock %}
+
+{% block navbar %}
+<!-- Override navbar to remove Frappe's default navbar -->
+{% endblock %}
+
+{% block footer %}
+<!-- Override footer to remove Frappe's default footer -->
+{% endblock %}
+
+{% block content %}
+<div class="custom-payroll-schedule-page">
+    <!-- Sidebar -->
+    {% include "templates/includes/dashboard/sidebar.html" %}
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <nav aria-label="breadcrumb" class="breadcrumb-custom">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="/dashboard/settings">Settings</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Payroll Schedule</li>
+                        </ol>
+                    </nav>
+                    <h2 class="fw-bold mb-0">Payroll Schedule</h2>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="search-container me-3">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="form-control rounded-pill search-input" placeholder="Search schedules">
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="d-flex align-items-center justify-content-center bg-white rounded-circle me-3 shadow-sm" style="width: 38px; height: 38px;">
+                            <i class="far fa-bell"></i>
+                        </div>
+                        <div class="profile-avatar">
+                            <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="Profile">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Tabs Navigation -->
+        <ul class="nav nav-tabs mb-4" id="payrollScheduleTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="upcoming-tab" data-bs-toggle="tab" data-bs-target="#upcoming-schedules" type="button" role="tab" aria-controls="upcoming-schedules" aria-selected="true">Upcoming Pay Periods</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="calendar-tab" data-bs-toggle="tab" data-bs-target="#calendar-view" type="button" role="tab" aria-controls="calendar-view" aria-selected="false">Calendar View</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#schedule-settings" type="button" role="tab" aria-controls="schedule-settings" aria-selected="false">Schedule Settings</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#payment-history" type="button" role="tab" aria-controls="payment-history" aria-selected="false">Payment History</button>
+            </li>
+        </ul>
+        
+        <!-- Tab Content -->
+        <div class="tab-content" id="payrollScheduleTabContent">
+            <!-- Upcoming Pay Periods Tab -->
+            <div class="tab-pane fade show active" id="upcoming-schedules" role="tabpanel" aria-labelledby="upcoming-tab">
+                <div class="card card-style">
+                    <div class="card-header">
+                        <div>
+                            <h5 class="card-title mb-1">
+                                <i class="fas fa-calendar-alt me-2 text-primary"></i>
+                                Upcoming Pay Periods
+                            </h5>
+                            <p class="text-muted small mb-0">Schedule and manage payroll cycles</p>
+                        </div>
+                        <div class="actions">
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPayPeriodModal">
+                                <i class="fas fa-plus me-2"></i> New Pay Period
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="schedule-table">
+                                <thead>
+                                    <tr>
+                                        <th>Pay Period</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Pay Date</th>
+                                        <th>Status</th>
+                                        <th>Employees</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="fw-medium">June 2023 - 1st Half</td>
+                                        <td>Jun 1, 2023</td>
+                                        <td>Jun 15, 2023</td>
+                                        <td>Jun 20, 2023</td>
+                                        <td><span class="schedule-status status-scheduled">Scheduled</span></td>
+                                        <td>42</td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <button class="btn-icon btn-icon-primary me-1" title="Edit">
+                                                    <i class="fas fa-pencil-alt"></i>
+                                                </button>
+                                                <button class="btn-icon" title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn-icon btn-icon-danger ms-1" title="Delete">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-medium">June 2023 - 2nd Half</td>
+                                        <td>Jun 16, 2023</td>
+                                        <td>Jun 30, 2023</td>
+                                        <td>Jul 5, 2023</td>
+                                        <td><span class="schedule-status status-scheduled">Scheduled</span></td>
+                                        <td>42</td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <button class="btn-icon btn-icon-primary me-1" title="Edit">
+                                                    <i class="fas fa-pencil-alt"></i>
+                                                </button>
+                                                <button class="btn-icon" title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn-icon btn-icon-danger ms-1" title="Delete">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-medium">July 2023 - 1st Half</td>
+                                        <td>Jul 1, 2023</td>
+                                        <td>Jul 15, 2023</td>
+                                        <td>Jul 20, 2023</td>
+                                        <td><span class="schedule-status status-scheduled">Scheduled</span></td>
+                                        <td>45</td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <button class="btn-icon btn-icon-primary me-1" title="Edit">
+                                                    <i class="fas fa-pencil-alt"></i>
+                                                </button>
+                                                <button class="btn-icon" title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn-icon btn-icon-danger ms-1" title="Delete">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-medium">July 2023 - 2nd Half</td>
+                                        <td>Jul 16, 2023</td>
+                                        <td>Jul 31, 2023</td>
+                                        <td>Aug 5, 2023</td>
+                                        <td><span class="schedule-status status-scheduled">Scheduled</span></td>
+                                        <td>45</td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <button class="btn-icon btn-icon-primary me-1" title="Edit">
+                                                    <i class="fas fa-pencil-alt"></i>
+                                                </button>
+                                                <button class="btn-icon" title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn-icon btn-icon-danger ms-1" title="Delete">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Generate Future Periods -->
+                <div class="card card-style">
+                    <div class="card-header">
+                        <div>
+                            <h5 class="card-title mb-1">
+                                <i class="fas fa-redo me-2 text-primary"></i>
+                                Generate Future Pay Periods
+                            </h5>
+                            <p class="text-muted small mb-0">Automatically create upcoming pay periods based on your schedule</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="periodPattern" class="form-label">Pay Period Pattern</label>
+                                    <select class="form-select" id="periodPattern">
+                                        <option value="semi-monthly">Semi-Monthly (15th & End of Month)</option>
+                                        <option value="bi-weekly">Bi-Weekly (Every Two Weeks)</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="periodCount" class="form-label">Number of Periods to Generate</label>
+                                    <input type="number" class="form-control" id="periodCount" value="6" min="1" max="12">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="paymentOffset" class="form-label">Payment Date Offset (Days)</label>
+                                    <input type="number" class="form-control" id="paymentOffset" value="5" min="0" max="15">
+                                    <div class="form-text">Number of days after period end when payment is processed</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="startingFrom" class="form-label">Starting From</label>
+                                    <input type="date" class="form-control" id="startingFrom">
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="button" class="btn btn-primary">
+                                    <i class="fas fa-cog me-1"></i> Generate Pay Periods
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Calendar View Tab -->
+            <div class="tab-pane fade" id="calendar-view" role="tabpanel" aria-labelledby="calendar-tab">
+                <div class="card card-style">
+                    <div class="card-header">
+                        <div>
+                            <h5 class="card-title mb-1">
+                                <i class="fas fa-calendar me-2 text-primary"></i>
+                                Payroll Calendar
+                            </h5>
+                            <p class="text-muted small mb-0">View and manage your payroll events on a calendar</p>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="calendar-view">
+                            <div class="calendar-header">
+                                <div class="calendar-title">June 2023</div>
+                                <div class="calendar-nav">
+                                    <button class="calendar-nav-btn">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <button class="calendar-nav-btn">
+                                        Today
+                                    </button>
+                                    <button class="calendar-nav-btn">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="calendar-grid">
+                                <!-- Day headers -->
+                                <div class="calendar-day-header">Sun</div>
+                                <div class="calendar-day-header">Mon</div>
+                                <div class="calendar-day-header">Tue</div>
+                                <div class="calendar-day-header">Wed</div>
+                                <div class="calendar-day-header">Thu</div>
+                                <div class="calendar-day-header">Fri</div>
+                                <div class="calendar-day-header">Sat</div>
+                                
+                                <!-- Week 1 -->
+                                <div class="calendar-day other-month">
+                                    <div class="calendar-day-number">28</div>
+                                </div>
+                                <div class="calendar-day other-month">
+                                    <div class="calendar-day-number">29</div>
+                                </div>
+                                <div class="calendar-day other-month">
+                                    <div class="calendar-day-number">30</div>
+                                </div>
+                                <div class="calendar-day other-month">
+                                    <div class="calendar-day-number">31</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">1</div>
+                                    <div class="calendar-event event-cutoff">Period Start</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">2</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">3</div>
+                                </div>
+                                
+                                <!-- Week 2 -->
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">4</div>
+                                </div>
+                                <div class="calendar-day current-month">
+
+
+
+<div class="calendar-day-number">5</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">6</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">7</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">8</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">9</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">10</div>
+                                </div>
+                                
+                                <!-- Week 3 -->
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">11</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">12</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">13</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">14</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">15</div>
+                                    <div class="calendar-event event-cutoff">Period End</div>
+                                </div>
+                                <div class="calendar-day current-month today">
+                                    <div class="calendar-day-number">16</div>
+                                    <div class="calendar-event event-cutoff">Period Start</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">17</div>
+                                </div>
+                                
+                                <!-- Week 4 -->
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">18</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">19</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">20</div>
+                                    <div class="calendar-event event-payday">Payday</div>
+                                    <div class="calendar-event event-processing">Processing</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">21</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">22</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">23</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">24</div>
+                                </div>
+                                
+                                <!-- Week 5 -->
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">25</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">26</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">27</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">28</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">29</div>
+                                </div>
+                                <div class="calendar-day current-month">
+                                    <div class="calendar-day-number">30</div>
+                                    <div class="calendar-event event-cutoff">Period End</div>
+                                </div>
+                                <div class="calendar-day other-month">
+                                    <div class="calendar-day-number">1</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Calendar Legend -->
+                        <div class="p-3 border-top">
+                            <div class="d-flex align-items-center flex-wrap">
+                                <div class="me-4 mb-2">
+                                    <span class="calendar-event event-payday d-inline-block me-1" style="width: 20px;"></span>
+                                    <span class="text-muted small">Payday</span>
+                                </div>
+                                <div class="me-4 mb-2">
+                                    <span class="calendar-event event-cutoff d-inline-block me-1" style="width: 20px;"></span>
+                                    <span class="text-muted small">Period Start/End</span>
+                                </div>
+                                <div class="me-4 mb-2">
+                                    <span class="calendar-event event-processing d-inline-block me-1" style="width: 20px;"></span>
+                                    <span class="text-muted small">Processing</span>
+                                </div>
+                                <div class="ms-auto mb-2">
+                                    <button class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-print me-1"></i> Print Calendar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Schedule Settings Tab -->
+            <div class="tab-pane fade" id="schedule-settings" role="tabpanel" aria-labelledby="settings-tab">
+                <div class="card card-style">
+                    <div class="card-header">
+                        <div>
+                            <h5 class="card-title mb-1">
+                                <i class="fas fa-cog me-2 text-primary"></i>
+                                Schedule Configuration
+                            </h5>
+                            <p class="text-muted small mb-0">Configure global settings for your payroll schedules</p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="section-title">Default Payroll Settings</h6>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="defaultFrequency" class="form-label">Default Pay Frequency</label>
+                                <select class="form-select" id="defaultFrequency">
+                                    <option value="semi-monthly" selected>Semi-Monthly (Twice a Month)</option>
+                                    <option value="bi-weekly">Bi-Weekly (Every Two Weeks)</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="paymentOffset" class="form-label">Default Payment Date Offset</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="paymentOffset" value="5">
+                                    <span class="input-group-text">days after period end</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <label for="workdaysPerWeek" class="form-label">Workdays Per Week</label>
+                                <select class="form-select" id="workdaysPerWeek">
+                                    <option value="5" selected>5 days (Mon-Fri)</option>
+                                    <option value="6">6 days (Mon-Sat)</option>
+                                    <option value="7">7 days (All week)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="hoursPerDay" class="form-label">Default Hours Per Day</label>
+                                <input type="number" class="form-control" id="hoursPerDay" value="8">
+                            </div>
+                        </div>
+                        
+                        <div class="form-check mt-3">
+                            <input class="form-check-input" type="checkbox" value="" id="adjustForHolidays" checked>
+                            <label class="form-check-label" for="adjustForHolidays">
+                                Automatically adjust pay dates for holidays and weekends
+                            </label>
+                            <div class="form-text">If a pay date falls on a weekend or holiday, move it to the previous business day</div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <h6 class="section-title">Recurring Schedule Rules</h6>
+                        
+                        <div class="recurring-rule">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="recurring-rule-title mb-0">Semi-Monthly Schedule</h6>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-primary me-1">Edit</button>
+                                    <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                </div>
+                            </div>
+                            <p class="recurring-rule-desc">Pay periods on the 1st-15th and 16th-end of each month. Payment on the 20th and 5th of the following month.</p>
+                        </div>
+                        
+                        <div class="recurring-rule">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="recurring-rule-title mb-0">Weekly Contract Employees</h6>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-primary me-1">Edit</button>
+                                    <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                </div>
+                            </div>
+                            <p class="recurring-rule-desc">Weekly pay periods from Monday to Sunday. Payment every Wednesday for the previous week.</p>
+                        </div>
+                        
+                        <button class="btn btn-outline-primary mt-3">
+                            <i class="fas fa-plus me-1"></i> Add Recurring Rule
+                        </button>
+                        
+                        <hr class="my-4">
+                        
+                        <h6 class="section-title">Notifications</h6>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" value="" id="notifyPeriodStart" checked>
+                                    <label class="form-check-label" for="notifyPeriodStart">
+                                        Notify when a pay period starts
+                                    </label>
+                                </div>
+                                
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" value="" id="notifyPeriodEnd" checked>
+                                    <label class="form-check-label" for="notifyPeriodEnd">
+                                        Notify when a pay period ends
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" value="" id="notifyProcessing" checked>
+                                    <label class="form-check-label" for="notifyProcessing">
+                                        Notify when payroll processing begins
+                                    </label>
+                                </div>
+                                
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" value="" id="notifyPayday" checked>
+                                    <label class="form-check-label" for="notifyPayday">
+                                        Notify on payday
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="button" class="btn btn-secondary me-2">Cancel</button>
+                            <button type="button" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Save Settings
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payment History Tab -->
+            <div class="tab-pane fade" id="payment-history" role="tabpanel" aria-labelledby="history-tab">
+                <div class="card card-style">
+                    <div class="card-header">
+                        <div>
+                            <h5 class="card-title mb-1">
+                                <i class="fas fa-history me-2 text-primary"></i>
+                                Payment History
+                            </h5>
+                            <p class="text-muted small mb-0">Record of past payroll processing and payments</p>
+                        </div>
+                        <div class="actions">
+                            <button class="btn btn-outline-secondary me-2">
+                                <i class="fas fa-filter me-1"></i> Filter
+                            </button>
+                            <button class="btn btn-outline-primary">
+                                <i class="fas fa-file-export me-1"></i> Export
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="schedule-table">
+                                <thead>
+                                    <tr>
+                                        <th>Pay Period</th>
+                                        <th>Period Dates</th>
+                                        <th>Payment Date</th>
+                                        <th>Status</th>
+                                        <th>Employees</th>
+                                        <th>Total Amount</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="fw-medium">May 2023 - 2nd Half</td>
+                                        <td>May 16 - May 31, 2023</td>
+                                        <td>Jun 5, 2023</td>
+                                        <td><span class="schedule-status status-paid">Paid</span></td>
+                                        <td>41</td>
+                                        <td>$124,587.00</td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <button class="btn-icon me-1" title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn-icon me-1" title="Download Report">
+                                                    <i class="fas fa-download"></i>
+                                                </button>
+                                                <button class="btn-icon" title="Print">
+                                                    <i class="fas fa-print"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-medium">May 2023 - 1st Half</td>
+                                        <td>May 1 - May 15, 2023</td>
+                                        <td>May 20, 2023</td>
+                                        <td><span class="schedule-status status-paid">Paid</span></td>
+                                        <td>41</td>
+                                        <td>$122,875.50</td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <button class="btn-icon me-1" title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn-icon me-1" title="Download Report">
+                                                    <i class="fas fa-download"></i>
+                                                </button>
+                                                <button class="btn-icon" title="Print">
+                                                    <i class="fas fa-print"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-medium">April 2023 - 2nd Half</td>
+                                        <td>Apr 16 - Apr 30, 2023</td>
+                                        <td>May 5, 2023</td>
+                                        <td><span class="schedule-status status-paid">Paid</span></td>
+                                        <td>40</td>
+                                        <td>$120,345.25</td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <button class="btn-icon me-1" title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn-icon me-1" title="Download Report">
+                                                    <i class="fas fa-download"></i>
+                                                </button>
+                                                <button class="btn-icon" title="Print">
+                                                    <i class="fas fa-print"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-medium">April 2023 - 1st Half</td>
+                                        <td>Apr 1 - Apr 15, 2023</td>
+                                        <td>Apr 20, 2023</td>
+                                        <td><span class="schedule-status status-paid">Paid</span></td>
+                                        <td>40</td>
+                                        <td>$119,876.75</td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <button class="btn-icon me-1" title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="btn-icon me-1" title="Download Report">
+                                                    <i class="fas fa-download"></i>
+                                                </button>
+                                                <button class="btn-icon" title="Print">
+                                                    <i class="fas fa-print"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Pay Period Modal -->
+    <div class="modal fade" id="addPayPeriodModal" tabindex="-1" aria-labelledby="addPayPeriodModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addPayPeriodModalLabel">Create New Pay Period</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label for="periodName" class="form-label">Pay Period Name</label>
+                            <input type="text" class="form-control" id="periodName" placeholder="E.g., June 2023 - 1st Half">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="startDate" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="startDate">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="endDate" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="endDate">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="payDate" class="form-label">Payment Date</label>
+                            <input type="date" class="form-control" id="payDate">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="employeeGroup" class="form-label">Employee Group</label>
+                            <select class="form-select" id="employeeGroup">
+                                <option value="all" selected>All Employees</option>
+                                <option value="full-time">Full-Time Employees</option>
+                                <option value="part-time">Part-Time Employees</option>
+                                <option value="contract">Contract Employees</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <label for="periodNotes" class="form-label">Notes</label>
+                            <textarea class="form-control" id="periodNotes" rows="3" placeholder="Optional notes about this pay period"></textarea>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" value="" id="notifyEmployees">
+                                <label class="form-check-label" for="notifyEmployees">
+                                    Notify employees about this pay period
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" value="" id="includeAttendance" checked>
+                                <label class="form-check-label" for="includeAttendance">
+                                    Include attendance data in payroll calculations
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" value="" id="includeBonuses" checked>
+                                <label class="form-check-label" for="includeBonuses">
+                                    Include bonuses and incentives
+                                </label>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" value="" id="includeDeductions" checked>
+                                <label class="form-check-label" for="includeDeductions">
+                                    Apply standard deductions
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i> Create Pay Period
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Add custom class to body to enable our custom styles
+    document.body.classList.add('custom-payroll-schedule-page');
+    
+    $(document).ready(function() {
+        // Set the active menu item in the sidebar
+        const settingsMenuItem = document.querySelector('.sidebar-item[href*="settings"]');
+        if (settingsMenuItem) {
+            settingsMenuItem.classList.add('active');
+        }
+        
+        // Auto-populate the date fields with current dates
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        function formatDate(date) {
+            return date.getFullYear() + '-' + 
+                   String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                   String(date.getDate()).padStart(2, '0');
+        }
+        
+        // Set start date to today
+        if (document.getElementById('startDate')) {
+            document.getElementById('startDate').value = formatDate(today);
+        }
+        
+        // Set end date to 15 days from today
+        if (document.getElementById('endDate')) {
+            const endDate = new Date(today);
+            endDate.setDate(endDate.getDate() + 14);
+            document.getElementById('endDate').value = formatDate(endDate);
+        }
+        
+        // Set pay date to 20 days from today
+        if (document.getElementById('payDate')) {
+            const payDate = new Date(today);
+            payDate.setDate(payDate.getDate() + 19);
+            document.getElementById('payDate').value = formatDate(payDate);
+        }
+        
+        // Set starting from date to today
+        if (document.getElementById('startingFrom')) {
+            document.getElementById('startingFrom').value = formatDate(today);
+        }
+        
+        // Handle tab persistence on page reload
+        const activeTabID = sessionStorage.getItem('activePayrollTab');
+        if (activeTabID) {
+            const tabElement = document.querySelector(`#payrollScheduleTabs button[data-bs-target="${activeTabID}"]`);
+            if (tabElement) {
+                const tab = new bootstrap.Tab(tabElement);
+                tab.show();
+            }
+        }
+        
+        // Store active tab
+        $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+            const targetTab = $(e.target).data('bs-target');
+            sessionStorage.setItem('activePayrollTab', targetTab);
+        });
+    });
+</script>
+{% endblock %} 

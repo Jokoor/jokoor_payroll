@@ -1,0 +1,154 @@
+/* Modal Styling */
+.employee-modal {
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.employee-modal .modal-header {
+    padding: 20px 24px 0;
+}
+
+.employee-modal .modal-body {
+    padding: 20px 24px;
+}
+
+.employee-modal .modal-footer {
+    padding: 16px 24px 20px;
+}
+
+/* Progress Indicator */
+.progress-indicator {
+    padding: 20px 0;
+    position: relative;
+}
+
+.progress-line {
+    position: absolute;
+    top: 24px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #eaedf2;
+    z-index: 1;
+}
+
+.step-dot {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #f5f7ff;
+    border: 2px solid #eaedf2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.step-dot.active {
+    border-color: #7d5fd2;
+    background-color: #f0f4ff;
+}
+
+.step-dot.completed {
+    border-color: #7d5fd2;
+    background-color: #7d5fd2;
+    color: white;
+}
+
+.step-dot .step-number {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.step-dot.completed .step-number {
+    display: none;
+}
+
+.step-dot.completed:after {
+    content: '\f00c';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    color: white;
+}
+
+.step-label {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    margin-top: 8px;
+    font-size: 12px;
+    color: #666;
+    font-weight: 500;
+}
+
+.step-dot.active .step-label {
+    color: #7d5fd2;
+    font-weight: 600;
+}
+
+/* Form styling */
+.form-label {
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 6px;
+}
+
+.form-control, .form-select {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border-color: #eaedf2;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #7d5fd2;
+    box-shadow: 0 0 0 0.25rem rgba(125, 95, 210, 0.15);
+}
+
+/* Profile upload styling */
+.profile-upload-container {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    background-color: #f5f7ff;
+    border: 2px dashed #d0d9e8;
+    cursor: pointer;
+}
+
+.profile-upload-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.profile-upload-placeholder i {
+    font-size: 40px;
+    color: #c0c7d9;
+}
+
+.profile-upload-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(125, 95, 210, 0.7);
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+/* Confirmation styling */
+.confirmation-icon {
+    font-size: 60px;
+    color: #3bb878;
+} 
