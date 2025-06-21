@@ -1,0 +1,51 @@
+
+<div class="row stats-row g-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-card issued">
+            <div class="stat-icon">
+                <i class="fas fa-file-invoice-dollar"></i>
+            </div>
+            <div class="stat-value">{{frappe.db.count("Salary Slip", {"status": "Submitted"})}}</div>
+            <div class="stat-label">Issued Payslips</div>
+            <div class="stat-change positive">
+                <i class="fas fa-arrow-up me-1"></i> 12% from last month
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-card pending">
+            <div class="stat-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-value">{{frappe.db.count("Salary Slip", {"status": "Draft"})}}</div>
+            <div class="stat-label">Pending Payslips</div>
+            <div class="stat-change negative">
+                <i class="fas fa-arrow-down me-1"></i> 5% from last month
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-card draft">
+            <div class="stat-icon">
+                <i class="fas fa-edit"></i>
+            </div>
+            <div class="stat-value">{{frappe.db.count("Salary Slip", {"status": "Draft"})}}</div>
+            <div class="stat-label">Draft Payslips</div>
+            <div class="stat-change positive">
+                <i class="fas fa-arrow-up me-1"></i> 8% from last month
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-rupee-sign"></i>
+            </div>
+            <div class="stat-value">GMD {{frappe.db.get_value("Salary Slip", {"status": "Submitted"}, "net_pay")}}</div>
+            <div class="stat-label">Total Disbursed</div>
+            <div class="stat-change positive">
+                <i class="fas fa-arrow-up me-1"></i> 15% from last month
+            </div>
+        </div>
+    </div>
+</div>

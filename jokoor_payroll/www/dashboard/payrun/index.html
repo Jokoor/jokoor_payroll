@@ -1,0 +1,694 @@
+{% extends "templates/web.html" %}
+
+{% block head_include %}
+<!-- Link to global styles -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/dashboard/styles/global.css">
+<style>
+    /* Tab navigation styling */
+    body.custom-dashboard .nav-tabs {
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 24px;
+    }
+    
+    body.custom-dashboard .nav-tabs .nav-link {
+        color: #6b7280;
+        border: none;
+        border-bottom: 2px solid transparent;
+        padding: 12px 20px;
+        font-weight: 500;
+        transition: all 0.2s;
+        margin-right: 8px;
+    }
+    
+    body.custom-dashboard .nav-tabs .nav-link:hover {
+        color: #7d5fd2;
+        border-bottom-color: #d4c5fa;
+    }
+    
+    body.custom-dashboard .nav-tabs .nav-link.active {
+        color: #7d5fd2;
+        border-bottom: 2px solid #7d5fd2;
+        background-color: transparent;
+    }
+    
+    body.custom-dashboard .tab-badge {
+        background-color: #f3f0ff;
+        color: #7d5fd2;
+        font-size: 12px;
+        font-weight: 500;
+        padding: 2px 8px;
+        border-radius: 10px;
+        margin-left: 6px;
+    }
+    
+    /* Latest payrun card */
+    body.custom-dashboard .latest-payrun-card {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+        margin-bottom: 24px;
+    }
+    
+    body.custom-dashboard .payrun-header {
+        padding: 20px 24px;
+        background-color: #f9fafb;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    body.custom-dashboard .payrun-body {
+        padding: 24px;
+    }
+    
+    body.custom-dashboard .payrun-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 4px;
+    }
+    
+    body.custom-dashboard .payrun-subtitle {
+        font-size: 14px;
+        color: #6b7280;
+    }
+    
+    body.custom-dashboard .status-pill {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    body.custom-dashboard .status-draft {
+        background-color: #f3f4f6;
+        color: #6b7280;
+    }
+    
+    body.custom-dashboard .status-processing {
+        background-color: #fffaeb;
+        color: #f59e0b;
+    }
+    
+    body.custom-dashboard .status-completed {
+        background-color: #ecfdf3;
+        color: #10b981;
+    }
+    
+    body.custom-dashboard .status-canceled {
+        background-color: #fee2e2;
+        color: #dc2626;
+    }
+    
+    body.custom-dashboard .payrun-stat {
+        background-color: #f9fafb;
+        border-radius: 8px;
+        padding: 16px;
+        height: 100%;
+    }
+    
+    body.custom-dashboard .stat-value {
+        font-size: 24px;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 4px;
+    }
+    
+    body.custom-dashboard .stat-label {
+        font-size: 13px;
+        color: #6b7280;
+    }
+    
+    body.custom-dashboard .payrun-action-btn {
+        padding: 8px 16px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    
+    /* Employee list */
+    body.custom-dashboard .employee-list {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+        margin-top: 24px;
+    }
+    
+    body.custom-dashboard .employee-list-header {
+        background-color: #f9fafb;
+        padding: 16px 20px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    body.custom-dashboard .employee-list-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 0;
+    }
+    
+    body.custom-dashboard .employee-list-table th {
+        font-weight: 500;
+        color: #6b7280;
+        padding: 12px 16px;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    
+    body.custom-dashboard .employee-list-table td {
+        padding: 12px 16px;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    
+    body.custom-dashboard .employee-list-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+    
+    body.custom-dashboard .employee-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: #f3f0ff;
+        color: #7d5fd2;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+        margin-right: 10px;
+    }
+    
+    /* History table */
+    body.custom-dashboard .history-table {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+    }
+    
+    body.custom-dashboard .history-table th {
+        background-color: #f9fafb;
+        font-weight: 500;
+        color: #374151;
+        padding: 14px 16px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    body.custom-dashboard .history-table td {
+        padding: 14px 16px;
+        border-bottom: 1px solid #f3f4f6;
+        vertical-align: middle;
+    }
+    
+    body.custom-dashboard .history-table tr {
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    
+    body.custom-dashboard .history-table tr:hover {
+        background-color: #f9fafb;
+    }
+    
+    body.custom-dashboard .history-filter-section {
+        background-color: #f9fafb;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 24px;
+        border: 1px solid #e5e7eb;
+    }
+    
+    body.custom-dashboard .filter-label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #4b5563;
+        margin-bottom: 6px;
+    }
+    
+    body.custom-dashboard .filter-control {
+        border-radius: 6px;
+        border: 1px solid #d1d5db;
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+    
+    body.custom-dashboard .pagination-info {
+        font-size: 14px;
+        color: #6b7280;
+    }
+    
+    /* Summary boxes */
+    body.custom-dashboard .summary-box {
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        border: 1px solid #e5e7eb;
+        margin-bottom: 20px;
+        height: 100%;
+    }
+    
+    body.custom-dashboard .summary-title {
+        font-size: 14px;
+        color: #6b7280;
+        margin-bottom: 8px;
+    }
+    
+    body.custom-dashboard .summary-value {
+        font-size: 24px;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 0;
+    }
+    
+    body.custom-dashboard .summary-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        margin-bottom: 16px;
+    }
+    
+    body.custom-dashboard .icon-purple {
+        background-color: #f3f0ff;
+        color: #7d5fd2;
+    }
+    
+    body.custom-dashboard .icon-blue {
+        background-color: #e0f2fe;
+        color: #0ea5e9;
+    }
+    
+    body.custom-dashboard .icon-green {
+        background-color: #ecfdf3;
+        color: #10b981;
+    }
+    
+    body.custom-dashboard .icon-orange {
+        background-color: #fffaeb;
+        color: #f59e0b;
+    }
+    
+    /* Progress bar */
+    body.custom-dashboard .progress-slim {
+        height: 6px;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    
+    body.custom-dashboard .progress-info {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        margin-top: 8px;
+    }
+    
+    body.custom-dashboard .progress-label {
+        color: #6b7280;
+    }
+    
+    body.custom-dashboard .progress-value {
+        color: #111827;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block title %}Pay Runs | Jokoor Payroll{% endblock %}
+
+{% block header %}
+<!-- Override the header to remove Frappe's default header -->
+{% endblock %}
+
+{% block navbar %}
+<!-- Override navbar to remove Frappe's default navbar -->
+{% endblock %}
+
+{% block footer %}
+<!-- Override footer to remove Frappe's default footer -->
+{% endblock %}
+
+{% block content %}
+<div class="custom-dashboard">
+    <!-- Sidebar -->
+    {% include "templates/includes/dashboard/sidebar.html" %}
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="fw-bold mb-0">Pay Runs</h2>
+                <div>
+                    <button type="button" class="btn btn-outline-secondary me-2" id="refreshBtn">
+                        <i class="fas fa-sync-alt me-1"></i> Refresh
+                    </button>
+                    <div class="dropdown d-inline-block">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-download me-1"></i> Export
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="exportDropdown">
+                            <li><a class="dropdown-item" href="#"><i class="far fa-file-excel me-2 text-success"></i>Excel</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="far fa-file-pdf me-2 text-danger"></i>PDF</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="far fa-file-csv me-2 text-primary"></i>CSV</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Tabs Navigation -->
+        <ul class="nav nav-tabs" id="payrunTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="latest-tab" data-bs-toggle="tab" data-bs-target="#latest" type="button" role="tab" aria-controls="latest" aria-selected="true">
+                    Latest Payrun
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">
+                    History <span class="tab-badge">{{ payrun_list|length }}</span>
+                </button>
+            </li>
+        </ul>
+        
+        <!-- Tab Content -->
+        <div class="tab-content" id="payrunTabsContent">
+            
+            <!-- Latest Payrun Tab -->
+            <div class="tab-pane fade show active" id="latest" role="tabpanel" aria-labelledby="latest-tab">
+                {% if payrun_list %}
+                    {% set latest_payrun = payrun_list[0] %}
+                    
+                    <!-- Latest Payrun Card -->
+                    <div class="latest-payrun-card">
+                        <div class="payrun-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <h3 class="payrun-title">{{ latest_payrun.name }}</h3>
+                                <div class="payrun-subtitle">
+                                    Period: 2025-04-24 to 2025-04-24
+                                </div>
+                            </div>
+                            <div>
+                                {% if latest_payrun.status == "Draft" %}
+                                <span class="status-pill status-draft">Draft</span>
+                                {% elif latest_payrun.status == "Processing" %}
+                                <span class="status-pill status-processing">Processing</span>
+                                {% elif latest_payrun.status == "Completed" %}
+                                <span class="status-pill status-completed">Completed</span>
+                                {% else %}
+                                <span class="status-pill status-canceled">Canceled</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="payrun-body">
+                            <!-- Summary Cards -->
+                            <div class="row mb-4">
+                                <div class="col-md-3">
+                                    <div class="summary-box">
+                                        <div class="summary-icon icon-purple">
+                                            <i class="fas fa-users"></i>
+                                        </div>
+                                        <div class="summary-title">Total Employees</div>
+                                        <div class="summary-value">{{ latest_payrun.employees|length }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="summary-box">
+                                        <div class="summary-icon icon-blue">
+                                            <i class="fas fa-coins"></i>
+                                        </div>
+                                        <div class="summary-title">Gross Pay</div>
+                                        <div class="summary-value">GMD {{ frappe.utils.fmt_money(latest_payrun.gross_pay) }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="summary-box">
+                                        <div class="summary-icon icon-orange">
+                                            <i class="fas fa-hand-holding-usd"></i>
+                                        </div>
+                                        <div class="summary-title">Deductions</div>
+                                        <div class="summary-value">GMD {{ frappe.utils.fmt_money(latest_payrun.gross_pay - latest_payrun.net_pay) }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="summary-box">
+                                        <div class="summary-icon icon-green">
+                                            <i class="fas fa-money-bill-wave"></i>
+                                        </div>
+                                        <div class="summary-title">Net Pay</div>
+                                        <div class="summary-value">GMD {{ frappe.utils.fmt_money(latest_payrun.net_pay) }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Progress Section -->
+                            <div class="row mb-4">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title mb-3">Payroll Processing Status</h5>
+                                            {% if latest_payrun.status == "Draft" %}
+                                                {% set progress = 25 %}
+                                            {% elif latest_payrun.status == "Processing" %}
+                                                {% set progress = 60 %}
+                                            {% elif latest_payrun.status == "Completed" %}
+                                                {% set progress = 100 %}
+                                            {% else %}
+                                                {% set progress = 0 %}
+                                            {% endif %}
+                                            
+                                            <div class="progress progress-slim">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress }}%" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                            <div class="progress-info">
+                                                <span class="progress-label">Current Status: {{ latest_payrun.status }}</span>
+                                                <span class="progress-value">{{ progress }}% Complete</span>
+                                            </div>
+                                            
+                                            <!-- Action Buttons -->
+                                            <div class="d-flex justify-content-end mt-3">
+                                                <a href="/dashboard/payrun/view?id={{latest_payrun.name}}" class="btn btn-primary payrun-action-btn">
+                                                    <i class="fas fa-eye me-1"></i> View Details
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                          
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info mt-4">
+                        <i class="fas fa-info-circle me-2"></i> No payruns have been created yet. They will be automatically generated based on payrun dates.
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- History Tab -->
+            <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                
+                <!-- Filter Section -->
+                <div class="history-filter-section">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label for="statusFilter" class="filter-label">Status</label>
+                            <select id="statusFilter" class="form-select filter-control">
+                                <option value="">All Statuses</option>
+                                <option value="Draft">Draft</option>
+                                <option value="Processing">Processing</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Canceled">Canceled</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="periodFilter" class="filter-label">Period</label>
+                            <select id="periodFilter" class="form-select filter-control">
+                                <option value="">All Periods</option>
+                                <option value="current">Current Month</option>
+                                <option value="previous">Previous Month</option>
+                                <option value="q1">Q1 {{ frappe.utils.getdate().year }}</option>
+                                <option value="q2">Q2 {{ frappe.utils.getdate().year }}</option>
+                                <option value="q3">Q3 {{ frappe.utils.getdate().year }}</option>
+                                <option value="q4">Q4 {{ frappe.utils.getdate().year }}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="searchPayrun" class="filter-label">Search</label>
+                            <div class="input-group">
+                                <input type="text" id="searchPayrun" class="form-control filter-control" placeholder="Search payruns...">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="button" id="resetFiltersBtn" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-times me-1"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- History Table -->
+                <div class="table-responsive history-table">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Payrun Name</th>
+                                <th>Period</th>
+                                <th>Employees</th>
+                                <th>Net Pay (GMD)</th>
+                                <th>Status</th>
+                                <th>Created On</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for payrun in payrun_list %}
+                            <tr class="payrun-row" data-status="{{ payrun.status }}" onclick="window.location.href='/dashboard/payrun/view?id={{ payrun.name }}'">
+                                <td>{{ payrun.name }}</td>
+                                <td>2025-04-24 to 2025-04-24</td>
+                                <td>{{ payrun.employees|length }}</td>
+                                <td>{{ frappe.utils.fmt_money(payrun.net_pay) }}</td>
+                                <td>
+                                    {% if payrun.status == "Draft" %}
+                                    <span class="status-pill status-draft">Draft</span>
+                                    {% elif payrun.status == "Processing" %}
+                                    <span class="status-pill status-processing">Processing</span>
+                                    {% elif payrun.status == "Completed" %}
+                                    <span class="status-pill status-completed">Completed</span>
+                                    {% else %}
+                                    <span class="status-pill status-canceled">Canceled</span>
+                                    {% endif %}
+                                </td>
+                                <td>2025-04-24</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                {% if payrun_list|length > 0 %}
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <div class="pagination-info">Showing 1-{{ payrun_list|length }} of {{ payrun_list|length }} payruns</div>
+                    <nav aria-label="Payrun pagination">
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            {% if payrun_list|length > 10 %}
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            {% endif %}
+                            <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Add custom class to body
+    document.body.classList.add('custom-dashboard');
+    
+    $(document).ready(function() {
+        // Set the active menu item in the sidebar
+        const payrollMenuItem = document.querySelector('.sidebar-item[href*="payroll"]');
+        if (payrollMenuItem) {
+            payrollMenuItem.classList.add('active');
+        }
+        
+        // Handle refresh button click
+        $('#refreshBtn').on('click', function() {
+            const btn = $(this);
+            const originalHtml = btn.html();
+            
+            // Show loading state
+            btn.html('<i class="fas fa-spinner fa-spin me-1"></i> Refreshing...');
+            btn.prop('disabled', true);
+            
+            // Reload the page after a short delay to simulate refresh
+            setTimeout(function() {
+                window.location.reload();
+            }, 1000);
+        });
+        
+        // Employee search in latest payrun
+        $('#employeeSearch').on('input', function() {
+            const searchTerm = $(this).val().toLowerCase();
+            $('.employee-list-table tbody tr').each(function() {
+                const text = $(this).text().toLowerCase();
+                $(this).toggle(text.indexOf(searchTerm) > -1);
+            });
+        });
+        
+        // History tab filters
+        $('#statusFilter, #periodFilter').on('change', function() {
+            filterPayrunHistory();
+        });
+        
+        $('#searchPayrun').on('input', function() {
+            filterPayrunHistory();
+        });
+        
+        // Reset filters
+        $('#resetFiltersBtn').on('click', function() {
+            $('#statusFilter').val('');
+            $('#periodFilter').val('');
+            $('#searchPayrun').val('');
+            $('.payrun-row').show();
+        });
+        
+        // Function to filter payrun history
+        function filterPayrunHistory() {
+            const statusFilter = $('#statusFilter').val();
+            const periodFilter = $('#periodFilter').val();
+            const searchTerm = $('#searchPayrun').val().toLowerCase();
+            
+            $('.payrun-row').each(function() {
+                let show = true;
+                
+                // Status filter
+                if (statusFilter && $(this).data('status') !== statusFilter) {
+                    show = false;
+                }
+                
+                // Period filter (simplified)
+                if (periodFilter && show) {
+                    // Add period filtering logic here
+                    // This is a placeholder - you would implement the actual period filtering based on your data structure
+                }
+                
+                // Search term
+                if (searchTerm && show) {
+                    const rowText = $(this).text().toLowerCase();
+                    if (rowText.indexOf(searchTerm) === -1) {
+                        show = false;
+                    }
+                }
+                
+                $(this).toggle(show);
+            });
+        }
+        
+        // Handle tab switching to ensure content is properly displayed
+        $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+            // For example, resize any charts if needed
+            window.dispatchEvent(new Event('resize'));
+        });
+    });
+</script>
+{% endblock %} 

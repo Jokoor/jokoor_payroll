@@ -1,0 +1,25 @@
+{% block title %}New Order | Jokoor Payroll{% endblock %}
+
+{% block page_content %}
+{# Define the content for the page component #}
+{% set page_title = "New Order" %}
+{% set has_search = false %}
+{% set has_actions = false %}
+
+{% set content %}
+<div class="container-fluid p-4">
+    <!-- Form Component -->
+    <div class="row">
+        <div class="col-12">
+            {% set card_type = 'widget_card' %}
+            {% set content %}
+            {% include "jokoor_payroll/templates/includes/elements/form.html" %}
+            {% endset %}
+            {% include "jokoor_payroll/templates/includes/elements/card.html" %}
+        </div>
+    </div>
+</div>
+{% endset %}
+
+{% include "jokoor_payroll/templates/pages/restaurant_page.html" %}
+{% endblock %}

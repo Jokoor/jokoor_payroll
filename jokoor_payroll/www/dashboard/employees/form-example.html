@@ -1,0 +1,139 @@
+{% extends "templates/includes/elements/page.html" %}
+
+{% block page_actions %}
+<button id="toggleEditBtn" class="btn btn-primary">
+    <i class="fa fa-edit me-1"></i> Edit
+</button>
+{% endblock %}
+
+{% block page_content %}
+<div class="row">
+    <div class="col-12">
+        {% set form_id = "employeeForm" %}
+        {% set form_action = "/api/method/jokoor_payroll.api.update_employee" %}
+        {% set form_method = "POST" %}
+        {% set form_initial_state = "view" %}
+        {% set form_sections = [
+            {
+                "title": "Personal Information",
+                "icon": "fa-user",
+                "description": "Basic employee information",
+                "width": 12,
+                "fields": [
+                    {
+                        "type": "text",
+                        "name": "employee_name",
+                        "label": "Full Name",
+                        "required": true,
+                        "value": "John Doe",
+                        "width": 6
+                    },
+                    {
+                        "type": "email",
+                        "name": "email",
+                        "label": "Email Address",
+                        "required": true,
+                        "value": "john.doe@example.com",
+                        "width": 6
+                    },
+                    {
+                        "type": "tel",
+                        "name": "phone",
+                        "label": "Phone Number",
+                        "value": "+1234567890",
+                        "width": 6
+                    },
+                    {
+                        "type": "select",
+                        "name": "gender",
+                        "label": "Gender",
+                        "value": "Male",
+                        "options": [
+                            {"value": "Male", "label": "Male"},
+                            {"value": "Female", "label": "Female"},
+                            {"value": "Other", "label": "Other"}
+                        ],
+                        "width": 6
+                    }
+                ]
+            },
+            {
+                "title": "Employment Details",
+                "icon": "fa-briefcase",
+                "description": "Work-related information",
+                "width": 12,
+                "fields": [
+                    {
+                        "type": "text",
+                        "name": "designation",
+                        "label": "Designation",
+                        "value": "Software Engineer",
+                        "width": 6
+                    },
+                    {
+                        "type": "text",
+                        "name": "department",
+                        "label": "Department",
+                        "value": "Engineering",
+                        "width": 6
+                    },
+                    {
+                        "type": "date",
+                        "name": "joining_date",
+                        "label": "Joining Date",
+                        "value": "2023-01-15",
+                        "width": 6
+                    },
+                    {
+                        "type": "select",
+                        "name": "status",
+                        "label": "Status",
+                        "value": "Active",
+                        "options": [
+                            {"value": "Active", "label": "Active"},
+                            {"value": "Inactive", "label": "Inactive"},
+                            {"value": "On Leave", "label": "On Leave"}
+                        ],
+                        "width": 6
+                    }
+                ]
+            }
+        ] %}
+        {% include "templates/includes/elements/form.html" %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleEditBtn = document.getElementById('toggleEditBtn');
+    const formId = 'employeeForm';
+    let editMode = false;
+    
+    if (toggleEditBtn) {
+        toggleEditBtn.addEventListener('click', function() {
+            // Toggle edit mode
+            editMode = !editMode;
+            
+            // Update button text
+            this.innerHTML = editMode ? 
+                '<i class="fa fa-eye me-1"></i> View' : 
+                '<i class="fa fa-edit me-1"></i> Edit';
+            
+            // Dispatch event to the form
+            document.dispatchEvent(new CustomEvent('form:toggleedit', {
+                detail: {
+                    targetFormId: formId,
+                    editMode: editMode
+                }
+            }));
+        });
+    }
+    
+    // Listen for form edit mode changes
+    document.addEventListener('form:editmodechange', function(e) {
+        const { isEditable, formId } = e.detail;
+        console.log(`Form ${formId} edit mode changed to ${isEditable ? 'edit' : 'view'}`);
+    });
+});
+</script>
+{% endblock %}

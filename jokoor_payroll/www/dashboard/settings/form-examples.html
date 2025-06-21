@@ -1,0 +1,379 @@
+{% extends "templates/web.html" %}
+
+{% block head_include %}
+<!-- Link to global styles -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/dashboard/styles/global.css">
+{% endblock %}
+
+{% block title %}Form Examples | Jokoor Payroll{% endblock %}
+
+{% block page_content %}
+
+{# Set up page context variables #}
+{% set page_title = "Form Component Examples" %}
+{% set has_search = false %}
+{% set has_actions = false %}
+{% set breadcrumb_items = [
+    {"label": "Dashboard", "url": "/dashboard"},
+    {"label": "Settings", "url": "/dashboard/settings"},
+    {"label": "Form Examples", "url": "#"}
+] %}
+
+{# Prepare page content #}
+{% set content %}
+    <div class="mb-5">
+        <h2 class="fs-4 mb-3">Form State Examples</h2>
+        <p class="text-muted">These examples demonstrate the different states of the form component.</p>
+        
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Example 1: Existing Editable Form</h5>
+                        <p class="card-text">This form shows both the toggle and save button. Toggle is on by default.</p>
+                        
+                        {% set form_id = "existingEditableForm" %}
+                        {% set form_action = "/api/update_company" %}
+                        {% set form_validate = true %}
+                        {% set form_class = "professional-form" %}
+                        {% set form_editable = true %}
+                        {% set form_is_new = false %}
+                        
+                        {% set form_sections = [
+                            {
+                                "title": "Company Details",
+                                "icon": "fa-building",
+                                "description": "Basic company information",
+                                "width": 12,
+                                "fields": [
+                                    {
+                                        "type": "text",
+                                        "name": "company_name_1",
+                                        "label": "Company Name",
+                                        "required": true,
+                                        "placeholder": "Enter company name",
+                                        "value": "Acme Corporation",
+                                        "width": 6
+                                    },
+                                    {
+                                        "type": "email",
+                                        "name": "company_email_1",
+                                        "label": "Company Email",
+                                        "required": true,
+                                        "placeholder": "Enter company email",
+                                        "value": "info@acme.com",
+                                        "width": 6
+                                    }
+                                ]
+                            }
+                        ] %}
+                        
+                        {% include "jokoor_payroll/templates/includes/elements/form.html" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Example 2: New Form</h5>
+                        <p class="card-text">This form only shows the save button, no toggle. Fields are editable by default.</p>
+                        
+                        {% set form_id = "newForm" %}
+                        {% set form_action = "/api/create_company" %}
+                        {% set form_validate = true %}
+                        {% set form_class = "professional-form" %}
+                        {% set form_editable = true %}
+                        {% set form_is_new = true %}
+                        
+                        {% set form_sections = [
+                            {
+                                "title": "Company Details",
+                                "icon": "fa-building",
+                                "description": "Basic company information",
+                                "width": 12,
+                                "fields": [
+                                    {
+                                        "type": "text",
+                                        "name": "company_name_2",
+                                        "label": "Company Name",
+                                        "required": true,
+                                        "placeholder": "Enter company name",
+                                        "width": 6
+                                    },
+                                    {
+                                        "type": "email",
+                                        "name": "company_email_2",
+                                        "label": "Company Email",
+                                        "required": true,
+                                        "placeholder": "Enter company email",
+                                        "width": 6
+                                    }
+                                ]
+                            }
+                        ] %}
+                        
+                        {% include "jokoor_payroll/templates/includes/elements/form.html" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Example 3: View-Only Form</h5>
+                        <p class="card-text">This form has no controls. All fields are read-only.</p>
+                        
+                        {% set form_id = "viewOnlyForm" %}
+                        {% set form_action = "/api/update_company" %}
+                        {% set form_validate = true %}
+                        {% set form_class = "professional-form" %}
+                        {% set form_editable = false %}
+                        {% set form_is_new = false %}
+                        
+                        {% set form_sections = [
+                            {
+                                "title": "Company Details",
+                                "icon": "fa-building",
+                                "description": "Basic company information",
+                                "width": 12,
+                                "fields": [
+                                    {
+                                        "type": "text",
+                                        "name": "company_name_3",
+                                        "label": "Company Name",
+                                        "required": true,
+                                        "value": "XYZ Industries",
+                                        "width": 6
+                                    },
+                                    {
+                                        "type": "email",
+                                        "name": "company_email_3",
+                                        "label": "Company Email",
+                                        "required": true,
+                                        "value": "contact@xyz.com",
+                                        "width": 6
+                                    }
+                                ]
+                            }
+                        ] %}
+                        
+                        {% include "jokoor_payroll/templates/includes/elements/form.html" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Example 4: Multi-Section Example with Side-by-Side Layout</h5>
+                        <p class="card-text">This form demonstrates a more complex layout with sections side-by-side.</p>
+                        
+                        {% set form_id = "multiSectionForm" %}
+                        {% set form_action = "/api/update_company" %}
+                        {% set form_validate = true %}
+                        {% set form_class = "professional-form" %}
+                        {% set form_editable = true %}
+                        {% set form_is_new = false %}
+                        
+                        {% set form_sections = [
+                            {
+                                "title": "Company Information",
+                                "icon": "fa-info-circle",
+                                "description": "General company details",
+                                "width": 6,
+                                "fields": [
+                                    {
+                                        "type": "text",
+                                        "name": "company_name_4",
+                                        "label": "Company Name",
+                                        "required": true,
+                                        "value": "Global Enterprises",
+                                        "width": 12
+                                    },
+                                    {
+                                        "type": "text",
+                                        "name": "company_id_4",
+                                        "label": "Company ID",
+                                        "value": "GE-1234",
+                                        "width": 6
+                                    },
+                                    {
+                                        "type": "select",
+                                        "name": "company_type_4",
+                                        "label": "Company Type",
+                                        "value": "llc",
+                                        "width": 6,
+                                        "options": [
+                                            {"value": "llc", "label": "LLC"},
+                                            {"value": "corporation", "label": "Corporation"},
+                                            {"value": "partnership", "label": "Partnership"},
+                                            {"value": "sole_proprietor", "label": "Sole Proprietor"}
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "title": "Contact Details",
+                                "icon": "fa-phone",
+                                "description": "How to reach the company",
+                                "width": 6,
+                                "fields": [
+                                    {
+                                        "type": "email",
+                                        "name": "company_email_4",
+                                        "label": "Email",
+                                        "required": true,
+                                        "value": "info@globalenterprises.com",
+                                        "width": 12
+                                    },
+                                    {
+                                        "type": "tel",
+                                        "name": "company_phone_4",
+                                        "label": "Phone",
+                                        "value": "+1 (555) 123-4567",
+                                        "width": 6
+                                    },
+                                    {
+                                        "type": "url",
+                                        "name": "company_website_4",
+                                        "label": "Website",
+                                        "value": "https://www.globalenterprises.com",
+                                        "width": 6
+                                    }
+                                ]
+                            }
+                        ] %}
+                        
+                        {% include "jokoor_payroll/templates/includes/elements/form.html" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Example 5: Locked Form</h5>
+                        <p class="card-text">This form is completely locked and cannot be edited at all (like a submitted payslip).</p>
+                        
+                        {% set form_id = "lockedForm" %}
+                        {% set form_action = "/api/update_company" %}
+                        {% set form_validate = true %}
+                        {% set form_class = "professional-form" %}
+                        {% set form_editable = true %}
+                        {% set form_is_new = false %}
+                        {% set form_locked = true %}
+                        
+                        {% set form_sections = [
+                            {
+                                "title": "Payslip Details",
+                                "icon": "fa-file-invoice-dollar",
+                                "description": "",
+                                "width": 12,
+                                "fields": [
+                                    {
+                                        "type": "text",
+                                        "name": "employee_name",
+                                        "label": "Employee Name",
+                                        "required": true,
+                                        "value": "John Doe",
+                                        "width": 6
+                                    },
+                                    {
+                                        "type": "text",
+                                        "name": "payslip_id",
+                                        "label": "Payslip ID",
+                                        "value": "PS-2025-0042",
+                                        "width": 6
+                                    },
+                                    {
+                                        "type": "number",
+                                        "name": "basic_salary",
+                                        "label": "Basic Salary",
+                                        "value": "5000",
+                                        "width": 4
+                                    },
+                                    {
+                                        "type": "number",
+                                        "name": "allowances",
+                                        "label": "Allowances",
+                                        "value": "1200",
+                                        "width": 4
+                                    },
+                                    {
+                                        "type": "number",
+                                        "name": "deductions",
+                                        "label": "Deductions",
+                                        "value": "750",
+                                        "width": 4
+                                    },
+                                    {
+                                        "type": "select",
+                                        "name": "payment_status",
+                                        "label": "Payment Status",
+                                        "value": "paid",
+                                        "width": 6,
+                                        "options": [
+                                            {"value": "pending", "label": "Pending"},
+                                            {"value": "processing", "label": "Processing"},
+                                            {"value": "paid", "label": "Paid"},
+                                            {"value": "failed", "label": "Failed"}
+                                        ]
+                                    },
+                                    {
+                                        "type": "date",
+                                        "name": "payment_date",
+                                        "label": "Payment Date",
+                                        "value": "2025-04-15",
+                                        "width": 6
+                                    }
+                                ]
+                            }
+                        ] %}
+                        
+                        {% include "jokoor_payroll/templates/includes/elements/form.html" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endset %}
+
+{# Include the page layout #}
+{% set page_title = page_title %}
+{% set breadcrumb_items = breadcrumb_items %}
+{% set has_search = has_search %}
+{% set has_actions = has_actions %}
+{% set content = content %}
+{% include "jokoor_payroll/templates/includes/elements/page.html" %}
+{% endblock %}
+
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+        
+        // Listen for edit mode changes
+        document.addEventListener('form:editmodechange', function(e) {
+            console.log('Form edit mode changed for', e.detail.formId, 'to', e.detail.isEditable);
+        });
+    });
+</script>
+{% endblock %}

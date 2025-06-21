@@ -1,0 +1,316 @@
+{% extends "templates/pages/restaurant_page.html" %}
+
+{% block content %}
+<div class="page-header">
+    <div class="header-content">
+        <h2 class="page-title">{{ title }}</h2>
+        {% if subtitle %}
+        <p class="page-subtitle">{{ subtitle }}</p>
+        {% endif %}
+    </div>
+    <div class="header-actions">
+        <button class="btn btn-primary" onclick="window.location.href='{{ add_new_url }}'">
+            <i class="fas fa-plus"></i>
+            Add New
+        </button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-container">
+        <table class="table" id="dataTable">
+            <thead>
+                <tr>
+                    <th class="select-column">
+                        <input type="checkbox" id="selectAll" onchange="window.toggleSelectAll()">
+                    </th>
+                    {% for column in columns %}
+                    <th class="sortable" data-key="{{ column.key }}" onclick="sortTable('{{ column.key }}')">
+                        {{ column.label }}
+                        <i class="fas fa-sort"></i>
+                    </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                {% for row in data %}
+                <tr {% if row.url %}data-url="{{ row.url }}" class="clickable-row"{% endif %}>
+                    <td class="select-column" onclick="event.stopPropagation()">
+                        <input type="checkbox" class="row-select" value="{{ row[primary_key] }}" onchange="window.updateSelectedCount()">
+                    </td>
+                    {% for column in columns %}
+                    <td>{{ row[column.key] }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="table-footer">
+        <div class="pagination-info-wrapper">
+            <div class="items-per-page">
+                <span>Items per page:</span>
+                <select id="itemsPerPage" onchange="window.changeItemsPerPage()">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50" selected>50</option>
+                    <option value="100">100</option>
+                </select>
+                <span class="selected-count">0 selected</span>
+            </div>
+            <div class="pagination">
+                <button class="btn btn-outline" onclick="window.changePage('prev')" {% if not has_prev %}disabled{% endif %}>
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <span class="pagination-info">{{ start_item }} - {{ end_item }} of {{ total_items }}</span>
+                <button class="btn btn-outline" onclick="window.changePage('next')" {% if not has_next %}disabled{% endif %}>
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.header-content {
+    flex: 1;
+}
+
+.header-actions {
+    margin-left: 1rem;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.select-column {
+    width: 40px;
+    text-align: center;
+}
+
+.select-column input[type="checkbox"] {
+    cursor: pointer;
+}
+
+.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.sortable i {
+    margin-left: 0.5rem;
+    opacity: 0.3;
+}
+
+.sortable.asc i {
+    opacity: 1;
+    transform: rotate(180deg);
+}
+
+.sortable.desc i {
+    opacity: 1;
+}
+
+.table-footer {
+    border-top: 1px solid #e5e7eb;
+    padding: 0.75rem 1rem;
+}
+
+.pagination-info-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.items-per-page {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #64748b;
+    font-size: 0.875rem;
+}
+
+.items-per-page select {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.25rem;
+    background-color: white;
+    color: #64748b;
+}
+
+.selected-count {
+    margin-left: 1rem;
+    padding-left: 1rem;
+    border-left: 1px solid #e5e7eb;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.pagination-info {
+    color: #64748b;
+    font-size: 0.875rem;
+    min-width: 100px;
+    text-align: center;
+}
+
+.btn-outline {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #e5e7eb;
+    background-color: white;
+    color: #64748b;
+    cursor: pointer;
+}
+
+.btn-outline:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-outline:not(:disabled):hover {
+    background-color: #f8fafc;
+}
+
+.clickable-row {
+    cursor: pointer;
+}
+
+.clickable-row:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    window.currentSort = {
+        key: null,
+        direction: 'asc'
+    };
+
+    // Add click event listeners to rows
+    document.querySelectorAll('.clickable-row').forEach(row => {
+        row.addEventListener('click', function() {
+            const url = this.dataset.url;
+            if (url) {
+                window.location.href = url;
+            }
+        });
+    });
+
+    window.toggleSelectAll = function() {
+        const selectAll = document.getElementById('selectAll');
+        const checkboxes = document.querySelectorAll('.row-select');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAll.checked;
+        });
+        window.updateSelectedCount();
+    };
+
+    window.updateSelectedCount = function() {
+        const selectedCount = document.querySelectorAll('.row-select:checked').length;
+        document.querySelector('.selected-count').textContent = `${selectedCount} selected`;
+        
+        // Update selectAll checkbox state
+        const selectAll = document.getElementById('selectAll');
+        const totalCheckboxes = document.querySelectorAll('.row-select').length;
+        selectAll.checked = selectedCount === totalCheckboxes;
+        selectAll.indeterminate = selectedCount > 0 && selectedCount < totalCheckboxes;
+    };
+
+    window.getSelectedItems = function() {
+        const selected = [];
+        document.querySelectorAll('.row-select:checked').forEach(checkbox => {
+            selected.push(checkbox.value);
+        });
+        return selected;
+    };
+
+    window.sortTable = function(key) {
+        const tableBody = document.getElementById('tableBody');
+        const rows = Array.from(tableBody.getElementsByTagName('tr'));
+        const th = document.querySelector(`th[data-key="${key}"]`);
+        
+        // Update sort direction
+        if (window.currentSort.key === key) {
+            window.currentSort.direction = window.currentSort.direction === 'asc' ? 'desc' : 'asc';
+        } else {
+            window.currentSort.key = key;
+            window.currentSort.direction = 'asc';
+        }
+
+        // Update sort icons
+        document.querySelectorAll('th.sortable').forEach(header => {
+            header.classList.remove('asc', 'desc');
+        });
+        th.classList.add(window.currentSort.direction);
+
+        // Sort rows
+        rows.sort((a, b) => {
+            const columnIndex = Array.from(th.parentElement.children).indexOf(th);
+            const aValue = a.children[columnIndex].textContent;
+            const bValue = b.children[columnIndex].textContent;
+            
+            // Try to sort as numbers if possible
+            const aNum = parseFloat(aValue);
+            const bNum = parseFloat(bValue);
+            if (!isNaN(aNum) && !isNaN(bNum)) {
+                return window.currentSort.direction === 'asc' ? aNum - bNum : bNum - aNum;
+            }
+            
+            // Sort as strings
+            return window.currentSort.direction === 'asc' 
+                ? aValue.localeCompare(bValue) 
+                : bValue.localeCompare(aValue);
+        });
+
+        // Update table
+        rows.forEach(row => tableBody.appendChild(row));
+    };
+
+    window.changeItemsPerPage = function() {
+        const perPage = document.getElementById('itemsPerPage').value;
+        const newUrl = updateQueryStringParameter(window.location.search, 'per_page', perPage);
+        window.location.href = window.location.pathname + newUrl;
+    };
+
+    window.changePage = function(direction) {
+        const currentPage = parseInt('{{ current_page }}', 10);
+        const newPage = direction === 'next' ? currentPage + 1 : currentPage - 1;
+        const newUrl = updateQueryStringParameter(window.location.search, 'page', newPage);
+        window.location.href = window.location.pathname + newUrl;
+    };
+
+    function updateQueryStringParameter(uri, key, value) {
+        const re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+        const separator = uri.indexOf('?') !== -1 ? "&" : "?";
+        if (uri.match(re)) {
+            return uri.replace(re, '$1' + key + "=" + value + '$2');
+        }
+        return uri + separator + key + "=" + value;
+    }
+
+    {% if on_select %}
+    window.handleSelection = function() {
+        const selected = window.getSelectedItems();
+        try {
+            const handler = new Function('selected', '{{ on_select | safe }}(selected)');
+            handler(selected);
+        } catch (error) {
+            console.error('Error calling selection handler:', error);
+        }
+    };
+    {% endif %}
+});
+</script>
+{% endblock %}

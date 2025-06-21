@@ -1,0 +1,84 @@
+{% extends "templates/web.html" %}
+
+{% block title %}Reports | Jokoor Payroll{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block navbar %}
+<!-- Override Frappe's default navbar -->
+{% endblock %}
+
+{% block footer %}
+<!-- Override Frappe's default footer -->
+{% endblock %}
+
+{% block page_content %}
+{# Set content for the page component #}
+{% set page_title = "Reports" %}
+{% set active_menu = "reports" %}
+{% set breadcrumb_items = breadcrumb_items %}
+{% set has_actions = false %}
+
+{% set content %}
+    <div class="row row-cols-1 row-cols-md-2 g-4 mb-5">
+        {% for report in reports %}
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 report-card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="report-icon-container me-3">
+                                <i class="{{ report.icon }}"></i>
+                            </div>
+                            <h5 class="card-title mb-0">{{ report.title }}</h5>
+                        </div>
+                        <p class="card-text text-muted">{{ report.description }}</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 text-end">
+                        <a href="{{ report.url }}" class="btn btn-primary">View Report</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endset %}
+
+{# Include the page template which has the sidebar built-in #}
+{% include "jokoor/templates/includes/elements/page.html" %}
+
+{% endblock %}
+
+{% block style %}
+<style>
+    .report-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .report-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .report-icon-container {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background-color: rgba(var(--accent-color-rgb, 103, 61, 230), 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent-color, #673de6);
+        font-size: 20px;
+    }
+    
+    .card-footer {
+        padding-top: 0;
+    }
+</style>
+{% endblock %}
+
+{% block script %}
+<!-- No additional scripts needed -->
+{% endblock %}

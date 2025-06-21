@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <meta name="description" content="{{ description }}">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #673de6;
+            --primary-dark: #5429d0;
+            --secondary-color: #ff6b35;
+            --accent-color: #2ec4b6;
+            --light-gray: #f9fafb;
+            --dark-gray: #1f2937;
+            --text-color: #374151;
+            --text-light: #6b7280;
+            --border-color: #e5e7eb;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+            background-color: #fff;
+        }
+        
+        /* Header & Navigation */
+        .navbar {
+            padding: 1rem 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            background-color: white;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .navbar-brand img {
+            height: 32px;
+            margin-right: 8px;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--text-color);
+            margin: 0 0.75rem;
+            transition: color 0.2s;
+            font-size: 0.95rem;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-color);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 0.5rem 1.25rem;
+            font-weight: 500;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 0.5rem 1.25rem;
+            font-weight: 500;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        /* Page Header */
+        .page-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 5rem 0 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .page-header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        
+        .page-header p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header-shape {
+            position: absolute;
+            bottom: -50px;
+            right: -50px;
+            width: 300px;
+            height: 300px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        .header-shape-2 {
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            width: 200px;
+            height: 200px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        /* Feature Categories */
+        .feature-category {
+            padding: 5rem 0;
+        }
+        
+        .feature-category:nth-child(even) {
+            background-color: var(--light-gray);
+        }
+        
+        .category-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .category-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark-gray);
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+        
+        .category-header h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+        
+        .category-header p {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        /* Feature Cards */
+        .feature-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 2.5rem;
+            height: 100%;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background-color: var(--primary-color);
+        }
+        
+        .feature-icon {
+            width: 65px;
+            height: 65px;
+            background-color: rgba(103, 61, 230, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            font-size: 1.8rem;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark-gray);
+        }
+        
+        .feature-card p {
+            font-size: 1rem;
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .feature-list li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.95rem;
+            color: var(--text-color);
+        }
+        
+        .feature-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background-color: var(--primary-color);
+            padding: 5rem 0;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-section h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        
+        .cta-section p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+        
+        .cta-shape {
+            position: absolute;
+            bottom: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        /* Footer */
+        .footer {
+            padding: 5rem 0 2rem;
+            background-color: #f8fafc;
+            color: var(--text-color);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+        }
+        
+        .footer-logo img {
+            height: 28px;
+            margin-right: 8px;
+        }
+        
+        .gambia-flag-colors {
+            display: inline-block;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(to right, #ce1126 33.33%, #0c1c8c 33.33%, #0c1c8c 66.66%, #3a7728 66.66%);
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-description {
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .page-header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .category-header h2 {
+                font-size: 2rem;
+            }
+            
+            .feature-card {
+                margin-bottom: 2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 4rem 0 2rem;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            
+            .feature-category {
+                padding: 3rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/site">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="32" height="32" rx="8" fill="#673de6"/>
+                    <path d="M10 16L14 20L22 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Jokoor Payroll
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/site">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/site/features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#pricing">Pricing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                    <li class="nav-item ms-lg-3">
+                        <a class="btn btn-outline-primary" href="/login">Login</a>
+                    </li>
+                    <li class="nav-item ms-lg-2">
+                        <a class="btn btn-primary" href="/contact">Get Started</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="header-shape"></div>
+        <div class="header-shape-2"></div>
+        <div class="container text-center">
+            <h1>Comprehensive Payroll Features</h1>
+            <p>Discover how our feature-rich payroll system can transform your business operations in The Gambia</p>
+        </div>
+    </header>
+
+    <!-- Employee Management Features -->
+    <section class="feature-section light" id="employee-management">
+        <div class="container">
+            <div class="section-title">
+                <h2>Employee Management</h2>
+                <p>Efficiently manage your workforce with our comprehensive employee management tools</p>
+            </div>
+            
+            <!-- Employee Profiles -->
+            <div class="feature-box highlight-purple">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 feature-content feature-accent-1">
+                        <div class="feature-icon-large">
+                            <i class="fas {{ employee_features.0.icon }}"></i>
+                        </div>
+                        <h3 class="feature-title">{{ employee_features.0.title }}</h3>
+                        <p class="feature-description">{{ employee_features.0.description }}</p>
+                        <ul class="feature-points">
+                            {% for detail in employee_features.0.details %}
+                            <li>{{ detail }}</li>
+                            {% endfor %}
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary">Learn More</a>
+                    </div>
+                    <div class="col-lg-6">
+                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80" alt="Employee Profiles" class="feature-image bordered">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Attendance Tracking -->
+            <div class="feature-box highlight-accent">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 order-lg-2 feature-content feature-accent-2">
+                        <div class="feature-icon-large">
+                            <i class="fas {{ employee_features.1.icon }}"></i>
+                        </div>
+                        <h3 class="feature-title">{{ employee_features.1.title }}</h3>
+                        <p class="feature-description">{{ employee_features.1.description }}</p>
+                        <ul class="feature-points">
+                            {% for detail in employee_features.1.details %}
+                            <li>{{ detail }}</li>
+                            {% endfor %}
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary">Learn More</a>
+                    </div>
+                    <div class="col-lg-6 order-lg-1">
+                        <img src="https://images.unsplash.com/photo-1553272725-086100aecf5e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80" alt="Attendance Tracking" class="feature-image bordered">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Onboarding & Offboarding -->
+            <div class="feature-box highlight-purple">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 feature-content feature-accent-3">
+                        <div class="feature-icon-large">
+                            <i class="fas {{ employee_features.2.icon }}"></i>
+                        </div>
+                        <h3 class="feature-title">{{ employee_features.2.title }}</h3>
+                        <p class="feature-description">{{ employee_features.2.description }}</p>
+                        <ul class="feature-points">
+                            {% for detail in employee_features.2.details %}
+                            <li>{{ detail }}</li>
+                            {% endfor %}
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary">Learn More</a>
+                    </div>
+                    <div class="col-lg-6">
+                        <img src="https://images.unsplash.com/photo-1518893494013-481c1d8ed3fd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80" alt="Onboarding & Offboarding" class="feature-image bordered">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Payroll Processing Features -->
+    <section class="feature-section gray" id="payroll-processing">
+        <div class="container">
+            <div class="section-title">
+                <h2>Payroll Processing</h2>
+                <p>Process payroll accurately and efficiently with our advanced payroll features</p>
+            </div>
+            
+            <!-- Salary Structures -->
+            <div class="feature-box highlight-accent">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 order-lg-2 feature-content feature-accent-1">
+                        <div class="feature-icon-large">
+                            <i class="fas {{ payroll_features.0.icon }}"></i>
+                        </div>
+                        <h3 class="feature-title">{{ payroll_features.0.title }}</h3>
+                        <p class="feature-description">{{ payroll_features.0.description }}</p>
+                        <ul class="feature-points">
+                            {% for detail in payroll_features.0.details %}
+                            <li>{{ detail }}</li>
+                            {% endfor %}
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary">Learn More</a>
+                    </div>
+                    <div class="col-lg-6 order-lg-1">
+                        <img src="https://images.unsplash.com/photo-1560472355-536de3962603?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80" alt="Salary Structures" class="feature-image bordered">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payrun Management -->
+            <div class="feature-box highlight-purple">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 feature-content feature-accent-2">
+                        <div class="feature-icon-large">
+                            <i class="fas {{ payroll_features.1.icon }}"></i>
+                        </div>
+                        <h3 class="feature-title">{{ payroll_features.1.title }}</h3>
+                        <p class="feature-description">{{ payroll_features.1.description }}</p>
+                        <ul class="feature-points">
+                            {% for detail in payroll_features.1.details %}
+                            <li>{{ detail }}</li>
+                            {% endfor %}
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary">Learn More</a>
+                    </div>
+                    <div class="col-lg-6">
+                        <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80" alt="Payrun Management" class="feature-image bordered">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payslip Generation -->
+            <div class="feature-box highlight-accent">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 order-lg-2 feature-content feature-accent-3">
+                        <div class="feature-icon-large">
+                            <i class="fas {{ payroll_features.2.icon }}"></i>
+                        </div>
+                        <h3 class="feature-title">{{ payroll_features.2.title }}</h3>
+                        <p class="feature-description">{{ payroll_features.2.description }}</p>
+                        <ul class="feature-points">
+                            {% for detail in payroll_features.2.details %}
+                            <li>{{ detail }}</li>
+                            {% endfor %}
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary">Learn More</a>
+                    </div>
+                    <div class="col-lg-6 order-lg-1">
+                        <div style="position: relative; max-width: 500px; margin: 0 auto;">
+                            <div style="background-color: white; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 2rem; border: 1px solid #eaeaea;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 1.5rem; border-bottom: 1px solid #eaeaea; padding-bottom: 1rem;">
+                                    <div>
+                                        <h5 style="margin: 0; font-size: 1.2rem; color: #333;">Jokoor Payroll</h5>
+                                        <p style="margin: 0; font-size: 0.9rem; color: #666;">Employee Payslip</p>
+                                    </div>
+                                    <div>
+                                        <p style="margin: 0; font-size: 0.9rem; color: #666; text-align: right;">April 2025</p>
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 1.5rem;">
+                                    <p style="margin: 0; font-size: 0.9rem; color: #666;"><strong>Employee:</strong> John Doe</p>
+                                    <p style="margin: 0; font-size: 0.9rem; color: #666;"><strong>Department:</strong> Finance</p>
+                                    <p style="margin: 0; font-size: 0.9rem; color: #666;"><strong>Employee ID:</strong> EMP001</p>
+                                </div>
+                                <div style="margin-bottom: 1.5rem; background-color: #f9f9f9; padding: 1rem; border-radius: 4px;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                        <span style="font-size: 0.9rem; color: #666;">Basic Salary</span>
+                                        <span style="font-size: 0.9rem; color: #666;">GMD 15,000.00</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                        <span style="font-size: 0.9rem; color: #666;">Housing Allowance</span>
+                                        <span style="font-size: 0.9rem; color: #666;">GMD 3,000.00</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                        <span style="font-size: 0.9rem; color: #666;">Transport Allowance</span>
+                                        <span style="font-size: 0.9rem; color: #666;">GMD 2,000.00</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; padding-top: 0.5rem; border-top: 1px dashed #ddd; margin-top: 0.5rem;">
+                                        <span style="font-size: 0.9rem; font-weight: bold; color: #333;">Gross Salary</span>
+                                        <span style="font-size: 0.9rem; font-weight: bold; color: #333;">GMD 20,000.00</span>
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 1.5rem; background-color: #f9f9f9; padding: 1rem; border-radius: 4px;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                        <span style="font-size: 0.9rem; color: #666;">PAYE Tax</span>
+                                        <span style="font-size: 0.9rem; color: #666;">GMD 2,500.00</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                        <span style="font-size: 0.9rem; color: #666;">SSHFC (5%)</span>
+                                        <span style="font-size: 0.9rem; color: #666;">GMD 1,000.00</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; padding-top: 0.5rem; border-top: 1px dashed #ddd; margin-top: 0.5rem;">
+                                        <span style="font-size: 0.9rem; font-weight: bold; color: #333;">Total Deductions</span>
+                                        <span style="font-size: 0.9rem; font-weight: bold; color: #333;">GMD 3,500.00</span>
+                                    </div>
+                                </div>
+                                <div style="background-color: #673de6; color: white; padding: 1rem; border-radius: 4px; display: flex; justify-content: space-between;">
+                                    <span style="font-weight: bold;">Net Salary</span>
+                                    <span style="font-weight: bold;">GMD 16,500.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tax & Compliance Features -->
+    <section class="feature-section dark" id="tax-compliance">
+        <div class="container">
+            <div class="section-title text-center mb-5">
+                <h2 style="color: white;">Tax & Compliance</h2>
+                <p style="color: rgba(255,255,255,0.8);">Stay compliant with Gambian tax regulations and labor laws with our built-in compliance features</p>
+            </div>
+            
+            <!-- PAYE Tax Management -->
+            <div class="feature-box" style="background-color: rgba(255, 255, 255, 0.1); border-radius: 12px; overflow: hidden; margin-bottom: 3rem;">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 feature-content" style="padding: 2.5rem;">
+                        <div class="feature-icon-large" style="background-color: rgba(255, 255, 255, 0.2); color: white;">
+                            <i class="fas {{ compliance_features.0.icon }}"></i>
+                        </div>
+                        <h3 class="feature-title" style="color: white;">{{ compliance_features.0.title }}</h3>
+                        <p class="feature-description" style="color: rgba(255,255,255,0.8);">{{ compliance_features.0.description }}</p>
+                        <ul class="feature-points">
+                            {% for detail in compliance_features.0.details %}
+                            <li style="color: rgba(255,255,255,0.9);">{{ detail }}</li>
+                            {% endfor %}
+                        </ul>
+                        <a href="#" class="btn btn-light">Learn More</a>
+                    </div>
+                    <div class="col-lg-6" style="padding: 2.5rem;">
+                        <div style="background-color: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: 8px;">
+                            <h4 style="color: white; margin-bottom: 1.5rem; font-size: 1.3rem;">PAYE Tax Calculator</h4>
+                            <div class="row mb-4">
+                                <div class="col-md-6 mb-3">
+                                    <label style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">Monthly Income (GMD)</label>
+                                    <div style="background-color: rgba(255, 255, 255, 0.1); color: white; padding: 0.75rem; border-radius: 4px; font-weight: 500;">
+                                        15,000
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">Tax Bracket</label>
+                                    <div style="background-color: rgba(255, 255, 255, 0.1); color: white; padding: 0.75rem; border-radius: 4px; font-weight: 500;">
+                                        15%
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="background-color: rgba(103, 61, 230, 0.3); color: white; padding: 1rem; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-weight: 600;">PAYE Tax Amount</span>
+                                <span style="font-weight: 700; font-size: 1.2rem;">GMD 2,250.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SSHFC Contribution Management -->
+            <div class="feature-box" style="background-color: rgba(255, 255, 255, 0.1); border-radius: 12px; overflow: hidden;">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 order-lg-2 feature-content" style="padding: 2.5rem;">
+                        <div class="feature-icon-large" style="background-color: rgba(255, 255, 255, 0.2); color: white;">
+                            <i class="fas {{ compliance_features.1.icon }}"></i>
+                        </div>
+                        <h3 class="feature-title" style="color: white;">{{ compliance_features.1.title }}</h3>
+                        <p class="feature-description" style="color: rgba(255,255,255,0.8);">{{ compliance_features.1.description }}</p>
+                        <ul class="feature-points">
+                            {% for detail in compliance_features.1.details %}
+                            <li style="color: rgba(255,255,255,0.9);">{{ detail }}</li>
+                            {% endfor %}
+                        </ul>
+                        <a href="#" class="btn btn-light">Learn More</a>
+                    </div>
+                    <div class="col-lg-6 order-lg-1" style="padding: 2.5rem;">
+                        <div style="background-color: rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: 8px;">
+                            <h4 style="color: white; margin-bottom: 1.5rem; font-size: 1.3rem;">SSHFC Contribution Breakdown</h4>
+                            <div style="margin-bottom: 1.5rem;">
+                                <label style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">Gross Salary</label>
+                                <div style="background-color: rgba(255, 255, 255, 0.1); color: white; padding: 0.75rem; border-radius: 4px; font-weight: 500; margin-bottom: 1rem;">
+                                    GMD 15,000.00
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div style="background-color: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 4px; height: 100%;">
+                                        <h5 style="color: white; font-size: 0.9rem; margin-bottom: 0.5rem;">Employee Contribution</h5>
+                                        <div style="color: white; font-size: 1.5rem; font-weight: 700; display: flex; align-items: baseline;">
+                                            GMD 750 <span style="font-size: 0.9rem; font-weight: 400; margin-left: 0.5rem; color: rgba(255,255,255,0.7);">(5%)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div style="background-color: rgba(103, 61, 230, 0.3); padding: 1rem; border-radius: 4px; height: 100%;">
+                                        <h5 style="color: white; font-size: 0.9rem; margin-bottom: 0.5rem;">Employer Contribution</h5>
+                                        <div style="color: white; font-size: 1.5rem; font-weight: 700; display: flex; align-items: baseline;">
+                                            GMD 1,500 <span style="font-size: 0.9rem; font-weight: 400; margin-left: 0.5rem; color: rgba(255,255,255,0.7);">(10%)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Regulatory Compliance CTA -->
+            <div class="text-center mt-5">
+                <h3 style="color: white; margin-bottom: 1.5rem;">Complete Gambian Regulatory Compliance</h3>
+                <p style="color: rgba(255,255,255,0.8); max-width: 700px; margin: 0 auto 2rem auto;">Our system ensures your business stays fully compliant with all Gambian tax and labor regulations with automatic updates and built-in compliance checks.</p>
+                <a href="#" class="btn btn-light">Schedule a Demo</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reporting & Analytics Features -->
+    <section class="feature-section light" id="reporting-analytics">
+        <div class="container">
+            <div class="section-title">
+                <h2>Reporting & Analytics</h2>
+                <p>Gain valuable insights into your payroll data with our comprehensive reporting features</p>
+            </div>
+            
+            <!-- Salary Overview Reports -->
+            <div class="feature-box highlight-purple">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 feature-content feature-accent-1">
+                        <div class="feature-icon-large">
+                            <i class="fas {{ reporting_features.0.icon }}"></i>
+                        </div>
+                        <h3 class="feature-title">{{ reporting_features.0.title }}</h3>
+                        <p class="feature-description">{{ reporting_features.0.description }}</p>
+                        <ul class="feature-points">
+                            {% for detail in reporting_features.0.details %}
+                            <li>{{ detail }}</li>
+                            {% endfor %}
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary">View Sample Reports</a>
+                    </div>
+                    <div class="col-lg-6">
+                        <div style="background-color: white; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); padding: 1.5rem; border: 1px solid #eaeaea;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid #f0f0f0;">
+                                <h5 style="margin: 0; font-size: 1.1rem; color: #333;">Salary Distribution by Department</h5>
+                                <div style="color: #666; font-size: 0.85rem;">April 2025</div>
+                            </div>
+                            <div style="height: 220px; position: relative; margin-bottom: 1rem;">
+                                <!-- Mocked Bar Chart -->
+                                <div style="position: absolute; bottom: 0; left: 0; width: 20%; height: 70%; background-color: #673de6; border-radius: 4px 4px 0 0;"></div>
+                                <div style="position: absolute; bottom: 0; left: 22%; width: 20%; height: 120%; background-color: #783de6; border-radius: 4px 4px 0 0;"></div>
+                                <div style="position: absolute; bottom: 0; left: 44%; width: 20%; height: 90%; background-color: #873de6; border-radius: 4px 4px 0 0;"></div>
+                                <div style="position: absolute; bottom: 0; left: 66%; width: 20%; height: 150%; background-color: #973de6; border-radius: 4px 4px 0 0;"></div>
+                                <div style="position: absolute; bottom: 0; left: 88%; width: 20%; height: 100%; background-color: #a73de6; border-radius: 4px 4px 0 0;"></div>
+                                
+                                <!-- X-axis labels -->
+                                <div style="position: absolute; bottom: -25px; left: 0; width: 20%; text-align: center; font-size: 0.8rem; color: #666;">HR</div>
+                                <div style="position: absolute; bottom: -25px; left: 22%; width: 20%; text-align: center; font-size: 0.8rem; color: #666;">IT</div>
+                                <div style="position: absolute; bottom: -25px; left: 44%; width: 20%; text-align: center; font-size: 0.8rem; color: #666;">Finance</div>
+                                <div style="position: absolute; bottom: -25px; left: 66%; width: 20%; text-align: center; font-size: 0.8rem; color: #666;">Sales</div>
+                                <div style="position: absolute; bottom: -25px; left: 88%; width: 20%; text-align: center; font-size: 0.8rem; color: #666;">Mgmt</div>
+                            </div>
+                            <div style="font-size: 0.85rem; color: #666; margin-top: 2rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span>Average Salary:</span>
+                                    <span style="font-weight: 600; color: #333;">GMD 25,800</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span>Highest Department:</span>
+                                    <span style="font-weight: 600; color: #333;">Sales (GMD 42,500)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Monthly Salary Reports -->
+            <div class="feature-box highlight-accent">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 order-lg-2 feature-content feature-accent-2">
+                        <div class="feature-icon-large">
+                            <i class="fas {{ reporting_features.1.icon }}"></i>
+                        </div>
+                        <h3 class="feature-title">{{ reporting_features.1.title }}</h3>
+                        <p class="feature-description">{{ reporting_features.1.description }}</p>
+                        <ul class="feature-points">
+                            {% for detail in reporting_features.1.details %}
+                            <li>{{ detail }}</li>
+                            {% endfor %}
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary">Explore Reports</a>
+                    </div>
+                    <div class="col-lg-6 order-lg-1">
+                        <div style="background-color: white; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); padding: 1.5rem; border: 1px solid #eaeaea;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid #f0f0f0;">
+                                <h5 style="margin: 0; font-size: 1.1rem; color: #333;">Monthly Payroll Summary</h5>
+                                <div style="color: #666; font-size: 0.85rem;">March 2025</div>
+                            </div>
+                            <div>
+                                <div style="margin-bottom: 1.5rem;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                        <span style="font-size: 0.9rem; color: #666;">Total Employees Paid</span>
+                                        <span style="font-size: 0.9rem; color: #333; font-weight: 600;">57</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                        <span style="font-size: 0.9rem; color: #666;">Gross Salary Total</span>
+                                        <span style="font-size: 0.9rem; color: #333; font-weight: 600;">GMD 1,254,500.00</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                        <span style="font-size: 0.9rem; color: #666;">Total PAYE Tax</span>
+                                        <span style="font-size: 0.9rem; color: #333; font-weight: 600;">GMD 158,670.00</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                        <span style="font-size: 0.9rem; color: #666;">Total SSHFC Contributions</span>
+                                        <span style="font-size: 0.9rem; color: #333; font-weight: 600;">GMD 187,950.00</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed #ddd;">
+                                        <span style="font-size: 0.9rem; color: #333; font-weight: 600;">Net Salary Total</span>
+                                        <span style="font-size: 0.9rem; color: #333; font-weight: 600;">GMD 907,880.00</span>
+                                    </div>
+                                </div>
+                                <div style="height: 10px; background-color: #f0f0f0; border-radius: 5px; position: relative; overflow: hidden; margin-bottom: 2rem;">
+                                    <div style="position: absolute; left: 0; top: 0; height: 100%; width: 65%; background-color: #673de6; border-radius: 5px;"></div>
+                                </div>
+                                <div style="font-size: 0.8rem; color: #666; text-align: center;">
+                                    65% of monthly budget utilized
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Custom Analytics -->
+            <div class="feature-box highlight-purple">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 feature-content feature-accent-3">
+                        <div class="feature-icon-large">
+                            <i class="fas {{ reporting_features.2.icon }}"></i>
+                        </div>
+                        <h3 class="feature-title">{{ reporting_features.2.title }}</h3>
+                        <p class="feature-description">{{ reporting_features.2.description }}</p>
+                        <ul class="feature-points">
+                            {% for detail in reporting_features.2.details %}
+                            <li>{{ detail }}</li>
+                            {% endfor %}
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary">Create Custom Reports</a>
+                    </div>
+                    <div class="col-lg-6">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80" alt="Custom Analytics" class="feature-image bordered">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- System & Administration Features -->
+    <section class="feature-section gray" id="admin-features">
+        <div class="container">
+            <div class="section-title">
+                <h2>System & Administration</h2>
+                <p>Configure and manage your system with powerful administration tools</p>
+            </div>
+            
+            <!-- User Management -->
+            <div class="feature-box highlight-accent">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 order-lg-2 feature-content feature-accent-1">
+                        <div class="feature-icon-large">
+                            <i class="fas {{ admin_features.0.icon }}"></i>
+                        </div>
+                        <h3 class="feature-title">{{ admin_features.0.title }}</h3>
+                        <p class="feature-description">{{ admin_features.0.description }}</p>
+                        <ul class="feature-points">
+                            {% for detail in admin_features.0.details %}
+                            <li>{{ detail }}</li>
+                            {% endfor %}
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary">Learn More</a>
+                    </div>
+                    <div class="col-lg-6 order-lg-1">
+                        <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80" alt="User Management" class="feature-image bordered">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- System Configuration -->
+            <div class="feature-box highlight-purple">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 feature-content feature-accent-2">
+                        <div class="feature-icon-large">
+                            <i class="fas {{ admin_features.1.icon }}"></i>
+                        </div>
+                        <h3 class="feature-title">{{ admin_features.1.title }}</h3>
+                        <p class="feature-description">{{ admin_features.1.description }}</p>
+                        <ul class="feature-points">
+                            {% for detail in admin_features.1.details %}
+                            <li>{{ detail }}</li>
+                            {% endfor %}
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary">Learn More</a>
+                    </div>
+                    <div class="col-lg-6">
+                        <img src="https://images.unsplash.com/photo-1581092921461-39b90ca61edb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80" alt="System Configuration" class="feature-image bordered">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Data Management -->
+            <div class="feature-box highlight-accent">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 order-lg-2 feature-content feature-accent-3">
+                        <div class="feature-icon-large">
+                            <i class="fas {{ admin_features.2.icon }}"></i>
+                        </div>
+                        <h3 class="feature-title">{{ admin_features.2.title }}</h3>
+                        <p class="feature-description">{{ admin_features.2.description }}</p>
+                        <ul class="feature-points">
+                            {% for detail in admin_features.2.details %}
+                            <li>{{ detail }}</li>
+                            {% endfor %}
+                        </ul>
+                        <a href="#" class="btn btn-outline-primary">Learn More</a>
+                    </div>
+                    <div class="col-lg-6 order-lg-1">
+                        <img src="https://images.unsplash.com/photo-1544383835-bda2bc66a55d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80" alt="Data Management" class="feature-image bordered">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="feature-section dark" style="background: linear-gradient(135deg, #673de6 0%, #5429d0 100%);">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-7 mb-5 mb-lg-0">
+                    <h2 style="color: white; font-size: 2.5rem; font-weight: 700; margin-bottom: 1.5rem;">Ready to Transform Your Payroll Process?</h2>
+                    <p style="color: rgba(255,255,255,0.9); font-size: 1.1rem; margin-bottom: 2rem; line-height: 1.6;">Join hundreds of Gambian businesses that trust Jokoor Payroll for their payroll management needs. Our comprehensive solution handles everything from automated calculations to compliance and reporting.</p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="/contact" class="btn btn-light btn-lg">Schedule a Demo</a>
+                        <a href="#" class="btn btn-outline-light btn-lg">View Pricing</a>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div style="background-color: rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 2rem; text-align: center;">
+                        <div style="width: 80px; height: 80px; background-color: rgba(255, 255, 255, 0.2); border-radius: 40px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                            <i class="fas fa-rocket" style="color: white; font-size: 2rem;"></i>
+                        </div>
+                        <h3 style="color: white; font-size: 1.5rem; margin-bottom: 1rem;">Get Started Today</h3>
+                        <p style="color: rgba(255,255,255,0.8); margin-bottom: 1.5rem;">Set up your Jokoor Payroll account in minutes and start managing your Gambian payroll with ease.</p>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 1.5rem;">
+                            <div style="text-align: center; padding: 0.5rem;">
+                                <div style="background-color: rgba(255, 255, 255, 0.2); width: 40px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem;">
+                                    <span style="color: white; font-weight: 700;">1</span>
+                                </div>
+                                <p style="color: white; font-size: 0.9rem; margin: 0;">Sign Up</p>
+                            </div>
+                            <div style="text-align: center; padding: 0.5rem;">
+                                <div style="background-color: rgba(255, 255, 255, 0.2); width: 40px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem;">
+                                    <span style="color: white; font-weight: 700;">2</span>
+                                </div>
+                                <p style="color: white; font-size: 0.9rem; margin: 0;">Add Employees</p>
+                            </div>
+                            <div style="text-align: center; padding: 0.5rem;">
+                                <div style="background-color: rgba(255, 255, 255, 0.2); width: 40px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem;">
+                                    <span style="color: white; font-weight: 700;">3</span>
+                                </div>
+                                <p style="color: white; font-size: 0.9rem; margin: 0;">Run Payroll</p>
+                            </div>
+                        </div>
+                        <a href="/register" class="btn btn-light">Create Free Account</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <div class="footer-logo">
+                        <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="32" height="32" rx="8" fill="#673de6"/>
+                            <path d="M10 16L14 20L22 12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Jokoor Payroll
+                    </div>
+                    <div class="gambia-flag-colors"></div>
+                    <p class="footer-description">A modern payroll solution designed specifically for businesses in The Gambia, helping you manage salaries, taxes, and compliance with ease.</p>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5>Company</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Our Team</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5>Product</h5>
+                    <ul class="footer-links">
+                        <li><a href="/site/features">Features</a></li>
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="#">Testimonials</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-4 mb-4">
+                    <h5>Contact</h5>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-map-marker-alt me-2"></i> Kairaba Avenue, Banjul, The Gambia</li>
+                        <li><i class="fas fa-phone me-2"></i> +220 123 4567</li>
+                        <li><i class="fas fa-envelope me-2"></i> info@jokoorpayroll.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; {{ frappe.utils.now_datetime().strftime('%Y') }} Jokoor Payroll. All rights reserved. Proudly serving businesses in The Gambia.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script>
+        // Add padding to body for fixed navbar
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.style.paddingTop = document.querySelector('.navbar').offsetHeight + 'px';
+        });
+    </script>
+</body>
+</html>

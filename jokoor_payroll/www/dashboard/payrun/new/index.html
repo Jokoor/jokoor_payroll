@@ -1,0 +1,1085 @@
+{% extends "templates/web.html" %}
+
+{% block head_include %}
+<!-- Link to global styles -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/dashboard/styles/global.css">
+<style>
+    body.custom-dashboard .form-section {
+        background-color: white;
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        border: 1px solid #e5e7eb;
+    }
+    
+    body.custom-dashboard .form-section-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    
+    body.custom-dashboard .form-label {
+        font-weight: 500;
+        color: #4b5563;
+        margin-bottom: 6px;
+    }
+    
+    body.custom-dashboard .required-field::after {
+        content: '*';
+        color: #ef4444;
+        margin-left: 4px;
+    }
+    
+    body.custom-dashboard .form-control {
+        border-radius: 6px;
+        border: 1px solid #d1d5db;
+        padding: 10px 12px;
+    }
+    
+    body.custom-dashboard .form-select {
+        border-radius: 6px;
+        border: 1px solid #d1d5db;
+        padding: 10px 12px;
+    }
+    
+    body.custom-dashboard .date-range-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    body.custom-dashboard .date-range-separator {
+        color: #6b7280;
+        font-weight: 500;
+    }
+    
+    body.custom-dashboard .employee-table {
+        margin-top: 20px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    body.custom-dashboard .employee-table thead {
+        background-color: #f9fafb;
+    }
+    
+    body.custom-dashboard .employee-table th {
+        font-weight: 600;
+        color: #374151;
+        padding: 12px 16px;
+    }
+    
+    body.custom-dashboard .employee-table td {
+        padding: 12px 16px;
+        border-top: 1px solid #f3f4f6;
+    }
+    
+    body.custom-dashboard .no-data-message {
+        text-align: center;
+        padding: 30px;
+        color: #6b7280;
+    }
+    
+    body.custom-dashboard .filter-btn {
+        background-color: #f3f0ff;
+        border-color: #d4c5fa;
+        color: #7d5fd2;
+    }
+    
+    body.custom-dashboard .filter-btn:hover {
+        background-color: #e9e1fb;
+        border-color: #c7b3f8;
+        color: #6a4ec1;
+    }
+    
+    body.custom-dashboard .filter-reset {
+        font-size: 14px;
+        color: #6b7280;
+        text-decoration: none;
+        margin-left: 10px;
+    }
+    
+    body.custom-dashboard .filter-reset:hover {
+        color: #374151;
+        text-decoration: underline;
+    }
+    
+    body.custom-dashboard .employee-count {
+        font-size: 14px;
+        color: #6b7280;
+        margin-top: 10px;
+    }
+    
+    body.custom-dashboard .employee-count strong {
+        color: #374151;
+    }
+    
+    body.custom-dashboard .enhanced-date-picker {
+        position: relative;
+    }
+    
+    body.custom-dashboard .calendar-icon {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6b7280;
+        pointer-events: none;
+    }
+    
+    .date-range-preview {
+        background-color: #f3f0ff;
+        border-radius: 6px;
+        padding: 12px 16px;
+        margin-top: 16px;
+        border: 1px solid #d4c5fa;
+    }
+    
+    .date-range-preview h6 {
+        font-weight: 600;
+        color: #7d5fd2;
+        margin-bottom: 8px;
+    }
+    
+    .date-range-preview p {
+        margin-bottom: 5px;
+        font-size: 14px;
+        color: #4b5563;
+    }
+    
+    .date-range-preview .days-count {
+        font-weight: 600;
+        color: #374151;
+    }
+</style>
+{% endblock %}
+
+{% block title %}Create New Pay Run | Jokoor Payroll{% endblock %}
+
+{% block header %}
+<!-- Override the header to remove Frappe's default header -->
+{% endblock %}
+
+{% block navbar %}
+<!-- Override navbar to remove Frappe's default navbar -->
+{% endblock %}
+
+{% block footer %}
+<!-- Override footer to remove Frappe's default footer -->
+{% endblock %}
+
+{% block content %}
+<div class="custom-dashboard">
+    <!-- Sidebar -->
+    {% include "templates/includes/dashboard/sidebar.html" %}
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <button class="btn btn-sm btn-light me-3" onclick="history.back()">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h2 class="fw-bold mb-0 d-inline-block">Create New Pay Run</h2>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Display form messages if any -->
+        {% if message %}
+            <div class="alert {{ 'alert-success' if success else 'alert-danger' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+        
+        <!-- Payrun Form -->
+        <form id="payrunForm" method="POST" action="/api/method/jokoor_payroll.www.dashboard.payrun.new.index.create_payrun">
+            <input type="hidden" name="csrf_token" value="{{ frappe.session.csrf_token }}">
+            
+            <!-- Other form fields -->
+            <input type="hidden" name="payrun_name" id="payrunNameField">
+            <input type="hidden" name="payroll_frequency" id="payrollFrequencyField">
+            <input type="hidden" name="start_date" id="startDateField">
+            <input type="hidden" name="end_date" id="endDateField">
+            <input type="hidden" name="posting_date" id="postingDateField">
+            <input type="hidden" name="base_days" id="baseDaysField">
+            
+            <!-- Payrun Details Section -->
+            <div class="form-section">
+                <h3 class="form-section-title">Pay Run Details</h3>
+                
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="payrunName" class="form-label required-field">Pay Run Name</label>
+                        <input type="text" class="form-control" id="payrunName" name="payrun_name" readonly>
+                        <small class="form-text text-muted">Automatically generated based on payroll frequency and period</small>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="payrollFrequency" class="form-label required-field">Payroll Frequency</label>
+                        <select class="form-select" id="payrollFrequency" name="payroll_frequency" required>
+                            <option value="" disabled selected>Select frequency</option>
+                            <option value="Monthly">Monthly</option>
+                            <option value="Fortnightly">Fortnightly</option>
+                            <option value="Bimonthly">Bimonthly</option>
+                            <option value="Weekly">Weekly</option>
+                            <option value="Daily">Daily</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-12">
+                        <label class="form-label required-field">Pay Period</label>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="enhanced-date-picker">
+                                    <input type="date" class="form-control" id="startDate" name="start_date" required>
+                                    <i class="fas fa-calendar-alt calendar-icon"></i>
+                                </div>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <span class="date-range-separator">to</span>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="enhanced-date-picker">
+                                    <input type="date" class="form-control" id="endDate" name="end_date" required>
+                                    <i class="fas fa-calendar-alt calendar-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-12 mt-3">
+                        <div class="mb-3">
+                            <label class="form-label">Quick Period Selection</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" data-period="current-month">
+                                    <i class="fas fa-calendar-day me-1"></i> Current Month
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" data-period="previous-month">
+                                    <i class="fas fa-calendar-week me-1"></i> Previous Month
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" data-period="current-quarter">
+                                    <i class="fas fa-calendar-alt me-1"></i> Current Quarter
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" data-period="custom">
+                                    <i class="fas fa-calendar-plus me-1"></i> Custom Range
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="postingDate" class="form-label required-field">Posting Date</label>
+                        <div class="enhanced-date-picker">
+                            <input type="date" class="form-control" id="postingDate" name="posting_date" required>
+                            <i class="fas fa-calendar-alt calendar-icon"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="baseDays" class="form-label required-field">Base Working Days</label>
+                        <input type="number" class="form-control" id="baseDays" name="base_days" min="1" max="31" value="30" required>
+                    </div>
+                </div>
+                
+                <!-- Date Range Preview -->
+                <div class="date-range-preview">
+                    <h6><i class="fas fa-calendar-check me-2"></i> Pay Period Summary</h6>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p>Start Date: <span id="previewStartDate">-</span></p>
+                        </div>
+                        <div class="col-md-4">
+                            <p>End Date: <span id="previewEndDate">-</span></p>
+                        </div>
+                        <div class="col-md-4">
+                            <p>Period: <span id="previewDays" class="days-count">0</span> days</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Filter Employees Section -->
+            <div class="form-section">
+                <h3 class="form-section-title">Filter Employees</h3>
+                
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="branch" class="form-label">Branch</label>
+                        <select class="form-select" id="branch" name="branch">
+                            <option value="">All Branches</option>
+                            {% for branch in branches %}
+                                <option value="{{ branch.name }}">{{ branch.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="designation" class="form-label">Designation</label>
+                        <select class="form-select" id="designation" name="designation">
+                            <option value="">All Designations</option>
+                            {% for desig in designations %}
+                                <option value="{{ desig.name }}">{{ desig.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="department" class="form-label">Department</label>
+                        <select class="form-select" id="department" name="department">
+                            <option value="">All Departments</option>
+                            {% for dept in departments %}
+                                <option value="{{ dept.name }}">{{ dept.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="grade" class="form-label">Grade</label>
+                        <select class="form-select" id="grade" name="grade">
+                            <option value="">All Grades</option>
+                            {% for grade in grades %}
+                                <option value="{{ grade.name }}">{{ grade.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mt-3 d-flex align-items-center">
+                    <button type="button" id="applyFilterBtn" class="btn filter-btn">
+                        <i class="fas fa-filter me-2"></i> Apply Filters
+                    </button>
+                    <a href="#" id="resetFiltersBtn" class="filter-reset">
+                        <i class="fas fa-times me-1"></i> Reset Filters
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Employee Details Section -->
+            <div class="form-section">
+                <h3 class="form-section-title">Employee Details</h3>
+                
+                <div class="employee-count">
+                    Showing <strong id="filteredCount">0</strong> employees out of <strong id="totalCount">{{ employees|length }}</strong> total employees
+                </div>
+                
+                <div class="table-responsive employee-table">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th width="40">
+                                    <input type="checkbox" class="form-check-input" id="selectAllEmployees" title="Select All">
+                                </th>
+                                <th>No.</th>
+                                <th>Employee</th>
+                                <th>Employee Name</th>
+                                <th>Department</th>
+                                <th>Designation</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeeTableBody">
+                            {% if employees %}
+                                {% for emp in employees %}
+                                    <tr class="employee-row" data-branch="{{ emp.branch or '' }}" data-department="{{ emp.department or '' }}" data-designation="{{ emp.designation or '' }}" data-grade="{{ emp.grade or '' }}">
+                                        <td>
+                                            <input type="checkbox" class="form-check-input employee-checkbox" name="employees[]" value="{{ emp.name }}">
+                                        </td>
+                                        <td>{{ loop.index }}</td>
+                                        <td>{{ emp.name }}</td>
+                                        <td>{{ emp.employee_name }}</td>
+                                        <td>{{ emp.department or 'Not Assigned' }}</td>
+                                        <td>{{ emp.designation or 'Not Assigned' }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="no-data-message">
+                                        <i class="fas fa-users me-2"></i> No employees found
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Submit Section -->
+            <div class="form-section">
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-outline-secondary me-2" onclick="history.back()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="createPayRunBtn">
+                        <i class="fas fa-plus me-1"></i> Create Pay Run
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Add custom class to body
+    document.body.classList.add('custom-dashboard');
+    
+    $(document).ready(function() {
+        // Set default dates (current month)
+        setDefaultDates();
+        
+        // Update date preview when dates change
+        $('#startDate, #endDate').on('change', function() {
+            updateDatePreview();
+        });
+        
+        // Select all employees toggle
+        $('#selectAllEmployees').on('change', function() {
+            $('.employee-checkbox:visible').prop('checked', $(this).prop('checked'));
+            updateSelectedCount();
+        });
+        
+        // Individual employee checkbox
+        $(document).on('change', '.employee-checkbox', function() {
+            updateSelectedCount();
+        });
+        
+        // Apply filters
+        $('#applyFilterBtn').on('click', function() {
+            applyFilters();
+        });
+        
+        // Reset filters
+        $('#resetFiltersBtn').on('click', function(e) {
+            e.preventDefault();
+            resetFilters();
+        });
+        
+        // Form submission
+        $('#payrunForm').on('submit', function(e) {
+            e.preventDefault(); // Prevent the default form submission
+            
+            // Set the values of the hidden fields
+            $('#payrunNameField').val($('#payrunName').val());
+            $('#payrollFrequencyField').val($('#payrollFrequency').val());
+            $('#startDateField').val($('#startDate').val());
+            $('#endDateField').val($('#endDate').val());
+            $('#postingDateField').val($('#postingDate').val());
+            $('#baseDaysField').val($('#baseDays').val());
+            
+            // Ensure we have at least one employee selected
+            if ($('.employee-checkbox:checked').length === 0) {
+                alert('Please select at least one employee');
+                return false;
+            }
+            
+            // Check if there's a warning and the exclude checkbox isn't checked
+            if ($('#payslipWarning').length && !$('#excludeExistingPayslips').is(':checked')) {
+                if (!confirm('Warning: Some employees already have payslips in this period. Continue anyway?')) {
+                    return false;
+                }
+            }
+            
+            // Show loading state
+            const submitBtn = $('#createPayRunBtn');
+            const originalText = submitBtn.html();
+            submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i> Creating...');
+            submitBtn.prop('disabled', true);
+            
+            // Prepare form data
+            const formData = new FormData(this);
+            
+            // Add employees
+            $('.employee-checkbox:checked').each(function() {
+                formData.append('employees', $(this).val());
+            });
+            
+            // Submit the form via AJAX
+            $.ajax({
+                url: '/api/method/jokoor_payroll.www.dashboard.payrun.new.index.create_payrun',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    // Redirect to the payrun list page
+                    window.location.href = '/dashboard/payrun';
+                },
+                error: function(xhr, status, error) {
+                    // Reset button
+                    submitBtn.html(originalText);
+                    submitBtn.prop('disabled', false);
+                    
+                    // Show error message
+                    let errorMessage = 'Error creating payrun';
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response && response._server_messages) {
+                            const messages = JSON.parse(response._server_messages);
+                            errorMessage = messages.map(msg => JSON.parse(msg).message).join('<br>');
+                        }
+                    } catch (e) {
+                        errorMessage = 'An unexpected error occurred';
+                    }
+                    
+                    showPayslipWarning(errorMessage, 'danger');
+                }
+            });
+            
+            return false;
+        });
+        
+        // Initially update the filtered count
+        updateFilteredCount();
+        
+        // Initialize date preview
+        updateDatePreview();
+        
+        // Generate payrun name when frequency changes
+        $('#payrollFrequency').on('change', function() {
+            generatePayrunName();
+        });
+        
+        // Auto-generate payrun name when dates change
+        $('#startDate, #endDate').on('change', function() {
+            generatePayrunName();
+        });
+        
+        // Set base days when end date changes
+        $('#endDate').on('change', function() {
+            calculateBaseDays();
+        });
+        
+        // Calculate posting date (5 days after end date)
+        $('#endDate').on('change', function() {
+            calculatePostingDate();
+        });
+        
+        // Quick period selection buttons
+        $('[data-period]').on('click', function() {
+            const periodType = $(this).data('period');
+            const today = new Date();
+            let startDate, endDate;
+            
+            switch (periodType) {
+                case 'current-month':
+                    startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                    endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                    break;
+                    
+                case 'previous-month':
+                    startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                    endDate = new Date(today.getFullYear(), today.getMonth(), 0);
+                    break;
+                    
+                case 'current-quarter':
+                    const quarter = Math.floor(today.getMonth() / 3);
+                    startDate = new Date(today.getFullYear(), quarter * 3, 1);
+                    endDate = new Date(today.getFullYear(), (quarter + 1) * 3, 0);
+                    break;
+                    
+                case 'custom':
+                    // Open a date range picker or modal for custom selection
+                    // For now, we'll just focus on the start date input
+                    $('#startDate').focus();
+                    return;
+            }
+            
+            // Set the date inputs
+            $('#startDate').val(formatDate(startDate));
+            $('#endDate').val(formatDate(endDate));
+            
+            // Update the date preview
+            updateDatePreview();
+            
+            // Update posting date and base days
+            calculatePostingDate();
+            calculateBaseDays();
+            
+            // Update payrun name
+            generatePayrunName();
+        });
+    });
+    
+    // Set default dates to current month
+    function setDefaultDates() {
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        
+        $('#startDate').val(formatDate(firstDay));
+        $('#endDate').val(formatDate(lastDay));
+        
+        // Set posting date to 5 days after end date
+        const postingDate = new Date(lastDay);
+        postingDate.setDate(postingDate.getDate() + 5);
+        $('#postingDate').val(formatDate(postingDate));
+        
+        // Set base days
+        calculateBaseDays();
+    }
+    
+    // Format date as YYYY-MM-DD
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+    
+    // Update the date preview
+    function updateDatePreview() {
+        const startDate = $('#startDate').val();
+        const endDate = $('#endDate').val();
+        
+        if (startDate && endDate) {
+            // Format dates for display
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            
+            $('#previewStartDate').text(start.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }));
+            $('#previewEndDate').text(end.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }));
+            
+            // Calculate days in period
+            const timeDiff = Math.abs(end - start);
+            const days = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)) + 1;
+            $('#previewDays').text(days);
+            
+            // Update base days
+            $('#baseDays').val(days);
+        } else {
+            $('#previewStartDate').text('-');
+            $('#previewEndDate').text('-');
+            $('#previewDays').text('0');
+        }
+    }
+    
+    // Replace the existing applyFilters function with this one that uses AJAX
+    function applyFilters() {
+        const branch = $('#branch').val();
+        const department = $('#department').val();
+        const designation = $('#designation').val();
+        const grade = $('#grade').val();
+        
+        // First apply client-side filtering for immediate feedback
+        applyClientSideFilters();
+        
+        // Then fetch from server for accurate results
+        fetchFilteredEmployees();
+    }
+    
+    // Client-side filtering for immediate feedback
+    function applyClientSideFilters() {
+        const branch = $('#branch').val();
+        const department = $('#department').val();
+        const designation = $('#designation').val();
+        const grade = $('#grade').val();
+        
+        $('.employee-row').each(function() {
+            let show = true;
+            
+            if (branch && $(this).data('branch') !== branch) {
+                show = false;
+            }
+            
+            if (department && $(this).data('department') !== department) {
+                show = false;
+            }
+            
+            if (designation && $(this).data('designation') !== designation) {
+                show = false;
+            }
+            
+            if (grade && $(this).data('grade') !== grade) {
+                show = false;
+            }
+            
+            $(this).toggle(show);
+        });
+        
+        // Update the filtered count
+        updateFilteredCount();
+        
+        // Uncheck "select all" if not all visible rows are selected
+        updateSelectAllState();
+    }
+    
+    // Fetch employees from server based on filters
+    function fetchFilteredEmployees() {
+        const branch = $('#branch').val();
+        const department = $('#department').val();
+        const designation = $('#designation').val();
+        const grade = $('#grade').val();
+        
+        // Show loading state in the table
+        $('#employeeTableBody').html('<tr><td colspan="6" class="text-center py-4"><i class="fas fa-spinner fa-spin me-2"></i> Loading employees...</td></tr>');
+        
+        $.ajax({
+            url: '/api/method/jokoor_payroll.www.dashboard.payrun.new.index.get_filtered_employees',
+            type: 'POST',
+            data: {
+                branch: branch,
+                department: department,
+                designation: designation,
+                grade: grade,
+                csrf_token: $('input[name="csrf_token"]').val()
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.message && response.message.success) {
+                    renderEmployeeTable(response.message.employees);
+                    $('#filteredCount').text(response.message.count);
+                } else {
+                    showError('Failed to fetch employees: ' + (response.message?.message || 'Unknown error'));
+                }
+            },
+            error: function(xhr, status, error) {
+                showError('Error fetching employees: ' + error);
+            }
+        });
+    }
+    
+    // Render employee table with fetched data
+    function renderEmployeeTable(employees) {
+        if (!employees || employees.length === 0) {
+            $('#employeeTableBody').html('<tr><td colspan="6" class="no-data-message"><i class="fas fa-users me-2"></i> No employees found</td></tr>');
+            return;
+        }
+        
+        let html = '';
+        employees.forEach(function(emp, index) {
+            html += `
+                <tr class="employee-row" data-branch="${emp.branch || ''}" data-department="${emp.department || ''}" data-designation="${emp.designation || ''}" data-grade="${emp.grade || ''}">
+                    <td>
+                        <input type="checkbox" class="form-check-input employee-checkbox" name="employees[]" value="${emp.name}">
+                    </td>
+                    <td>${index + 1}</td>
+                    <td>${emp.name}</td>
+                    <td>${emp.employee_name}</td>
+                    <td>${emp.department || 'Not Assigned'}</td>
+                    <td>${emp.designation || 'Not Assigned'}</td>
+                </tr>
+            `;
+        });
+        
+        $('#employeeTableBody').html(html);
+        
+        // Update the filtered count
+        updateFilteredCount();
+        
+        // Update "select all" checkbox state
+        updateSelectAllState();
+    }
+    
+    // Show error message
+    function showError(message) {
+        $('#employeeTableBody').html(`<tr><td colspan="6" class="text-center text-danger py-4"><i class="fas fa-exclamation-circle me-2"></i> ${message}</td></tr>`);
+    }
+    
+    // Reset all filters
+    function resetFilters() {
+        $('#branch, #department, #designation, #grade').val('');
+        $('.employee-row').show();
+        updateFilteredCount();
+        updateSelectAllState();
+    }
+    
+    // Update filtered count
+    function updateFilteredCount() {
+        const filteredCount = $('.employee-row:visible').length;
+        $('#filteredCount').text(filteredCount);
+    }
+    
+    // Update selected count
+    function updateSelectedCount() {
+        const selectedCount = $('.employee-checkbox:visible:checked').length;
+        const filteredCount = $('.employee-row:visible').length;
+        
+        // Update "select all" checkbox
+        if (filteredCount > 0) {
+            $('#selectAllEmployees').prop('indeterminate', selectedCount > 0 && selectedCount < filteredCount);
+            $('#selectAllEmployees').prop('checked', selectedCount === filteredCount);
+        } else {
+            $('#selectAllEmployees').prop('indeterminate', false);
+            $('#selectAllEmployees').prop('checked', false);
+        }
+    }
+    
+    // Update "select all" checkbox state
+    function updateSelectAllState() {
+        const filteredCount = $('.employee-row:visible').length;
+        const selectedCount = $('.employee-checkbox:visible:checked').length;
+        
+        if (filteredCount > 0) {
+            $('#selectAllEmployees').prop('indeterminate', selectedCount > 0 && selectedCount < filteredCount);
+            $('#selectAllEmployees').prop('checked', selectedCount === filteredCount);
+        } else {
+            $('#selectAllEmployees').prop('indeterminate', false);
+            $('#selectAllEmployees').prop('checked', false);
+        }
+    }
+    
+    // Generate payrun name based on frequency and period
+    function generatePayrunName() {
+        const frequency = $('#payrollFrequency').val();
+        const startDate = $('#startDate').val();
+        
+        if (frequency && startDate) {
+            const start = new Date(startDate);
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            const month = monthNames[start.getMonth()];
+            const year = start.getFullYear();
+            
+            // Format: Regular Payroll - January 2023
+            const payrunName = `${frequency} Payroll - ${month} ${year}`;
+            $('#payrunName').val(payrunName);
+        }
+    }
+    
+    // Calculate base days between start and end date
+    function calculateBaseDays() {
+        const startDate = $('#startDate').val();
+        const endDate = $('#endDate').val();
+        
+        if (startDate && endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            
+            // Calculate days in period
+            const timeDiff = Math.abs(end - start);
+            const days = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)) + 1;
+            
+            $('#baseDays').val(days);
+        }
+    }
+    
+    // Calculate posting date (5 days after end date)
+    function calculatePostingDate() {
+        const endDate = $('#endDate').val();
+        
+        if (endDate) {
+            const end = new Date(endDate);
+            const postingDate = new Date(end);
+            postingDate.setDate(postingDate.getDate() + 5);
+            
+            $('#postingDate').val(formatDate(postingDate));
+        }
+    }
+
+    // Add this function to validate existing payslips
+    function validateExistingPayslips() {
+        // Get selected employees
+        const selectedEmployees = [];
+        $('.employee-checkbox:checked').each(function() {
+            selectedEmployees.push($(this).val());
+        });
+        
+        // If no employees are selected, don't check
+        if (selectedEmployees.length === 0) {
+            clearPayslipWarning();
+            return;
+        }
+        
+        const startDate = $('#startDate').val();
+        const endDate = $('#endDate').val();
+        
+        // If dates aren't set, don't check
+        if (!startDate || !endDate) {
+            clearPayslipWarning();
+            return;
+        }
+        
+        // Show loading message
+        showPayslipWarning('Checking for existing payslips...', 'info');
+        
+        $.ajax({
+            url: '/api/method/jokoor_payroll.www.dashboard.payrun.new.index.check_existing_payslips',
+            type: 'POST',
+            data: {
+                start_date: startDate,
+                end_date: endDate,
+                employees: selectedEmployees,
+                csrf_token: $('input[name="csrf_token"]').val()
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.message && response.message.success) {
+                    const existingPayslips = response.message.existing_payslips;
+                    
+                    if (existingPayslips.length > 0) {
+                        // Create warning message with details
+                        let warningHtml = `
+                            <div class="alert alert-warning mt-3" id="payslipWarning">
+                                <h6 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Warning: Existing Payslips Found</h6>
+                                <p>The following ${existingPayslips.length} employee(s) already have payslips in this period:</p>
+                                <ul class="mb-0">
+                        `;
+                        
+                        // Add first 5 employees with existing payslips
+                        const displayLimit = Math.min(existingPayslips.length, 5);
+                        for (let i = 0; i < displayLimit; i++) {
+                            const slip = existingPayslips[i];
+                            warningHtml += `<li>${slip.employee_name} (${slip.employee}) - Period: ${slip.period}</li>`;
+                        }
+                        
+                        // If there are more than 5, add a note
+                        if (existingPayslips.length > 5) {
+                            warningHtml += `<li>And ${existingPayslips.length - 5} more employees...</li>`;
+                        }
+                        
+                        warningHtml += `
+                                </ul>
+                                <hr>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="excludeExistingPayslips">
+                                        <label class="form-check-label" for="excludeExistingPayslips">
+                                            Exclude these employees from the pay run
+                                        </label>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" id="viewAllPayslipsBtn">View All</button>
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Add the warning to the page
+                        if ($('#payslipWarning').length) {
+                            $('#payslipWarning').replaceWith(warningHtml);
+                        } else {
+                            $('#createPayRunBtn').before(warningHtml);
+                        }
+                        
+                        // Store the full list for the modal
+                        window.existingPayslipsList = existingPayslips;
+                        
+                        // Add event listener for the "View All" button
+                        $('#viewAllPayslipsBtn').on('click', function() {
+                            showExistingPayslipsModal(existingPayslips);
+                        });
+                        
+                        // Add event listener for the "Exclude" checkbox
+                        $('#excludeExistingPayslips').on('change', function() {
+                            if ($(this).is(':checked')) {
+                                // Uncheck employees with existing payslips
+                                for (const slip of existingPayslips) {
+                                    $(`.employee-checkbox[value="${slip.employee}"]`).prop('checked', false);
+                                }
+                                updateSelectedCount();
+                            }
+                        });
+                    } else {
+                        clearPayslipWarning();
+                    }
+                } else {
+                    // Show error message
+                    showPayslipWarning('Failed to check for existing payslips', 'danger');
+                }
+            },
+            error: function(xhr, status, error) {
+                // Show error message
+                showPayslipWarning('Error checking for existing payslips: ' + error, 'danger');
+            }
+        });
+    }
+
+    // Helper function to show payslip warning
+    function showPayslipWarning(message, type = 'warning') {
+        // Create or update warning
+        if ($('#payslipWarning').length) {
+            $('#payslipWarning').replaceWith(`
+                <div class="alert alert-${type} mt-3" id="payslipWarning">
+                    <i class="fas fa-${type === 'info' ? 'info-circle' : type === 'danger' ? 'exclamation-circle' : 'exclamation-triangle'} me-2"></i> ${message}
+                </div>
+            `);
+        } else {
+            $('#createPayRunBtn').before(`
+                <div class="alert alert-${type} mt-3" id="payslipWarning">
+                    <i class="fas fa-${type === 'info' ? 'info-circle' : type === 'danger' ? 'exclamation-circle' : 'exclamation-triangle'} me-2"></i> ${message}
+                </div>
+            `);
+        }
+    }
+
+    // Helper function to clear payslip warning
+    function clearPayslipWarning() {
+        $('#payslipWarning').remove();
+    }
+
+    // Function to show modal with all existing payslips
+    function showExistingPayslipsModal(payslips) {
+        // Create modal HTML
+        const modalHtml = `
+            <div class="modal fade" id="existingPayslipsModal" tabindex="-1" aria-labelledby="existingPayslipsModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="existingPayslipsModalLabel">Existing Payslips</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Employee ID</th>
+                                            <th>Employee Name</th>
+                                            <th>Pay Period</th>
+                                            <th>Payslip</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${payslips.map(slip => `
+                                            <tr>
+                                                <td>${slip.employee}</td>
+                                                <td>${slip.employee_name}</td>
+                                                <td>${slip.period}</td>
+                                                <td><a href="/app/salary-slip/${slip.payslip}" target="_blank">${slip.payslip}</a></td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="excludeAllBtn">Exclude All These Employees</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Add modal to the page
+        if ($('#existingPayslipsModal').length) {
+            $('#existingPayslipsModal').remove();
+        }
+        $('body').append(modalHtml);
+        
+        // Initialize and show the modal
+        const modal = new bootstrap.Modal(document.getElementById('existingPayslipsModal'));
+        modal.show();
+        
+        // Add event listener for the "Exclude All" button
+        $('#excludeAllBtn').on('click', function() {
+            // Uncheck employees with existing payslips
+            for (const slip of payslips) {
+                $(`.employee-checkbox[value="${slip.employee}"]`).prop('checked', false);
+            }
+            updateSelectedCount();
+            $('#excludeExistingPayslips').prop('checked', true);
+            modal.hide();
+        });
+    }
+</script>
+{% endblock %}

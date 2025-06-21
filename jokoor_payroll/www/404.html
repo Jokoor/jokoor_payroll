@@ -1,0 +1,616 @@
+{% extends "templates/web.html" %}
+
+{% block head_include %}
+<!-- Link to global styles -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/dashboard/styles/global.css">
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f9fafb;
+        color: #111827;
+    }
+    
+    .error-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 60px 20px;
+        text-align: center;
+    }
+    
+    .error-code {
+        font-size: 120px;
+        font-weight: 700;
+        color: #7d5fd2;
+        line-height: 1;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 0px rgba(125, 95, 210, 0.2);
+    }
+    
+    .error-title {
+        font-size: 28px;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 20px;
+    }
+    
+    .error-message {
+        font-size: 16px;
+        color: #6b7280;
+        margin-bottom: 30px;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .error-image {
+        max-width: 300px;
+        margin-bottom: 30px;
+    }
+    
+    .btn-primary {
+        background-color: #7d5fd2;
+        border-color: #7d5fd2;
+        padding: 10px 24px;
+        font-weight: 500;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+    
+    .btn-primary:hover {
+        background-color: #6a4ec1;
+        border-color: #6a4ec1;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(125, 95, 210, 0.25);
+    }
+    
+    .btn-outline-primary {
+        color: #7d5fd2;
+        border-color: #7d5fd2;
+        padding: 10px 24px;
+        font-weight: 500;
+        border-radius: 8px;
+        transition: all 0.2s;
+        margin-left: 10px;
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: #f3f0ff;
+        color: #6a4ec1;
+        border-color: #6a4ec1;
+        transform: translateY(-2px);
+    }
+    
+    .common-links {
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 1px solid #e5e7eb;
+    }
+    
+    .common-links h5 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #374151;
+    }
+    
+    .link-card {
+        display: inline-block;
+        width: 140px;
+        height: 120px;
+        background-color: white;
+        border-radius: 12px;
+        padding: 20px 10px;
+        margin: 0 10px 20px;
+        text-decoration: none;
+        color: #111827;
+        transition: all 0.2s;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        border: 1px solid #e5e7eb;
+        cursor: pointer;
+    }
+    
+    .link-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        border-color: #d4c5fa;
+        color: #7d5fd2;
+    }
+    
+    .link-card i {
+        font-size: 24px;
+        color: #7d5fd2;
+        margin-bottom: 10px;
+    }
+    
+    .link-card-title {
+        font-size: 14px;
+        font-weight: 500;
+    }
+    
+    .error-animation {
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-20px);
+        }
+        100% {
+            transform: translateY(0px);
+        }
+    }
+    
+    /* Salary details styles */
+    .salary-details-container {
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        margin-top: 40px;
+        padding: 30px;
+        text-align: left;
+        display: none;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .salary-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .employee-name {
+        font-size: 18px;
+        font-weight: 600;
+        color: #111827;
+    }
+    
+    .employee-id {
+        font-size: 14px;
+        color: #6b7280;
+    }
+    
+    .salary-amount {
+        font-size: 22px;
+        font-weight: 700;
+        color: #7d5fd2;
+    }
+    
+    .component-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    
+    .component-table th {
+        text-align: left;
+        padding: 12px 15px;
+        background-color: #f3f0ff;
+        color: #4b5563;
+        font-weight: 600;
+        font-size: 14px;
+        border-radius: 6px 6px 0 0;
+    }
+    
+    .component-table td {
+        padding: 12px 15px;
+        border-top: 1px solid #e5e7eb;
+        font-size: 14px;
+    }
+    
+    .component-name {
+        color: #4b5563;
+        font-weight: 500;
+    }
+    
+    .component-amount {
+        text-align: right;
+        font-weight: 600;
+        color: #111827;
+    }
+    
+    .deduction .component-amount {
+        color: #ef4444;
+    }
+    
+    .section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 15px;
+        padding-left: 5px;
+    }
+    
+    .total-row {
+        background-color: #f9fafb;
+    }
+    
+    .total-row td {
+        font-weight: 600;
+        color: #111827;
+    }
+    
+    .close-details {
+        cursor: pointer;
+        color: #6b7280;
+        transition: all 0.2s;
+    }
+    
+    .close-details:hover {
+        color: #111827;
+    }
+    
+    .action-row {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+    }
+    
+    @media (max-width: 768px) {
+        .error-code {
+            font-size: 80px;
+        }
+        
+        .error-title {
+            font-size: 24px;
+        }
+        
+        .link-card {
+            width: 120px;
+            height: 100px;
+            margin: 0 5px 10px;
+        }
+        
+        .salary-details-container {
+            padding: 20px 15px;
+        }
+        
+        .component-table th, 
+        .component-table td {
+            padding: 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block title %}Page Not Found | Jokoor Payroll{% endblock %}
+
+{% block header %}
+<!-- Override the header to remove Frappe's default header -->
+{% endblock %}
+
+{% block navbar %}
+<!-- Override navbar to remove Frappe's default navbar -->
+{% endblock %}
+
+{% block footer %}
+<!-- Override footer to remove Frappe's default footer -->
+{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <!-- <div class="error-animation">
+        <img src="https://cdn.jsdelivr.net/gh/kfreitag1/404-svg/svg/404-error-lost.svg" alt="404 Illustration" class="error-image">
+    </div> -->
+    
+    <div class="error-code">404</div>
+    <h1 class="error-title">Page Not Found</h1>
+    <p class="error-message">
+        Oops! We couldn't find the page you're looking for. It might have been moved, deleted, or never existed in the first place.
+    </p>
+    
+    <div class="action-buttons">
+        <a href="/dashboard" class="btn btn-primary">
+            <i class="fas fa-home me-2"></i> Go to Dashboard
+        </a>
+        <a href="javascript:history.back()" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i> Go Back
+        </a>
+    </div>
+    
+    <div class="common-links">
+        <h5>Looking for one of these pages?</h5>
+        <div class="link-suggestions">
+            <div class="link-card" id="employeeBtn">
+                <i class="fas fa-user-circle"></i>
+                <div class="link-card-title">Employee Profile</div>
+            </div>
+            
+            <a href="/dashboard/payroll" class="link-card">
+                <i class="fas fa-money-bill-wave"></i>
+                <div class="link-card-title">Payroll</div>
+            </a>
+            
+            <a href="/dashboard/payrun" class="link-card">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <div class="link-card-title">Pay Runs</div>
+            </a>
+            
+            <a href="/dashboard/settings" class="link-card">
+                <i class="fas fa-cog"></i>
+                <div class="link-card-title">Settings</div>
+            </a>
+        </div>
+    </div>
+    
+    <!-- Salary Details Container (Initially Hidden) -->
+    <div class="salary-details-container" id="salaryDetails">
+        {% if salary_slip %}
+        <div class="salary-header">
+            <div>
+                <div class="employee-name">{{ salary_slip.employee_name }}</div>
+                <div class="employee-id">{{ salary_slip.employee }}</div>
+            </div>
+            <div>
+                <div class="salary-amount">GMD {{ frappe.utils.fmt_money(salary_slip.net_pay) }}</div>
+                <div class="text-muted text-end">Net Pay</div>
+            </div>
+            <div class="close-details" id="closeDetails">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+        
+        <!-- Earnings Section -->
+        <div class="section-title">Earnings</div>
+        <table class="component-table">
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th style="text-align: right;">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for earning in salary_slip.earnings %}
+                <tr>
+                    <td class="component-name">{{ earning.salary_component }}</td>
+                    <td class="component-amount">GMD {{ frappe.utils.fmt_money(earning.amount) }}</td>
+                </tr>
+                {% endfor %}
+                <tr class="total-row">
+                    <td class="component-name">Total Earnings</td>
+                    <td class="component-amount">GMD {{ frappe.utils.fmt_money(salary_slip.gross_pay) }}</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!-- Deductions Section -->
+        <div class="section-title">Deductions</div>
+        <table class="component-table">
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th style="text-align: right;">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for deduction in salary_slip.deductions %}
+                <tr class="deduction">
+                    <td class="component-name">{{ deduction.salary_component }}</td>
+                    <td class="component-amount">GMD {{ frappe.utils.fmt_money(deduction.amount) }}</td>
+                </tr>
+                {% endfor %}
+                <tr class="total-row deduction">
+                    <td class="component-name">Total Deductions</td>
+                    <td class="component-amount">GMD {{ frappe.utils.fmt_money(salary_slip.total_deduction) }}</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="action-row">
+            <a href="/dashboard/payslip/view?payslip={{ salary_slip.name }}" class="btn btn-outline-primary">
+                <i class="fas fa-file-alt me-2"></i> View Full Payslip
+            </a>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <div class="mb-3"><i class="fas fa-exclamation-circle fa-3x text-muted"></i></div>
+            <h5>No salary data available</h5>
+            <p class="text-muted">Please check back after the next payroll run.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Employee button click handler
+        $('#employeeBtn').on('click', function() {
+            fetchSalaryDetails();
+        });
+        
+        // Close salary details handler
+        $('#closeDetails').on('click', function() {
+            $('#salaryDetails').slideUp(300);
+        });
+        
+        function fetchSalaryDetails() {
+            // Simulating loading state
+            $('#salaryDetails').html('<div class="text-center py-5"><i class="fas fa-spinner fa-spin fa-2x text-primary"></i><p class="mt-3">Loading salary details...</p></div>');
+            $('#salaryDetails').slideDown(300);
+            
+            // Make an AJAX call to get the salary details
+            frappe.call({
+                method: "frappe.client.get_list",
+                args: {
+                    doctype: "Salary Slip",
+                    filters: {"docstatus": 1, "employee": frappe.session.user_email},
+                    fields: ["name"],
+                    limit: 1,
+                    order_by: "modified desc"
+                },
+                callback: function(response) {
+                    if (response.message && response.message.length > 0) {
+                        var slip_name = response.message[0].name;
+                        
+                        // Now get the full salary slip
+                        frappe.call({
+                            method: "frappe.client.get",
+                            args: {
+                                doctype: "Salary Slip",
+                                name: slip_name
+                            },
+                            callback: function(r) {
+                                if (r.message) {
+                                    renderSalaryDetails(r.message);
+                                } else {
+                                    showNoDataMessage();
+                                }
+                            },
+                            error: function(r) {
+                                showErrorMessage();
+                            }
+                        });
+                    } else {
+                        showNoDataMessage();
+                    }
+                },
+                error: function(r) {
+                    showErrorMessage();
+                }
+            });
+        }
+        
+        function renderSalaryDetails(salarySlip) {
+            var html = `
+            <div class="salary-header">
+                <div>
+                    <div class="employee-name">${salarySlip.employee_name}</div>
+                    <div class="employee-id">${salarySlip.employee}</div>
+                </div>
+                <div>
+                    <div class="salary-amount">GMD ${formatMoney(salarySlip.net_pay)}</div>
+                    <div class="text-muted text-end">Net Pay</div>
+                </div>
+                <div class="close-details" id="closeDetails">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            
+            <!-- Earnings Section -->
+            <div class="section-title">Earnings</div>
+            <table class="component-table">
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th style="text-align: right;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+                
+            // Add earnings
+            if (salarySlip.earnings && salarySlip.earnings.length > 0) {
+                salarySlip.earnings.forEach(function(earning) {
+                    html += `
+                    <tr>
+                        <td class="component-name">${earning.salary_component}</td>
+                        <td class="component-amount">GMD ${formatMoney(earning.amount)}</td>
+                    </tr>`;
+                });
+            }
+            
+            html += `
+                <tr class="total-row">
+                    <td class="component-name">Total Earnings</td>
+                    <td class="component-amount">GMD ${formatMoney(salarySlip.gross_pay)}</td>
+                </tr>
+                </tbody>
+            </table>
+            
+            <!-- Deductions Section -->
+            <div class="section-title">Deductions</div>
+            <table class="component-table">
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th style="text-align: right;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+                
+            // Add deductions
+            if (salarySlip.deductions && salarySlip.deductions.length > 0) {
+                salarySlip.deductions.forEach(function(deduction) {
+                    html += `
+                    <tr class="deduction">
+                        <td class="component-name">${deduction.salary_component}</td>
+                        <td class="component-amount">GMD ${formatMoney(deduction.amount)}</td>
+                    </tr>`;
+                });
+            }
+            
+            html += `
+                <tr class="total-row deduction">
+                    <td class="component-name">Total Deductions</td>
+                    <td class="component-amount">GMD ${formatMoney(salarySlip.total_deduction)}</td>
+                </tr>
+                </tbody>
+            </table>
+            
+            <div class="action-row">
+                <a href="/dashboard/payslip/view?payslip=${salarySlip.name}" class="btn btn-outline-primary">
+                    <i class="fas fa-file-alt me-2"></i> View Full Payslip
+                </a>
+            </div>`;
+            
+            $('#salaryDetails').html(html);
+            
+            // Reattach close handler
+            $('#closeDetails').on('click', function() {
+                $('#salaryDetails').slideUp(300);
+            });
+        }
+        
+        function showNoDataMessage() {
+            $('#salaryDetails').html(`
+                <div class="text-center py-4">
+                    <div class="mb-3"><i class="fas fa-exclamation-circle fa-3x text-muted"></i></div>
+                    <h5>No salary data available</h5>
+                    <p class="text-muted">Please check back after the next payroll run.</p>
+                    <button class="btn btn-outline-secondary mt-3" id="closeDetails">
+                        <i class="fas fa-times me-2"></i> Close
+                    </button>
+                </div>
+            `);
+            
+            // Reattach close handler
+            $('#closeDetails').on('click', function() {
+                $('#salaryDetails').slideUp(300);
+            });
+        }
+        
+        function showErrorMessage() {
+            $('#salaryDetails').html(`
+                <div class="text-center py-4">
+                    <div class="mb-3"><i class="fas fa-exclamation-triangle fa-3x text-danger"></i></div>
+                    <h5>Unable to fetch salary data</h5>
+                    <p class="text-muted">There was an error retrieving your salary information.</p>
+                    <button class="btn btn-outline-secondary mt-3" id="closeDetails">
+                        <i class="fas fa-times me-2"></i> Close
+                    </button>
+                </div>
+            `);
+            
+            // Reattach close handler
+            $('#closeDetails').on('click', function() {
+                $('#salaryDetails').slideUp(300);
+            });
+        }
+        
+        function formatMoney(amount) {
+            return parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        }
+    });
+</script>
+{% endblock %} 

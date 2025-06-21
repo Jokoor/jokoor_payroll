@@ -1,0 +1,653 @@
+{% extends "templates/includes/elements/page.html" %}
+
+{% block page_content %}
+{# Employee Profile Header #}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="employee-avatar me-4">
+                        {% if employee.image %}
+                            <img src="{{ employee.image }}" alt="{{ employee.employee_name }}" class="rounded-circle" width="100" height="100">
+                        {% else %}
+                            <div class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center bg-primary text-white" style="width: 100px; height: 100px; font-size: 2.5rem;">
+                                {{ employee.employee_name[0] }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="employee-info">
+                        <h2 class="mb-1">{{ employee.employee_name }}</h2>
+                        <p class="text-muted mb-2">{{ employee.designation }} {% if employee.department %} • {{ employee.department }}{% endif %}</p>
+                        <div class="d-flex align-items-center">
+                            <span class="status-badge status-{{ employee.status|lower|replace(' ', '-') }}">
+                                {{ employee.status }}
+                            </span>
+                            {% if employee.date_of_joining %}
+                                <span class="ms-3 text-muted small">
+                                    <i class="fa fa-calendar-check me-1"></i> Joined {{ employee.date_of_joining }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="ms-auto">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editEmployeeModal">
+                            <i class="fa fa-pencil me-1"></i> Edit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Tabs Navigation #}
+<div class="row mb-4">
+    <div class="col-12">
+        <ul class="nav nav-tabs" id="employeeTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="info-tab-btn" data-bs-toggle="tab" data-bs-target="#info-tab-content" type="button" role="tab" aria-controls="info-tab-content" aria-selected="true">
+                    <i class="fa fa-user me-2"></i>Personal Info
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="employment-tab-btn" data-bs-toggle="tab" data-bs-target="#employment-tab-content" type="button" role="tab" aria-controls="employment-tab-content" aria-selected="false">
+                    <i class="fa fa-briefcase me-2"></i>Employment
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="payroll-tab-btn" data-bs-toggle="tab" data-bs-target="#payroll-tab-content" type="button" role="tab" aria-controls="payroll-tab-content" aria-selected="false">
+                    <i class="fa fa-money-bill me-2"></i>Payroll
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="documents-tab-btn" data-bs-toggle="tab" data-bs-target="#documents-tab-content" type="button" role="tab" aria-controls="documents-tab-content" aria-selected="false">
+                    <i class="fa fa-file me-2"></i>Documents
+                </button>
+            </li>
+        </ul>
+    </div>
+</div>
+
+{# Tab Contents #}
+<div class="tab-content" id="employeeTabsContent">
+    {# Personal Info Tab #}
+    <div class="tab-pane fade show active" id="info-tab-content" role="tabpanel" aria-labelledby="info-tab-btn">
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                {% set card_type = 'widget_card' %}
+                {% set title = 'Personal Details' %}
+                {% set content %}
+                {% set form_id = 'personal-details-form' %}
+                {% set form_editable = false %}
+                {% set form_locked = true %}
+                {% set form_fields = [
+                    {
+                        'type': 'text',
+                        'name': 'employee_name',
+                        'label': 'Full Name',
+                        'value': employee.employee_name,
+                        'required': true
+                    },
+                    {
+                        'type': 'text',
+                        'name': 'employee_id',
+                        'label': 'Employee ID',
+                        'value': employee.name,
+                        'readonly': true
+                    },
+                    {
+                        'type': 'select',
+                        'name': 'gender',
+                        'label': 'Gender',
+                        'value': employee.gender,
+                        'options': [
+                            {'value': 'Male', 'label': 'Male'},
+                            {'value': 'Female', 'label': 'Female'},
+                            {'value': 'Other', 'label': 'Other'}
+                        ]
+                    },
+                    {
+                        'type': 'date',
+                        'name': 'date_of_birth',
+                        'label': 'Date of Birth',
+                        'value': employee.date_of_birth
+                    }
+                ] %}
+                {% include "templates/includes/elements/form.html" %}
+                {% endset %}
+                {% include "templates/includes/elements/card.html" %}
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                {% set card_type = 'widget_card' %}
+                {% set title = 'Contact Information' %}
+                {% set content %}
+                {% set form_id = 'contact-info-form' %}
+                {% set form_editable = false %}
+                {% set form_locked = true %}
+                {% set form_fields = [
+                    {
+                        'type': 'email',
+                        'name': 'email_id',
+                        'label': 'Email',
+                        'value': employee.email_id
+                    },
+                    {
+                        'type': 'tel',
+                        'name': 'mobile_no',
+                        'label': 'Mobile',
+                        'value': employee.mobile_no
+                    },
+                    {
+                        'type': 'textarea',
+                        'name': 'permanent_address',
+                        'label': 'Address',
+                        'value': employee.permanent_address
+                    }
+                ] %}
+                {% include "templates/includes/elements/form.html" %}
+                {% endset %}
+                {% include "templates/includes/elements/card.html" %}
+            </div>
+        </div>
+    </div>
+    
+    {# Employment Tab #}
+    <div class="tab-pane fade" id="employment-tab-content" role="tabpanel" aria-labelledby="employment-tab-btn">
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                {% set card_type = 'widget_card' %}
+                {% set title = 'Employment Details' %}
+                {% set content %}
+                {% set form_id = 'employment-details-form' %}
+                {% set form_editable = false %}
+                {% set form_locked = true %}
+                {% set form_fields = [
+                    {
+                        'type': 'text',
+                        'name': 'designation',
+                        'label': 'Designation',
+                        'value': employee.designation
+                    },
+                    {
+                        'type': 'text',
+                        'name': 'department',
+                        'label': 'Department',
+                        'value': employee.department
+                    },
+                    {
+                        'type': 'date',
+                        'name': 'date_of_joining',
+                        'label': 'Date of Joining',
+                        'value': employee.date_of_joining
+                    },
+                    {
+                        'type': 'select',
+                        'name': 'status',
+                        'label': 'Status',
+                        'value': employee.status,
+                        'options': [
+                            {'value': 'Active', 'label': 'Active'},
+                            {'value': 'Inactive', 'label': 'Inactive'},
+                            {'value': 'On Leave', 'label': 'On Leave'}
+                        ]
+                    }
+                ] %}
+                {% include "templates/includes/elements/form.html" %}
+                {% endset %}
+                {% include "templates/includes/elements/card.html" %}
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                {% set card_type = 'widget_card' %}
+                {% set title = 'Compensation' %}
+                {% set content %}
+                {% set form_id = 'compensation-form' %}
+                {% set form_editable = false %}
+                {% set form_locked = true %}
+                {% set form_fields = [
+                    {
+                        'type': 'text',
+                        'name': 'base_salary',
+                        'label': 'Base Salary',
+                        'value': salary.base_salary
+                    },
+                    {
+                        'type': 'text',
+                        'name': 'gross_pay',
+                        'label': 'Gross Pay',
+                        'value': salary.gross_pay
+                    },
+                    {
+                        'type': 'text',
+                        'name': 'net_pay',
+                        'label': 'Net Pay',
+                        'value': salary.net_pay
+                    },
+                    {
+                        'type': 'text',
+                        'name': 'last_raise',
+                        'label': 'Last Raise',
+                        'value': last_raise.description if last_raise else 'No raise history'
+                    }
+                ] %}
+                {% include "templates/includes/elements/form.html" %}
+                {% endset %}
+                {% include "templates/includes/elements/card.html" %}
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-12 mb-4">
+                {% set card_type = 'widget_card' %}
+                {% set title = 'Employment Timeline' %}
+                {% set content %}
+                <div class="timeline-container">
+                    {% if employment_timeline %}
+                        <div class="employee-timeline">
+                            {% for event in employment_timeline %}
+                                <div class="timeline-item">
+                                    <div class="timeline-marker timeline-marker-{{ event.type }}"></div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-date">{{ event.date }}</div>
+                                        <h4 class="timeline-title">{{ event.title }}</h4>
+                                        <p class="timeline-description">{{ event.description }}</p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="fa fa-info-circle me-2"></i> No timeline events available
+                        </div>
+                    {% endif %}
+                </div>
+                {% endset %}
+                {% include "templates/includes/elements/card.html" %}
+            </div>
+        </div>
+    </div>
+    
+    {# Payroll Tab #}
+    <div class="tab-pane fade" id="payroll-tab-content" role="tabpanel" aria-labelledby="payroll-tab-btn">
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                {% set card_type = 'widget_card' %}
+                {% set title = 'Earnings' %}
+                {% set content %}
+                <div class="table-responsive">
+                    <table class="table table-borderless mb-0">
+                        <thead>
+                            <tr>
+                                <th>Component</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if earnings %}
+                                {% for item in earnings %}
+                                    <tr>
+                                        <td>{{ item.salary_component }}</td>
+                                        <td class="text-end">{{ item.amount }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="2" class="text-center py-3 text-muted">No earnings data available</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endset %}
+                {% include "templates/includes/elements/card.html" %}
+            </div>
+            
+            <div class="col-md-6 mb-4">
+                {% set card_type = 'widget_card' %}
+                {% set title = 'Deductions' %}
+                {% set content %}
+                <div class="table-responsive">
+                    <table class="table table-borderless mb-0">
+                        <thead>
+                            <tr>
+                                <th>Component</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if deductions %}
+                                {% for item in deductions %}
+                                    <tr>
+                                        <td>{{ item.salary_component }}</td>
+                                        <td class="text-end">{{ item.amount }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="2" class="text-center py-3 text-muted">No deductions data available</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endset %}
+                {% include "templates/includes/elements/card.html" %}
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-12 mb-4">
+                {% set card_type = 'widget_card' %}
+                {% set title = 'Recent Payslips' %}
+                {% set content %}
+                {# Table Component for Payslips #}
+                {% set table_id = 'payslips-table' %}
+                {% set columns = [
+                    {'key': 'name', 'label': 'Payslip ID'},
+                    {'key': 'posting_date', 'label': 'Date'},
+                    {'key': 'start_date', 'label': 'Start Date'},
+                    {'key': 'end_date', 'label': 'End Date'},
+                    {'key': 'total_working_days', 'label': 'Working Days'},
+                    {'key': 'gross_pay', 'label': 'Gross Pay'},
+                    {'key': 'net_pay', 'label': 'Net Pay'},
+                    {'key': 'status', 'label': 'Status'}
+                ] %}
+                {% set data = recent_payslips %}
+                {% set row_click_action = 'view' %}
+                {% set has_record_selector = false %}
+                {% set title = '' %}
+                {% include "templates/includes/elements/table.html" %}
+                {% endset %}
+                {% include "templates/includes/elements/card.html" %}
+            </div>
+        </div>
+    </div>
+    
+    {# Documents Tab #}
+    <div class="tab-pane fade" id="documents-tab-content" role="tabpanel" aria-labelledby="documents-tab-btn">
+        <div class="row">
+            <div class="col-12 mb-4">
+                {% set card_type = 'widget_card' %}
+                {% set title = 'Documents' %}
+                {% set content %}
+                <div class="d-flex justify-content-end mb-3">
+                    <button class="btn btn-primary btn-sm">
+                        <i class="fa fa-upload me-1"></i> Upload Document
+                    </button>
+                </div>
+                
+                <div class="documents-list">
+                    {% if documents %}
+                        {% for document in documents %}
+                            <div class="document-item">
+                                <i class="fa fa-file me-2"></i>
+                                <div class="document-name">{{ document.name }}</div>
+                                <div class="document-date">{{ document.uploaded_at }}</div>
+                                <button class="btn btn-sm btn-light ms-auto" data-bs-toggle="modal" data-bs-target="#viewDocumentModal">
+                                    <i class="fa fa-eye me-1"></i> View
+                                </button>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="fa fa-info-circle me-2"></i> No documents available
+                        </div>
+                    {% endif %}
+                </div>
+                {% endset %}
+                {% include "templates/includes/elements/card.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Edit Employee Modal #}
+<div class="modal fade" id="editEmployeeModal" tabindex="-1" aria-labelledby="editEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editEmployeeModalLabel">Edit Employee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% set form_id = 'employee-edit-form' %}
+                {% set form_action = '/api/method/jokoor_payroll.api.update_employee' %}
+                {% set form_method = 'POST' %}
+                {% set form_editable = true %}
+                {% set form_is_new = false %}
+                {% set form_fields = [
+                    {
+                        'type': 'hidden',
+                        'name': 'employee_id',
+                        'value': employee.name
+                    },
+                    {
+                        'type': 'text',
+                        'name': 'employee_name',
+                        'label': 'Full Name',
+                        'value': employee.employee_name,
+                        'required': true
+                    },
+                    {
+                        'type': 'email',
+                        'name': 'email_id',
+                        'label': 'Email',
+                        'value': employee.email_id
+                    },
+                    {
+                        'type': 'tel',
+                        'name': 'mobile_no',
+                        'label': 'Mobile',
+                        'value': employee.mobile_no
+                    },
+                    {
+                        'type': 'select',
+                        'name': 'gender',
+                        'label': 'Gender',
+                        'value': employee.gender,
+                        'options': [
+                            {'value': 'Male', 'label': 'Male'},
+                            {'value': 'Female', 'label': 'Female'},
+                            {'value': 'Other', 'label': 'Other'}
+                        ]
+                    },
+                    {
+                        'type': 'date',
+                        'name': 'date_of_birth',
+                        'label': 'Date of Birth',
+                        'value': employee.date_of_birth
+                    },
+                    {
+                        'type': 'select',
+                        'name': 'department',
+                        'label': 'Department',
+                        'value': employee.department,
+                        'options': departments
+                    },
+                    {
+                        'type': 'select',
+                        'name': 'designation',
+                        'label': 'Designation',
+                        'value': employee.designation,
+                        'options': designations
+                    },
+                    {
+                        'type': 'select',
+                        'name': 'status',
+                        'label': 'Status',
+                        'value': employee.status,
+                        'options': [
+                            {'value': 'Active', 'label': 'Active'},
+                            {'value': 'Inactive', 'label': 'Inactive'},
+                            {'value': 'On Leave', 'label': 'On Leave'}
+                        ]
+                    },
+                    {
+                        'type': 'textarea',
+                        'name': 'permanent_address',
+                        'label': 'Address',
+                        'value': employee.permanent_address
+                    }
+                ] %}
+                {% set form_buttons = [
+                    {
+                        'type': 'submit',
+                        'label': 'Save Changes',
+                        'class': 'btn-primary'
+                    },
+                    {
+                        'type': 'button',
+                        'label': 'Cancel',
+                        'class': 'btn-light',
+                        'attributes': 'data-bs-dismiss="modal"'
+                    }
+                ] %}
+                {% include "templates/includes/elements/form.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Timeline Styling */
+.employee-timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.employee-timeline::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    background-color: #e9ecef;
+    top: 0;
+    bottom: 0;
+    left: 15px;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.timeline-marker {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    left: -22px;
+    top: 5px;
+    z-index: 1;
+}
+
+.timeline-marker-hire {
+    background-color: #28a745;
+}
+
+.timeline-marker-promotion {
+    background-color: #007bff;
+}
+
+.timeline-marker-payroll {
+    background-color: #17a2b8;
+}
+
+.timeline-marker-leave {
+    background-color: #ffc107;
+}
+
+.timeline-marker-other {
+    background-color: #6c757d;
+}
+
+.timeline-date {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+
+.timeline-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.timeline-description {
+    font-size: 0.9rem;
+    color: #495057;
+}
+
+/* Document List Styling */
+.documents-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.document-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    transition: all 0.2s ease;
+}
+
+.document-item:hover {
+    background-color: #f0f0f0;
+}
+
+.document-name {
+    flex: 1;
+    font-weight: 500;
+    margin-right: 15px;
+}
+
+.document-date {
+    color: #6c757d;
+    font-size: 0.85rem;
+    margin-right: 15px;
+}
+
+/* Status Badge Styling */
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-active {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+}
+
+.status-inactive {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+.status-on-leave {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle row clicks for payslips table
+    document.addEventListener('table:row-click', function(e) {
+        const { id, action, tableId } = e.detail;
+        
+        if (tableId === 'payslips-table' && action === 'view') {
+            // Redirect to payslip view page
+            window.location.href = `/dashboard/payroll/payslips/view?id=${id}`;
+        }
+    });
+});
+</script>
+{% endblock %}

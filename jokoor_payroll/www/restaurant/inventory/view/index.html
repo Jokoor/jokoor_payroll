@@ -1,0 +1,56 @@
+{% set page_title = "View Inventory Item" %}
+{% set content %}
+<div class="container-fluid p-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/restaurant">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="/restaurant/inventory">Inventory</a></li>
+            <li class="breadcrumb-item active">View Item</li>
+        </ol>
+    </nav>
+
+    <!-- Form -->
+    {% include "jokoor_payroll/templates/includes/elements/form.html" %}
+
+    <!-- Transaction History -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="mb-0">Transaction History</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                            <th>Reference</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for transaction in transactions %}
+                        <tr>
+                            <td>{{ transaction.date }}</td>
+                            <td>
+                                <span class="badge {% if transaction.type == 'Purchase' %}bg-success{% else %}bg-warning{% endif %}">
+                                    {{ transaction.type }}
+                                </span>
+                            </td>
+                            <td>{{ transaction.quantity }}</td>
+                            <td>GMD {{ "%.2f"|format(transaction.unit_price) }}</td>
+                            <td>GMD {{ "%.2f"|format(transaction.total) }}</td>
+                            <td>{{ transaction.reference }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endset %}
+{% include "jokoor_payroll/templates/pages/restaurant_page.html" %}

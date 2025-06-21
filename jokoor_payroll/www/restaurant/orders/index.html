@@ -1,0 +1,45 @@
+{% block title %}Orders | Jokoor Payroll{% endblock %}
+
+{% block page_content %}
+{# Define the content for the page component #}
+{% set page_title = "Orders" %}
+{% set has_search = false %}
+{% set has_actions = true %}
+{% set action_buttons %}{% endset %}
+
+{% set breadcrumb_items = [
+    {"label": "Restaurant", "url": "/restaurant"},
+    {"label": "Orders", "url": "#"}
+] %}
+
+{% set content %}
+<div class="container-fluid p-4">
+    <!-- Table Component -->
+    <div class="row">
+        <div class="col-12">
+            {% set card_type = 'widget_card' %}
+            {% set content %}
+            {% set table_id = table_id %}
+            {% set columns = columns %}
+            {% set data = data %}
+            {% set row_click_action = 'view' %}
+            {% set has_record_selector = true %}
+            {% set default_page_size = page_size %}
+            {% set page_size_options = [10, 20, 50, 'All'] %}
+            {% set has_search = true %}
+            {% set search_placeholder = search_placeholder %}
+            {% set show_export = true %}
+            {% set show_actions = true %}
+            {% set delete_action = true %}
+            {% set delete_url = delete_url %}
+            {% set view_page = view_page %}
+            {% include "jokoor_payroll/templates/includes/elements/table.html" %}
+            {% endset %}
+            {% include "jokoor_payroll/templates/includes/elements/card.html" %}
+        </div>
+    </div>
+</div>
+{% endset %}
+
+{% include "jokoor_payroll/templates/pages/restaurant_page.html" %}
+{% endblock %}

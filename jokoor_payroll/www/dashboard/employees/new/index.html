@@ -1,0 +1,451 @@
+{% extends "templates/web.html" %}
+
+{% block head_include %}
+<!-- Link to global styles -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/dashboard/styles/global.css">
+<style>
+    body.custom-dashboard .form-section {
+        background-color: white;
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        border: 1px solid #e5e7eb;
+    }
+    
+    body.custom-dashboard .form-section-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    
+    body.custom-dashboard .form-label {
+        font-weight: 500;
+        color: #4b5563;
+        margin-bottom: 6px;
+    }
+    
+    body.custom-dashboard .required-field::after {
+        content: '*';
+        color: #ef4444;
+        margin-left: 4px;
+    }
+    
+    body.custom-dashboard .form-control {
+        border-radius: 6px;
+        border: 1px solid #d1d5db;
+        padding: 10px 12px;
+    }
+    
+    body.custom-dashboard .form-control:focus {
+        border-color: #7d5fd2;
+        box-shadow: 0 0 0 3px rgba(125, 95, 210, 0.1);
+    }
+    
+    body.custom-dashboard .form-select {
+        border-radius: 6px;
+        border: 1px solid #d1d5db;
+        padding: 10px 12px;
+        background-position: right 12px center;
+    }
+    
+    body.custom-dashboard .form-select:focus {
+        border-color: #7d5fd2;
+        box-shadow: 0 0 0 3px rgba(125, 95, 210, 0.1);
+    }
+    
+    body.custom-dashboard .submit-section {
+        background-color: #f9fafb;
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 30px;
+    }
+    
+    body.custom-dashboard .form-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    body.custom-dashboard .btn-primary {
+        background-color: #7d5fd2;
+        border-color: #7d5fd2;
+        padding: 10px 24px;
+        font-weight: 500;
+    }
+    
+    body.custom-dashboard .btn-primary:hover {
+        background-color: #6a4ec1;
+        border-color: #6a4ec1;
+    }
+    
+    body.custom-dashboard .btn-outline-secondary {
+        color: #6b7280;
+        border-color: #d1d5db;
+        padding: 10px 20px;
+    }
+    
+    body.custom-dashboard .btn-outline-secondary:hover {
+        background-color: #f3f4f6;
+        color: #374151;
+    }
+    
+    .form-text {
+        color: #6b7280;
+        font-size: 0.875rem;
+        margin-top: 5px;
+    }
+    
+    .alert-banner {
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .alert-banner.success {
+        background-color: #ecfdf3;
+        border: 1px solid #d1fae5;
+        color: #065f46;
+    }
+    
+    .alert-banner.error {
+        background-color: #fee2e2;
+        border: 1px solid #fecaca;
+        color: #b91c1c;
+    }
+    
+    .age-error {
+        color: #ef4444;
+        font-size: 0.875rem;
+        margin-top: 5px;
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block title %}Add New Employee | Jokoor Payroll{% endblock %}
+
+{% block header %}
+<!-- Override the header to remove Frappe's default header -->
+{% endblock %}
+
+{% block navbar %}
+<!-- Override navbar to remove Frappe's default navbar -->
+{% endblock %}
+
+{% block footer %}
+<!-- Override footer to remove Frappe's default footer -->
+{% endblock %}
+
+{% block content %}
+<div class="custom-dashboard">
+    <!-- Sidebar -->
+    {% include "templates/includes/dashboard/sidebar.html" %}
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <button class="btn btn-sm btn-light me-3" onclick="history.back()">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <h2 class="fw-bold mb-0 d-inline-block">Add New Employee</h2>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Display form messages if any -->
+        {% if message %}
+            <div class="alert-banner {{ 'success' if success else 'error' }}">
+                <i class="fas {{ 'fa-check-circle' if success else 'fa-exclamation-circle' }} me-2"></i> 
+                {{ message }}
+            </div>
+        {% endif %}
+        
+        <!-- Employee Form -->
+        <form method="POST" action="/api/method/jokoor_payroll.www.dashboard.employees.new.index.save_employee" id="employeeForm">
+            <input type="hidden" name="csrf_token" value="{{ frappe.session.csrf_token }}">
+            
+            <!-- Basic Information Section -->
+            <div class="form-section">
+                <h3 class="form-section-title">Basic Information</h3>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="firstName" class="form-label required-field">First Name</label>
+                        <input type="text" class="form-control" id="firstName" name="first_name" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="lastName" class="form-label required-field">Last Name</label>
+                        <input type="text" class="form-control" id="lastName" name="last_name" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="employeeId" class="form-label">Employee ID</label>
+                        <input type="text" class="form-control" id="employeeId" name="employee_id" placeholder="Auto-generated if left blank">
+                        <div class="form-text">Leave blank for auto-generated ID</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="gender" class="form-label required-field">Gender</label>
+                        <select class="form-select" id="gender" name="gender" required>
+                            <option value="" disabled selected>Select gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="dateOfBirth" class="form-label required-field">Date of Birth</label>
+                        <input type="date" class="form-control" id="dateOfBirth" name="date_of_birth" required>
+                        <div class="age-error" id="ageError">Employee must be at least 18 years old</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="maritalStatus" class="form-label">Marital Status</label>
+                        <select class="form-select" id="maritalStatus" name="marital_status">
+                            <option value="" disabled selected>Select status</option>
+                            <option value="Single">Single</option>
+                            <option value="Married">Married</option>
+                            <option value="Divorced">Divorced</option>
+                            <option value="Widowed">Widowed</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact Information Section -->
+            <div class="form-section">
+                <h3 class="form-section-title">Contact Information</h3>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="email" class="form-label required-field">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="phone" class="form-label required-field">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" required>
+                    </div>
+                    <div class="col-md-12">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" name="address" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="city" class="form-label">City</label>
+                        <input type="text" class="form-control" id="city" name="city">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="country" class="form-label">Country</label>
+                        <select class="form-select" id="country" name="country">
+                            <option value="" disabled selected>Select country</option>
+                            <option value="Gambia">Gambia</option>
+                            <option value="Senegal">Senegal</option>
+                            <option value="Nigeria">Nigeria</option>
+                            <option value="Ghana">Ghana</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ID Information Section -->
+            <div class="form-section">
+                <h3 class="form-section-title">Identification Information</h3>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="tinNo" class="form-label">TIN No</label>
+                        <input type="text" class="form-control" id="tinNo" name="tin_no">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="bban" class="form-label">BBAN</label>
+                        <input type="text" class="form-control" id="bban" name="bban">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="ssn" class="form-label">Social Security Number</label>
+                        <input type="text" class="form-control" id="ssn" name="social_security_number">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Employment Details Section -->
+            <div class="form-section">
+                <h3 class="form-section-title">Employment Details</h3>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="department" class="form-label required-field">Department</label>
+                        <select class="form-select" id="department" name="department" required>
+                            <option value="" disabled selected>Select department</option>
+                            {% for dept in departments %}
+                                <option value="{{ dept.name }}">{{ dept.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="designation" class="form-label required-field">Designation</label>
+                        <select class="form-select" id="designation" name="designation" required>
+                            <option value="" disabled selected>Select designation</option>
+                            {% for desig in designations %}
+                                <option value="{{ desig.name }}">{{ desig.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="employmentType" class="form-label required-field">Employment Type</label>
+                        <select class="form-select" id="employmentType" name="employment_type" required>
+                            <option value="" disabled selected>Select type</option>
+                            <option value="Full-time">Full-time</option>
+                            <option value="Part-time">Part-time</option>
+                            <option value="Contract">Contract</option>
+                            <option value="Intern">Intern</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="joinDate" class="form-label required-field">Joining Date</label>
+                        <input type="date" class="form-control" id="joinDate" name="date_of_joining" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="status" class="form-label required-field">Status</label>
+                        <select class="form-select" id="status" name="status" required>
+                            <option value="Active" selected>Active</option>
+                            <option value="Inactive">Inactive</option>
+                            <option value="On Leave">On Leave</option>
+                            <option value="Terminated">Terminated</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="reportingManager" class="form-label">Reporting Manager</label>
+                        <select class="form-select" id="reportingManager" name="reports_to">
+                            <option value="" selected>None</option>
+                            {% for emp in employees %}
+                                <option value="{{ emp.name }}">{{ emp.employee_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Banking Information Section -->
+            <div class="form-section">
+                <h3 class="form-section-title">Banking & Salary Information</h3>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="baseSalary" class="form-label required-field">Basic Salary (GMD)</label>
+                        <input type="number" class="form-control" id="baseSalary" name="base_salary" step="0.01" min="0" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="salaryMode" class="form-label required-field">Salary Mode</label>
+                        <select class="form-select" id="salaryMode" name="salary_mode" required>
+                            <option value="" disabled selected>Select mode</option>
+                            <option value="Bank">Bank</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Cheque">Cheque</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 bank-field">
+                        <label for="bankName" class="form-label">Bank Name</label>
+                        <input type="text" class="form-control" id="bankName" name="bank_name">
+                    </div>
+                    <div class="col-md-6 bank-field">
+                        <label for="accountNumber" class="form-label">Account Number</label>
+                        <input type="text" class="form-control" id="accountNumber" name="bank_ac_no">
+                    </div>
+                    <div class="col-md-6 bank-field">
+                        <label for="accountName" class="form-label">Account Name</label>
+                        <input type="text" class="form-control" id="accountName" name="account_name">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Submit Section -->
+            <div class="submit-section">
+                <div class="form-footer">
+                    <button type="button" class="btn btn-outline-secondary" onclick="history.back()">Cancel</button>
+                    <div>
+                        <button type="submit" name="save_action" value="save_and_new" class="btn btn-outline-primary me-2">Save & New</button>
+                        <button type="submit" name="save_action" value="save" class="btn btn-primary">Save Employee</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Add custom class to body
+    document.body.classList.add('custom-dashboard');
+    
+    $(document).ready(function() {
+        // Toggle bank details based on salary mode
+        $('#salaryMode').on('change', function() {
+            if ($(this).val() === 'Bank') {
+                $('.bank-field').show();
+                $('#bankName').prop('required', true);
+                $('#accountNumber').prop('required', true);
+                $('#accountName').prop('required', true);
+            } else {
+                $('.bank-field').hide();
+                $('#bankName').prop('required', false);
+                $('#accountNumber').prop('required', false);
+                $('#accountName').prop('required', false);
+            }
+        });
+        
+        // Initialize salary mode toggle
+        $('#salaryMode').trigger('change');
+        
+        // Age validation - frontend
+        $('#dateOfBirth').on('change', function() {
+            validateAge($(this).val());
+        });
+        
+        // Form submission validation
+        $('#employeeForm').on('submit', function(e) {
+            const dobValue = $('#dateOfBirth').val();
+            if (!validateAge(dobValue)) {
+                e.preventDefault(); // Prevent form submission
+                // Scroll to the date of birth field to highlight the error
+                $('html, body').animate({
+                    scrollTop: $('#dateOfBirth').offset().top - 100
+                }, 200);
+            }
+        });
+        
+        // Function to validate age
+        function validateAge(dateString) {
+            if (!dateString) return false;
+            
+            const dob = new Date(dateString);
+            const today = new Date();
+            
+            let age = today.getFullYear() - dob.getFullYear();
+            const monthDiff = today.getMonth() - dob.getMonth();
+            
+            // If birth month is after current month or same month but birth day is after current day
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+            
+            const isValid = age >= 18;
+            
+            // Show/hide error message
+            if (isValid) {
+                $('#ageError').hide();
+                $('#dateOfBirth').removeClass('is-invalid').addClass('is-valid');
+            } else {
+                $('#ageError').show();
+                $('#dateOfBirth').removeClass('is-valid').addClass('is-invalid');
+            }
+            
+            return isValid;
+        }
+    });
+</script>
+{% endblock %} 

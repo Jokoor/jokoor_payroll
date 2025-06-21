@@ -1,0 +1,96 @@
+{% block title %}Customers | Jokoor Payroll{% endblock %}
+
+{% block page_content %}
+{# Define the content for the page component #}
+{% set page_title = "Customers" %}
+{% set has_search = false %}
+{% set has_actions = false %}
+
+{% set content %}
+<div class="container-fluid p-4">
+    <!-- Customer Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-1">Total Customers</h6>
+                    <h3 class="mb-0">{{ total_count }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-1">Total Orders</h6>
+                    <h3 class="mb-0">{{ data | sum(attribute='total_orders') }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-1">Total Revenue</h6>
+                    <h3 class="mb-0">GMD {{ data | map(attribute='total_spent') | map('float') | sum }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h6 class="text-muted mb-1">Avg. Order Value</h6>
+                    <h3 class="mb-0">GMD {{ (data | map(attribute='total_spent') | map('float') | sum / data | sum(attribute='total_orders')) | round }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customers Table -->
+    <div class="row">
+        <div class="col-12">
+            {% set card_type = 'widget_card' %}
+            {% set content %}
+            {# Table Component #}
+            {% set table_id = 'customers-table' %}
+            {% set columns = [
+                {'key': 'customer_id', 'label': 'ID', 'width': '10%', 'sortable': true},
+                {'key': 'name', 'label': 'Name', 'width': '20%', 'sortable': true},
+                {'key': 'phone', 'label': 'Phone', 'width': '15%', 'sortable': true},
+                {'key': 'email', 'label': 'Email', 'width': '20%', 'sortable': true},
+                {'key': 'total_orders', 'label': 'Total Orders', 'width': '10%', 'sortable': true},
+                {'key': 'total_spent', 'label': 'Total Spent', 'width': '15%', 'sortable': true},
+                {'key': 'last_visit', 'label': 'Last Visit', 'width': '10%', 'sortable': true}
+            ] %}
+            {% set data = data %}
+            {% set row_click_action = 'view' %}
+            {% set has_record_selector = true %}
+            {% set default_page_size = 10 %}
+            {% set page_size_options = [10, 20, 50, 'All'] %}
+            {% set has_search = true %}
+            {% set title = 'Customer List' %}
+            {% set current_page = current_page %}
+            {% set total_count = total_count %}
+            {% set page_size = page_size %}
+            {% set show_new_button = true %}
+            {% set new_button_label = 'Add Customer' %}
+            {% set view_page = '/restaurant/customers/view?id=:id' %}
+            {% include "jokoor_payroll/templates/includes/elements/table.html" %}
+            {% endset %}
+            {% include "jokoor_payroll/templates/includes/elements/card.html" %}
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+</style>
+{% endset %}
+
+{% include "jokoor_payroll/templates/pages/restaurant_page.html" %}
+{% endblock %}

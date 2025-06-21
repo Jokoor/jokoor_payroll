@@ -1,0 +1,43 @@
+{% block title %}View Order | Jokoor Payroll{% endblock %}
+
+{% block page_content %}
+{# Define the content for the page component #}
+{% set page_title = "View Order" %}
+{% set has_search = false %}
+{% set has_actions = true %}
+{% set action_buttons %}
+<button class="btn btn-success me-2" onclick="printOrder()">
+    <i class="fas fa-print me-2"></i>Print Order
+</button>
+<button class="btn btn-primary" onclick="editOrder()">
+    <i class="fas fa-edit me-2"></i>Edit Order
+</button>
+{% endset %}
+
+{% set content %}
+<div class="container-fluid p-4">
+    <!-- Form Component -->
+    <div class="row">
+        <div class="col-12">
+            {% set card_type = 'widget_card' %}
+            {% set content %}
+            {% include "jokoor_payroll/templates/includes/elements/form.html" %}
+            {% endset %}
+            {% include "jokoor_payroll/templates/includes/elements/card.html" %}
+        </div>
+    </div>
+</div>
+
+<script>
+function printOrder() {
+    window.print();
+}
+
+function editOrder() {
+    window.location.href = '/restaurant/orders/edit/{{ order_id }}';
+}
+</script>
+{% endset %}
+
+{% include "jokoor_payroll/templates/pages/restaurant_page.html" %}
+{% endblock %}

@@ -1,0 +1,417 @@
+{% extends "templates/web.html" %}
+
+{% block head_include %}
+<!-- Link to global styles -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/dashboard/styles/global.css">
+{% endblock %}
+
+{% block title %}Company Information | Jokoor Payroll{% endblock %}
+
+{% block page_content %}
+
+{# Set up page context variables #}
+{% set page_title = "Company Information" %}
+{% set has_search = false %}
+{% set has_actions = true %}
+{% set breadcrumb_items = [
+    {"label": "Dashboard", "url": "/dashboard"},
+    {"label": "Settings", "url": "/dashboard/settings"},
+    {"label": "Company Information", "url": "#"}
+] %}
+
+{# Prepare action buttons HTML #}
+{% set action_buttons %}
+    {# Removing duplicate buttons since we now have them in the form #}
+{% endset %}
+
+{# Define form sections and fields #}
+{% set form_id = "companyInfoForm" %}
+{% set form_action = "/api/method/jokoor_payroll.api.update_company_info" %}
+{% set form_validate = true %}
+{% set form_class = "professional-form" %}
+{% set form_editable = false %}
+{% set form_is_new = true %}
+
+{% set form_sections = [
+    {
+        "title": "Basic Information",
+        "icon": "fa-info-circle",
+        "description": "General information about your company",
+        "width": 8,
+        "has_logo_upload": false,
+        "logo_icon": "fa-building",
+        "logo_text": "Upload your company logo",
+        "logo_help_text": "Recommended size: 200x200px",
+        "fields": [
+            {
+                "type": "text",
+                "name": "company_name",
+                "label": "Company Name",
+                "required": true,
+                "placeholder": "Enter company name",
+                "width": 3
+            },
+            {
+                "type": "text",
+                "name": "legal_name",
+                "label": "Legal Business Name",
+                "placeholder": "Enter legal business name",
+                "width": 3
+            },
+            {
+                "type": "text",
+                "name": "tax_id",
+                "label": "Tax ID / Registration Number",
+                "placeholder": "Enter tax ID or registration number",
+                "width": 6
+            },
+            {
+                "type": "select",
+                "name": "industry",
+                "label": "Industry",
+                "width": 6,
+                "options": [
+                    {"value": "", "label": "Select Industry"},
+                    {"value": "food_service", "label": "Food Service"},
+                    {"value": "retail", "label": "Retail"},
+                    {"value": "manufacturing", "label": "Manufacturing"},
+                    {"value": "technology", "label": "Technology"},
+                    {"value": "healthcare", "label": "Healthcare"},
+                    {"value": "education", "label": "Education"},
+                    {"value": "finance", "label": "Finance"},
+                    {"value": "other", "label": "Other"}
+                ]
+            },
+            {
+                "type": "select",
+                "name": "company_size",
+                "label": "Company Size",
+                "width": 6,
+                "options": [
+                    {"value": "", "label": "Select Size"},
+                    {"value": "1-10", "label": "1-10 employees"},
+                    {"value": "11-50", "label": "11-50 employees"},
+                    {"value": "51-200", "label": "51-200 employees"},
+                    {"value": "201-500", "label": "201-500 employees"},
+                    {"value": "501+", "label": "501+ employees"}
+                ]
+            },
+            {
+                "type": "text",
+                "name": "year_established",
+                "label": "Year Established",
+                "placeholder": "e.g., 2010",
+                "width": 6
+            },
+            {
+                "type": "url",
+                "name": "website",
+                "label": "Website",
+                "placeholder": "https://www.example.com",
+                "width": 6
+            },
+            {
+                "type": "email",
+                "name": "company_email",
+                "label": "Company Email",
+                "required": true,
+                "placeholder": "info@example.com",
+                "width": 6
+            }
+        ]
+    },
+    {
+        "title": "Contact Information",
+        "icon": "fa-map-marker-alt",
+        "description": "Address and contact details",
+        "width": 4,
+        "fields": [
+            {
+                "type": "text",
+                "name": "address_line_1",
+                "label": "Address Line 1",
+                "required": true,
+                "placeholder": "Street address, P.O. box, company name",
+                "width": 4
+            },
+            {
+                "type": "text",
+                "name": "address_line_2",
+                "label": "Address Line 2",
+                "placeholder": "Apartment, suite, unit, building, floor, etc.",
+                "width": 4
+            },
+            {
+                "type": "text",
+                "name": "city",
+                "label": "City",
+                "required": true,
+                "placeholder": "Enter city",
+                "width": 4
+            },
+            {
+                "type": "text",
+                "name": "state_province",
+                "label": "State/Province",
+                "placeholder": "Enter state or province",
+                "width": 6
+            },
+            {
+                "type": "select",
+                "name": "country",
+                "label": "Country",
+                "required": true,
+                "width": 6,
+                "options": [
+                    {"value": "", "label": "Select Country"},
+                    {"value": "us", "label": "United States"},
+                    {"value": "ca", "label": "Canada"},
+                    {"value": "uk", "label": "United Kingdom"},
+                    {"value": "au", "label": "Australia"},
+                    {"value": "in", "label": "India"},
+                    {"value": "other", "label": "Other"}
+                ]
+            },
+            {
+                "type": "text",
+                "name": "postal_code",
+                "label": "Postal Code",
+                "placeholder": "Enter postal code",
+                "width": 6
+            },
+            {
+                "type": "tel",
+                "name": "phone_number",
+                "label": "Phone Number",
+                "placeholder": "Enter phone number",
+                "width": 6,
+                "icon": "fa-phone"
+            }
+        ]
+    },
+    {
+        "title": "Fiscal Information",
+        "icon": "fa-calculator",
+        "description": "Financial and tax settings",
+        "width": 6,
+        "fields": [
+            {
+                "type": "select",
+                "name": "fiscal_year",
+                "label": "Fiscal Year",
+                "width": 6,
+                "options": [
+                    {"value": "jan_dec", "label": "January - December"},
+                    {"value": "apr_mar", "label": "April - March"},
+                    {"value": "jul_jun", "label": "July - June"},
+                    {"value": "oct_sep", "label": "October - September"}
+                ]
+            },
+            {
+                "type": "select",
+                "name": "currency",
+                "label": "Currency",
+                "required": true,
+                "width": 6,
+                "options": [
+                    {"value": "usd", "label": "USD - US Dollar"},
+                    {"value": "eur", "label": "EUR - Euro"},
+                    {"value": "gbp", "label": "GBP - British Pound"},
+                    {"value": "cad", "label": "CAD - Canadian Dollar"},
+                    {"value": "aud", "label": "AUD - Australian Dollar"},
+                    {"value": "inr", "label": "INR - Indian Rupee"}
+                ]
+            },
+            {
+                "type": "number",
+                "name": "tax_rate",
+                "label": "Default Tax Rate (%)",
+                "placeholder": "e.g., 7.5",
+                "width": 6
+            }
+        ]
+    },
+    {
+        "title": "Additional Settings",
+        "icon": "fa-cog",
+        "description": "Other company preferences",
+        "width": 6,
+        "fields": [
+            {
+                "type": "select",
+                "name": "time_zone",
+                "label": "Time Zone",
+                "width": 6,
+                "options": [
+                    {"value": "utc", "label": "UTC"},
+                    {"value": "est", "label": "Eastern Time (EST)"},
+                    {"value": "cst", "label": "Central Time (CST)"},
+                    {"value": "mst", "label": "Mountain Time (MST)"},
+                    {"value": "pst", "label": "Pacific Time (PST)"},
+                    {"value": "gmt", "label": "Greenwich Mean Time (GMT)"}
+                ]
+            },
+            {
+                "type": "select",
+                "name": "date_format",
+                "label": "Date Format",
+                "width": 6,
+                "options": [
+                    {"value": "mm-dd-yyyy", "label": "MM-DD-YYYY"},
+                    {"value": "dd-mm-yyyy", "label": "DD-MM-YYYY"},
+                    {"value": "yyyy-mm-dd", "label": "YYYY-MM-DD"}
+                ]
+            },
+            {
+                "type": "select",
+                "name": "language",
+                "label": "Default Language",
+                "width": 6,
+                "options": [
+                    {"value": "en", "label": "English"},
+                    {"value": "es", "label": "Spanish"},
+                    {"value": "fr", "label": "French"},
+                    {"value": "de", "label": "German"},
+                    {"value": "ar", "label": "Arabic"}
+                ]
+            }
+        ]
+    }
+] %}
+
+{# Prepare page content #}
+{% set content %}
+    {# Include the form component #}
+    {% include "jokoor_payroll/templates/includes/elements/form.html" %}
+{% endset %}
+
+{# Include the page layout #}
+{% set page_title = page_title %}
+{% set breadcrumb_items = breadcrumb_items %}
+{% set has_search = has_search %}
+{% set has_actions = has_actions %}
+{% set action_buttons = action_buttons %}
+{% set content = content %}
+{% include "jokoor_payroll/templates/includes/elements/page.html" %}
+{% endblock %}
+
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+        
+        // Handle custom logo change event
+        document.addEventListener('logo:change', function(e) {
+            console.log('Logo change button clicked:', e.detail);
+            // In a real implementation, this would trigger a file upload dialog
+            alert('This would open a file upload dialog in a real implementation.');
+        });
+        
+        // Handle form edit mode change event
+        document.addEventListener('form:editmodechange', function(e) {
+            console.log('Form edit mode changed:', e.detail.isEditable);
+            
+            // Update header action buttons visibility
+            if (e.detail.isEditable) {
+                $('.page-actions .btn-primary').show();
+                $('.page-actions .btn-outline-secondary').show();
+            } else {
+                $('.page-actions .btn-primary').hide();
+                $('.page-actions .btn-outline-secondary').hide();
+            }
+            
+            // Add visual indication of read-only mode
+            if (!e.detail.isEditable) {
+                $('.card').addClass('read-only-mode');
+            } else {
+                $('.card').removeClass('read-only-mode');
+            }
+        });
+    });
+</script>
+
+<style>
+    /* Additional professional styling for the company form */
+    .professional-form .col-lg-4,
+    .professional-form .col-lg-6 {
+        margin-bottom: 1.25rem;
+    }
+    
+    /* Custom field spacing for better appearance */
+    .professional-form .form-label {
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+    
+    /* Add a subtle transition to form fields */
+    .professional-form .form-control,
+    .professional-form .form-select {
+        transition: all 0.2s ease-in-out;
+    }
+    
+    /* Enhance the appearance of the action buttons */
+    .professional-form ~ .form-actions .btn,
+    .page-actions .btn {
+        padding: 0.6rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    
+    .professional-form ~ .form-actions .btn-primary,
+    .page-actions .btn-primary {
+        background-color: #4F46E5;
+        border-color: #4F46E5;
+    }
+    
+    .professional-form ~ .form-actions .btn-primary:hover,
+    .page-actions .btn-primary:hover {
+        background-color: #4338CA;
+        border-color: #4338CA;
+        box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
+    }
+    
+    .professional-form ~ .form-actions .btn-outline-secondary:hover,
+    .page-actions .btn-outline-secondary:hover {
+        background-color: #F3F4F6;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Read-only mode styling */
+    .card.read-only-mode {
+        background-color: #F9FAFB;
+        border-left: 3px solid #9CA3AF;
+    }
+    
+    .card.read-only-mode .form-control,
+    .card.read-only-mode .form-select {
+        background-color: #F9FAFB;
+    }
+    
+    /* Edit toggle switch enhancements */
+    .form-check-input:checked {
+        background-color: #4F46E5;
+        border-color: #4F46E5;
+    }
+    
+    /* Card shadow and hover effects */
+    .card {
+        transition: all 0.3s ease;
+    }
+    
+    .edit-controls {
+        background-color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 30px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "templates/web.html" %}
+
+{% block title %}Monthly Salary Report | Jokoor Payroll{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block navbar %}
+<!-- Override Frappe's default navbar -->
+{% endblock %}
+
+{% block footer %}
+<!-- Override Frappe's default footer -->
+{% endblock %}
+
+{% block page_content %}
+{# Set content for the page component #}
+{% set page_title = "Monthly Salary Report" %}
+{% set active_menu = "reports" %}
+{% set subtitle = subtitle %}
+{% set breadcrumb_items = [
+    {"label": "Dashboard", "url": "/dashboard"},
+    {"label": "Reports", "url": "/dashboard/reports"},
+    {"label": "Monthly Salary Report", "url": "#"}
+] %}
+{% set has_actions = false %}
+
+{% set content %}
+    <div class="d-flex justify-content-end align-items-center mb-4">
+        <div class="text-end text-muted">
+            {{ month_year }}
+        </div>
+    </div>
+
+    {# Include report view component directly using report object #}
+    {% include "jokoor/templates/includes/elements/report_view.html" %}
+{% endset %}
+
+{# Include the page template which has the sidebar built-in #}
+{% include "jokoor/templates/includes/elements/page.html" %}
+
+{% endblock %}
+
+{% block style %}
+<style>
+    /* Additional custom styles if needed */
+</style>
+{% endblock %}
+
+{% block script %}
+<!-- No additional scripts needed as they're included in the report_table component -->
+{% endblock %}
