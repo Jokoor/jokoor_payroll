@@ -43,12 +43,60 @@
     <!-- Custom CSS -->
     <style>
         :root {
+            --brand-purple: #5534c9;
+            --brand-purple-50: #f6f4fe;
+            --brand-purple-100: #ede9fd;
+            --brand-purple-600: #5534c9;
+            --brand-purple-700: #4c2eb3;
+            --brand-purple-800: #42289c;
+            
+            /* IBM Design System Colors */
+            --ibm-gray-10: #f4f4f4;
+            --ibm-gray-20: #e0e0e0;
+            --ibm-gray-30: #c6c6c6;
+            --ibm-gray-40: #a8a8a8;
+            --ibm-gray-50: #8d8d8d;
+            --ibm-gray-60: #6f6f6f;
+            --ibm-gray-70: #525252;
+            --ibm-gray-80: #393939;
+            --ibm-gray-90: #262626;
+            --ibm-gray-100: #161616;
+            
+            /* IBM Typography */
+            --ibm-font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --ibm-font-size-xs: 0.75rem;
+            --ibm-font-size-sm: 0.875rem;
+            --ibm-font-size-md: 1rem;
+            --ibm-font-size-lg: 1.125rem;
+            --ibm-font-size-xl: 1.25rem;
+            --ibm-font-size-2xl: 1.5rem;
+            
+            /* IBM Spacing */
+            --ibm-spacing-01: 0.125rem;
+            --ibm-spacing-02: 0.25rem;
+            --ibm-spacing-03: 0.5rem;
+            --ibm-spacing-04: 0.75rem;
+            --ibm-spacing-05: 1rem;
+            --ibm-spacing-06: 1.5rem;
+            --ibm-spacing-07: 2rem;
+            --ibm-spacing-08: 2.5rem;
+            --ibm-spacing-09: 3rem;
+            --ibm-spacing-10: 4rem;
+            
+            /* IBM Border Radius */
+            --ibm-border-radius-sm: 0.25rem;
+            --ibm-border-radius-md: 0.5rem;
+            --ibm-border-radius-lg: 0.75rem;
+            
+            /* IBM Shadows */
+            --ibm-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+            --ibm-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --ibm-shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --ibm-shadow-xl: 0 8px 16px rgba(0, 0, 0, 0.1);
+            
+            /* Layout Variables */
             --header-height: 60px;
-            --sidebar-width: 250px;
-            --primary-color: #4a90e2;
-            --text-color: #2c3e50;
-            --border-color: #e5e7eb;
-            --bg-color: #f8fafc;
+            --sidebar-width: 256px;
         }
 
         * {
@@ -58,26 +106,26 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: var(--bg-color);
-            color: var(--text-color);
+            font-family: var(--ibm-font-family);
+            background: var(--ibm-gray-10);
+            color: var(--ibm-gray-100);
             line-height: 1.5;
             min-height: 100vh;
         }
 
-        /* Preloader Styles */
+        /* Preloader Styles - IBM Design System */
         .jk-preloader {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #fff;
+            background: var(--ibm-gray-10);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            transition: opacity 0.3s ease-out;
+            transition: opacity 0.3s cubic-bezier(0.2, 0, 0.38, 0.9);
         }
 
         .jk-preloader.hidden {
@@ -99,8 +147,8 @@
         .jk-preloader-spinner {
             width: 50px;
             height: 50px;
-            border: 3px solid var(--border-color);
-            border-top-color: var(--primary-color);
+            border: 3px solid var(--ibm-gray-30);
+            border-top-color: var(--brand-purple);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -114,73 +162,84 @@
         .jk-main-wrapper {
             margin-left: var(--sidebar-width);
             min-height: 100vh;
-            background: var(--bg-color);
-            transition: margin-left 0.3s ease;
+            background: var(--ibm-gray-10);
+            transition: margin-left 0.3s cubic-bezier(0.2, 0, 0.38, 0.9);
         }
 
+        /* Header - IBM Design System */
         .jk-header {
             height: var(--header-height);
-            background: #fff;
-            border-bottom: 1px solid var(--border-color);
+            background: white;
+            border-bottom: 1px solid var(--ibm-gray-20);
             display: flex;
             align-items: center;
-            padding: 0 2rem;
+            padding: 0 var(--ibm-spacing-07);
             position: fixed;
             right: 0;
             top: 0;
             left: var(--sidebar-width);
             z-index: 100;
-            transition: left 0.3s ease;
+            transition: left 0.3s cubic-bezier(0.2, 0, 0.38, 0.9);
+            box-shadow: var(--ibm-shadow-sm);
         }
 
         .jk-header-title {
-            font-size: 1.25rem;
+            font-size: var(--ibm-font-size-xl);
             font-weight: 600;
-            color: #1a1a1a;
+            color: var(--ibm-gray-100);
             margin: 0;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            letter-spacing: -0.025em;
         }
 
         .jk-header-actions {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: var(--ibm-spacing-05);
             margin-left: auto;
         }
 
+        /* User Menu - IBM Design System */
         .jk-user-menu {
             position: relative;
         }
 
         .jk-user-button {
             background: none;
-            border: none;
-            padding: 0.5rem;
+            border: 1px solid var(--ibm-gray-20);
+            padding: var(--ibm-spacing-03) var(--ibm-spacing-04);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            color: #4b5563;
-            font-size: 0.875rem;
+            gap: var(--ibm-spacing-03);
+            color: var(--ibm-gray-70);
+            font-size: var(--ibm-font-size-sm);
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.2, 0, 0.38, 0.9);
+            border-radius: var(--ibm-border-radius-md);
+            font-family: var(--ibm-font-family);
         }
 
         .jk-user-button:hover {
-            color: #1a1a1a;
+            color: var(--ibm-gray-100);
+            background: var(--ibm-gray-10);
+            border-color: var(--ibm-gray-30);
+            transform: translateY(-1px);
+            box-shadow: var(--ibm-shadow-sm);
         }
 
         .jk-user-avatar {
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            background: #f3f4f6;
+            background: var(--ibm-gray-20);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #64748b;
+            color: var(--ibm-gray-60);
+            font-size: var(--ibm-font-size-sm);
         }
 
         .jk-user-dropdown {
@@ -188,12 +247,13 @@
             top: 100%;
             right: 0;
             width: 200px;
-            background: #fff;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            margin-top: 0.5rem;
+            background: white;
+            border: 1px solid var(--ibm-gray-20);
+            border-radius: var(--ibm-border-radius-md);
+            box-shadow: var(--ibm-shadow-lg);
+            margin-top: var(--ibm-spacing-02);
             display: none;
+            z-index: 1000;
         }
 
         .jk-user-dropdown.show {
@@ -201,30 +261,32 @@
         }
 
         .jk-dropdown-item {
-            padding: 0.75rem 1rem;
-            color: #4b5563;
+            padding: var(--ibm-spacing-04) var(--ibm-spacing-05);
+            color: var(--ibm-gray-70);
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            font-size: 0.875rem;
-            transition: all 0.2s ease;
+            gap: var(--ibm-spacing-04);
+            font-size: var(--ibm-font-size-sm);
+            transition: all 0.2s cubic-bezier(0.2, 0, 0.38, 0.9);
+            font-family: var(--ibm-font-family);
         }
 
         .jk-dropdown-item:hover {
-            background: #f8fafc;
-            color: #1a1a1a;
+            background: var(--ibm-gray-10);
+            color: var(--ibm-gray-100);
         }
 
         .jk-dropdown-item i {
             width: 16px;
-            color: #64748b;
+            color: var(--ibm-gray-50);
+            text-align: center;
         }
 
         .jk-dropdown-divider {
             height: 1px;
-            background: var(--border-color);
-            margin: 0.25rem 0;
+            background: var(--ibm-gray-20);
+            margin: var(--ibm-spacing-01) 0;
         }
 
         /* Mobile Responsive Styles */
@@ -236,11 +298,11 @@
 
             .jk-header {
                 left: 0;
-                padding-left: 4rem; /* Space for menu toggle */
+                padding-left: calc(36px + var(--ibm-spacing-05)); /* Space for menu toggle + padding */
             }
 
             .jk-header-title {
-                font-size: 1.125rem; /* Slightly smaller on mobile */
+                font-size: var(--ibm-font-size-lg);
             }
 
             .jk-user-button span {
@@ -250,68 +312,78 @@
             .jk-user-dropdown {
                 position: fixed;
                 top: var(--header-height);
-                right: 1rem;
+                right: var(--ibm-spacing-05);
                 width: auto;
                 min-width: 200px;
                 max-width: calc(100vw - 2rem);
             }
         }
 
-        /* Content area styles */
+        @media (max-width: 480px) {
+            .jk-header {
+                padding-left: calc(32px + var(--ibm-spacing-04));
+            }
+        }
+
+        /* Content area styles - IBM Design System */
         .jk-content {
-            padding: calc(var(--header-height) + 1rem) 2rem 2rem;
+            padding: calc(var(--header-height) + var(--ibm-spacing-05)) var(--ibm-spacing-07) var(--ibm-spacing-07);
         }
 
         @media (max-width: 768px) {
             .jk-content {
-                padding: 1rem;
+                padding: var(--ibm-spacing-05);
             }
         }
 
-        /* Button Styles */
+        /* Button Styles - IBM Design System */
         .btn {
             display: inline-flex;
             align-items: center;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-size: 0.875rem;
+            padding: var(--ibm-spacing-03) var(--ibm-spacing-05);
+            border-radius: var(--ibm-border-radius-md);
+            font-size: var(--ibm-font-size-sm);
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s cubic-bezier(0.2, 0, 0.38, 0.9);
             border: 1px solid transparent;
-            gap: 0.5rem;
+            gap: var(--ibm-spacing-03);
             text-decoration: none;
+            font-family: var(--ibm-font-family);
         }
 
         .btn-primary {
-            background: var(--primary-color);
-            color: #fff;
+            background: var(--brand-purple);
+            color: white;
         }
 
         .btn-primary:hover {
-            background: #357abd;
-            color: #fff;
+            background: var(--brand-purple-700);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: var(--ibm-shadow-md);
         }
 
         .btn-outline {
-            border-color: var(--border-color);
-            background: #fff;
-            color: #64748b;
+            border-color: var(--ibm-gray-30);
+            background: white;
+            color: var(--ibm-gray-70);
         }
 
         .btn-outline:hover {
-            border-color: #64748b;
-            color: #1a1a1a;
+            border-color: var(--ibm-gray-50);
+            color: var(--ibm-gray-100);
+            background: var(--ibm-gray-10);
         }
 
         .btn-sm {
-            padding: 0.375rem 0.75rem;
-            font-size: 0.813rem;
+            padding: var(--ibm-spacing-02) var(--ibm-spacing-04);
+            font-size: var(--ibm-font-size-xs);
         }
 
         .btn-lg {
-            padding: 0.75rem 1.5rem;
-            font-size: 1rem;
+            padding: var(--ibm-spacing-04) var(--ibm-spacing-06);
+            font-size: var(--ibm-font-size-md);
         }
 
         /* Add New button style */
@@ -330,36 +402,37 @@
 
         @media (max-width: 768px) {
             .btn {
-                padding: 0.625rem 1rem; /* Slightly bigger touch target on mobile */
+                padding: var(--ibm-spacing-03) var(--ibm-spacing-05);
             }
 
             .btn-sm {
-                padding: 0.5rem 0.875rem;
+                padding: var(--ibm-spacing-03) var(--ibm-spacing-04);
             }
 
             .btn-lg {
-                padding: 0.875rem 1.5rem;
+                padding: var(--ibm-spacing-04) var(--ibm-spacing-06);
             }
         }
 
-        /* Card and Table Styles */
+        /* Card and Table Styles - IBM Design System */
         .card {
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            margin-bottom: 1rem;
+            background: white;
+            border-radius: var(--ibm-border-radius-md);
+            box-shadow: var(--ibm-shadow-sm);
+            margin-bottom: var(--ibm-spacing-05);
+            border: 1px solid var(--ibm-gray-20);
         }
 
         .card-header {
-            padding: 1rem;
-            border-bottom: 1px solid var(--border-color);
+            padding: var(--ibm-spacing-05);
+            border-bottom: 1px solid var(--ibm-gray-20);
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
         .card-body {
-            padding: 1rem;
+            padding: var(--ibm-spacing-05);
         }
 
         .table-responsive {
@@ -374,60 +447,63 @@
 
         .table th,
         .table td {
-            padding: 0.75rem;
-            border-bottom: 1px solid var(--border-color);
+            padding: var(--ibm-spacing-04);
+            border-bottom: 1px solid var(--ibm-gray-20);
             text-align: left;
         }
 
         .table th {
-            background: #f8fafc;
+            background: var(--ibm-gray-10);
             font-weight: 500;
-            color: #64748b;
+            color: var(--ibm-gray-60);
             white-space: nowrap;
+            font-family: var(--ibm-font-family);
         }
 
         .table tr:hover {
-            background: #f8fafc;
+            background: var(--ibm-gray-10);
         }
 
         .table-footer {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 1rem;
-            background: #f8fafc;
-            border-top: 1px solid var(--border-color);
+            padding: var(--ibm-spacing-05);
+            background: var(--ibm-gray-10);
+            border-top: 1px solid var(--ibm-gray-20);
         }
 
-        /* Form Controls */
+        /* Form Controls - IBM Design System */
         .form-control {
             display: block;
             width: 100%;
-            padding: 0.5rem 0.75rem;
-            font-size: 0.875rem;
+            padding: var(--ibm-spacing-03) var(--ibm-spacing-04);
+            font-size: var(--ibm-font-size-sm);
             line-height: 1.5;
-            color: #1a1a1a;
-            background-color: #fff;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            transition: border-color 0.2s ease;
+            color: var(--ibm-gray-100);
+            background-color: white;
+            border: 1px solid var(--ibm-gray-30);
+            border-radius: var(--ibm-border-radius-md);
+            transition: all 0.2s cubic-bezier(0.2, 0, 0.38, 0.9);
+            font-family: var(--ibm-font-family);
         }
 
         .form-control:focus {
             outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.1);
+            border-color: var(--brand-purple);
+            box-shadow: 0 0 0 2px rgba(85, 52, 201, 0.1);
         }
 
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: var(--ibm-spacing-05);
         }
 
         .form-label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: var(--ibm-spacing-02);
             font-weight: 500;
-            color: #4b5563;
+            color: var(--ibm-gray-70);
+            font-family: var(--ibm-font-family);
         }
 
         /* Checkbox styles */
@@ -441,18 +517,19 @@
         .checkbox input[type="checkbox"] {
             width: 16px;
             height: 16px;
-            margin-right: 0.5rem;
+            margin-right: var(--ibm-spacing-03);
             cursor: pointer;
         }
 
-        /* Alert Styles */
+        /* Alert Styles - IBM Design System */
         .alert {
-            padding: 1rem;
-            border-radius: 6px;
-            margin-bottom: 1rem;
+            padding: var(--ibm-spacing-05);
+            border-radius: var(--ibm-border-radius-md);
+            margin-bottom: var(--ibm-spacing-05);
             display: flex;
             align-items: flex-start;
-            gap: 0.75rem;
+            gap: var(--ibm-spacing-04);
+            font-family: var(--ibm-font-family);
         }
 
         .alert-success {
@@ -473,14 +550,15 @@
             color: #92400e;
         }
 
-        /* Badge Styles */
+        /* Badge Styles - IBM Design System */
         .badge {
             display: inline-flex;
             align-items: center;
-            padding: 0.25rem 0.5rem;
+            padding: var(--ibm-spacing-01) var(--ibm-spacing-03);
             border-radius: 9999px;
-            font-size: 0.75rem;
+            font-size: var(--ibm-font-size-xs);
             font-weight: 500;
+            font-family: var(--ibm-font-family);
         }
 
         .badge-success {
@@ -498,33 +576,35 @@
             color: #991b1b;
         }
 
-        /* align it to the bottom  */
+        /* Breadcrumb - IBM Design System */
         .jk-breadcrumb {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: -1rem;
-        
+            margin-bottom: calc(-1 * var(--ibm-spacing-05));
+            font-family: var(--ibm-font-family);
         }
 
         .jk-breadcrumb a {
-            color: #1f2937;
+            color: var(--ibm-gray-100);
             text-decoration: solid;
+            font-size: var(--ibm-font-size-sm);
         }
 
         .jk-breadcrumb a:hover {
             text-decoration: underline;
+            color: var(--brand-purple);
         }
 
         .jk-breadcrumb-separator {
-            color: #64748b;
+            color: var(--ibm-gray-50);
         }
 
-        /* Chat Widget Styles */
+        /* Chat Widget Styles - IBM Design System */
         .jk-chat-widget {
             position: fixed;
-            bottom: 2rem;
-            right: 2rem;
+            bottom: var(--ibm-spacing-07);
+            right: var(--ibm-spacing-07);
             z-index: 1000;
         }
 
@@ -532,35 +612,36 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: var(--primary-color);
+            background: var(--brand-purple);
             color: white;
             border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(85, 52, 201, 0.2);
-            transition: all 0.3s ease;
+            box-shadow: var(--ibm-shadow-lg);
+            transition: all 0.3s cubic-bezier(0.2, 0, 0.38, 0.9);
         }
 
         .jk-chat-button:hover {
-            background: var(--primary-color);
+            background: var(--brand-purple-700);
             transform: scale(1.05);
+            box-shadow: var(--ibm-shadow-xl);
         }
 
         .jk-chat-button i {
-            font-size: 1.5rem;
+            font-size: var(--ibm-font-size-2xl);
         }
 
         .jk-chat-window {
             position: fixed;
             bottom: 5rem;
-            right: 2rem;
+            right: var(--ibm-spacing-07);
             width: 350px;
             height: 500px;
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            border-radius: var(--ibm-border-radius-lg);
+            box-shadow: var(--ibm-shadow-xl);
             display: none;
             flex-direction: column;
             overflow: hidden;
@@ -571,8 +652,8 @@
         }
 
         .jk-chat-header {
-            padding: 1rem;
-            background: var(--primary-color);
+            padding: var(--ibm-spacing-05);
+            background: var(--brand-purple);
             color: white;
             display: flex;
             align-items: center;
@@ -582,12 +663,13 @@
         .jk-chat-title {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: var(--ibm-spacing-03);
             font-weight: 500;
+            font-family: var(--ibm-font-family);
         }
 
         .jk-chat-title i {
-            font-size: 1.25rem;
+            font-size: var(--ibm-font-size-xl);
         }
 
         .jk-chat-close {
@@ -595,65 +677,68 @@
             border: none;
             color: white;
             cursor: pointer;
-            padding: 0.25rem;
+            padding: var(--ibm-spacing-01);
         }
 
         .jk-chat-body {
             flex: 1;
-            padding: 1rem;
+            padding: var(--ibm-spacing-05);
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: var(--ibm-spacing-05);
         }
 
         .jk-chat-message {
             max-width: 80%;
-            padding: 0.75rem 1rem;
-            border-radius: 12px;
-            font-size: 0.875rem;
+            padding: var(--ibm-spacing-04) var(--ibm-spacing-05);
+            border-radius: var(--ibm-border-radius-lg);
+            font-size: var(--ibm-font-size-sm);
+            font-family: var(--ibm-font-family);
         }
 
         .jk-chat-message-system {
             align-self: flex-start;
-            background: var(--bg-color);
-            color: var(--text-color);
+            background: var(--ibm-gray-10);
+            color: var(--ibm-gray-100);
         }
 
         .jk-chat-message-user {
             align-self: flex-end;
-            background: var(--primary-color);
+            background: var(--brand-purple);
             color: white;
         }
 
         .jk-chat-footer {
-            padding: 1rem;
-            border-top: 1px solid var(--border-color);
+            padding: var(--ibm-spacing-05);
+            border-top: 1px solid var(--ibm-gray-20);
         }
 
         .jk-chat-input-wrapper {
             display: flex;
-            gap: 0.5rem;
+            gap: var(--ibm-spacing-03);
         }
 
         .jk-chat-input {
             flex: 1;
-            padding: 0.75rem 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 0.875rem;
+            padding: var(--ibm-spacing-04) var(--ibm-spacing-05);
+            border: 1px solid var(--ibm-gray-30);
+            border-radius: var(--ibm-border-radius-md);
+            font-size: var(--ibm-font-size-sm);
+            font-family: var(--ibm-font-family);
         }
 
         .jk-chat-input:focus {
             outline: none;
-            border-color: var(--primary-color);
+            border-color: var(--brand-purple);
+            box-shadow: 0 0 0 2px rgba(85, 52, 201, 0.1);
         }
 
         .jk-chat-send {
             width: 40px;
             height: 40px;
-            border-radius: 6px;
-            background: var(--primary-color);
+            border-radius: var(--ibm-border-radius-md);
+            background: var(--brand-purple);
             color: white;
             border: none;
             cursor: pointer;
@@ -663,19 +748,19 @@
         }
 
         .jk-chat-send:hover {
-            background: var(--primary-color);
+            background: var(--brand-purple-700);
         }
 
         /* Responsive Styles */
         @media (max-width: 768px) {
             .jk-chat-widget {
-                bottom: 1rem;
-                right: 1rem;
+                bottom: var(--ibm-spacing-05);
+                right: var(--ibm-spacing-05);
             }
 
             .jk-chat-window {
                 bottom: 4rem;
-                right: 1rem;
+                right: var(--ibm-spacing-05);
                 width: calc(100% - 2rem);
                 height: 400px;
             }
@@ -685,188 +770,225 @@
                 height: 50px;
             }
         }
+        
         .jk-no-data {
-    text-align: center;
-    padding: 2rem;
-    color: #6b7280;
-}
+            text-align: center;
+            padding: var(--ibm-spacing-07);
+            color: var(--ibm-gray-50);
+            font-family: var(--ibm-font-family);
+        }
 
-.jk-page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-}
+        .jk-page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--ibm-spacing-06);
+        }
 
-.jk-header-content {
-    flex: 1;
-}
+        .jk-header-content {
+            flex: 1;
+        }
 
-.jk-page-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #111827;
-    margin: 0;
-}
+        .jk-page-title {
+            font-size: var(--ibm-font-size-2xl);
+            font-weight: 600;
+            color: var(--ibm-gray-100);
+            margin: 0;
+            font-family: var(--ibm-font-family);
+        }
 
-.jk-page-subtitle {
-    color: #6b7280;
-    margin-top: 0.25rem;
-}
+        .jk-page-subtitle {
+            color: var(--ibm-gray-50);
+            margin-top: var(--ibm-spacing-01);
+            font-family: var(--ibm-font-family);
+        }
 
-.jk-card {
-    background: #fff;
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    margin-bottom: 1.5rem;
-}
+        .jk-card {
+            background: white;
+            border-radius: var(--ibm-border-radius-md);
+            box-shadow: var(--ibm-shadow-sm);
+            margin-bottom: var(--ibm-spacing-06);
+            border: 1px solid var(--ibm-gray-20);
+        }
 
-.jk-table-container {
-    overflow-x: auto;
-}
+        .jk-table-container {
+            overflow-x: auto;
+        }
 
-.jk-table {
-    width: 100%;
-    border-collapse: collapse;
-}
+        .jk-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-.jk-table th,
-.jk-table td {
-    padding: 0.75rem 1rem;
-    text-align: left;
-    border-bottom: 1px solid #e5e7eb;
-}
+        .jk-table th,
+        .jk-table td {
+            padding: var(--ibm-spacing-04) var(--ibm-spacing-05);
+            text-align: left;
+            border-bottom: 1px solid var(--ibm-gray-20);
+            font-family: var(--ibm-font-family);
+        }
 
-.jk-table th {
-    background: #f9fafb;
-    font-weight: 500;
-    color: #374151;
-}
+        .jk-table th {
+            background: var(--ibm-gray-10);
+            font-weight: 500;
+            color: var(--ibm-gray-70);
+        }
 
-.jk-select-column {
-    width: 40px;
-    text-align: center !important;
-}
+        .jk-select-column {
+            width: 40px;
+            text-align: center !important;
+        }
 
-.jk-sortable {
-    cursor: pointer;
-    user-select: none;
-}
+        .jk-sortable {
+            cursor: pointer;
+            user-select: none;
+        }
 
-.jk-sortable i {
-    margin-left: 0.5rem;
-    color: #9ca3af;
-}
+        .jk-sortable i {
+            margin-left: var(--ibm-spacing-03);
+            color: var(--ibm-gray-40);
+        }
 
-.jk-clickable-row {
-    cursor: pointer;
-}
+        .jk-clickable-row {
+            cursor: pointer;
+        }
 
-.jk-clickable-row:hover {
-    background-color: #f3f4f6;
-}
+        .jk-clickable-row:hover {
+            background-color: var(--ibm-gray-10);
+        }
 
-.jk-list-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    border-top: 1px solid #e5e7eb;
-}
+        .jk-list-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--ibm-spacing-04) var(--ibm-spacing-05);
+            border-top: 1px solid var(--ibm-gray-20);
+        }
 
-.jk-items-per-page {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    color: #6b7280;
-}
+        .jk-items-per-page {
+            display: flex;
+            align-items: center;
+            gap: var(--ibm-spacing-04);
+            color: var(--ibm-gray-50);
+            font-family: var(--ibm-font-family);
+        }
 
-.jk-select {
-    padding: 0.375rem 0.75rem;
-    padding-right: 2rem;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.375rem;
-    background-color: #fff;
-    color: #374151;
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-    background-position: right 0.5rem center;
-    background-repeat: no-repeat;
-    background-size: 1.5em 1.5em;
-}
+        .jk-select {
+            padding: var(--ibm-spacing-02) var(--ibm-spacing-04);
+            padding-right: 2rem;
+            border: 1px solid var(--ibm-gray-30);
+            border-radius: var(--ibm-border-radius-sm);
+            background-color: white;
+            color: var(--ibm-gray-70);
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            font-family: var(--ibm-font-family);
+        }
 
-.jk-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    font-weight: 500;
-    border-radius: 0.375rem;
-    cursor: pointer;
-    transition: all 0.2s;
-}
+        .jk-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--ibm-spacing-03);
+            padding: var(--ibm-spacing-03) var(--ibm-spacing-05);
+            font-weight: 500;
+            border-radius: var(--ibm-border-radius-sm);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.2, 0, 0.38, 0.9);
+            font-family: var(--ibm-font-family);
+        }
 
-.jk-btn-primary {
-    background-color: #5534c9;
-    color: white;
-    border: none;
-}
+        .jk-btn-primary {
+            background-color: var(--brand-purple);
+            color: white;
+            border: none;
+        }
 
-.jk-btn-primary:hover {
-    background-color: #4425a3;
-}
+        .jk-btn-primary:hover {
+            background-color: var(--brand-purple-700);
+            transform: translateY(-1px);
+            box-shadow: var(--ibm-shadow-md);
+        }
 
-.jk-btn i {
-    font-size: 0.875rem;
-}
+        .jk-btn i {
+            font-size: var(--ibm-font-size-sm);
+        }
 
-.jk-selected-count {
-    color: #6b7280;
-    font-size: 0.875rem;
-}
-.badge {
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-}
-.badge-primary {
-    background-color: #5534c9;
-    color: white;
-}
-.badge-danger {
-    background-color: #dc2626;
-    color: white;
-}
-.badge-success {
-    background-color: #198754;
-    color: white;
-}
-.badge-warning {
-    background-color: #f0ad4e;
-    color: white;
-}
-.badge-info {
-    background-color: #5bc0de;
-    color: white;
-}
-.badge-light {
-    background-color: #f8f9fa;
-    color: #212529;
-}
-.badge-dark {
-    background-color: #212529;
-    color: white;
-}
-.badge-secondary {
-    background-color: #1990f8;
-    color: rgb(255, 255, 255);
-}
+        .jk-selected-count {
+            color: var(--ibm-gray-50);
+            font-size: var(--ibm-font-size-sm);
+            font-family: var(--ibm-font-family);
+        }
+        
+        .badge {
+            padding: var(--ibm-spacing-01) var(--ibm-spacing-03);
+            border-radius: var(--ibm-border-radius-sm);
+            font-size: var(--ibm-font-size-sm);
+            font-weight: 500;
+            font-family: var(--ibm-font-family);
+        }
+        
+        .badge-primary {
+            background-color: var(--brand-purple);
+            color: white;
+        }
+        
+        .badge-danger {
+            background-color: #dc2626;
+            color: white;
+        }
+        
+        .badge-success {
+            background-color: #198754;
+            color: white;
+        }
+        
+        .badge-warning {
+            background-color: #f0ad4e;
+            color: white;
+        }
+        
+        .badge-info {
+            background-color: #5bc0de;
+            color: white;
+        }
+        
+        .badge-light {
+            background-color: var(--ibm-gray-10);
+            color: var(--ibm-gray-100);
+        }
+        
+        .badge-dark {
+            background-color: var(--ibm-gray-100);
+            color: white;
+        }
+        
+        .badge-secondary {
+            background-color: #1990f8;
+            color: white;
+        }
     </style>
 
-    <!-- Tailwind CSS -->
-    <link href="/assets/jokoor/css/tailwind.min.css" rel="stylesheet">
+    <!-- IBM Plex Sans font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&display=swap">
+    
+    <!-- Additional CSS to ensure toggle button is hidden on desktop -->
+    <style>
+        /* Force hide toggle button on desktop */
+        @media (min-width: 769px) {
+            .jk-sidebar-toggle {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
+                position: absolute !important;
+                left: -9999px !important;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Preloader -->

@@ -19,18 +19,22 @@ def get_context(context):
             {"key": "name", "label": "Name"},
             {"key": "salary_component_abbr", "label": "Abbreviation"},
             {"key": "type", "label": "Type"},
-            {"key": "status", "label": "Status"}
+            {"key": "status_html", "label": "Status"},
+            {"key": "creation", "label": "Created At"}
         ]
         
         # Get employee data
         component_list = frappe.get_list(
-            "Salary Component", ["name", "salary_component_abbr", "type", "disabled"],
+            "Salary Component", ["name", "salary_component_abbr", "type", "disabled", "creation"],
             limit=per_page
         )
         
         # Process employee data
         for component in component_list:
+
             doc = frappe.get_doc("Salary Component", component.name)
+            creation = frappe.utils.format_date(doc.creation, "dd-MMM-yyyy")
+            component.creation = creation
             component.name = doc.name
             component.salary_component_abbr = doc.salary_component_abbr
             component.type = doc.type

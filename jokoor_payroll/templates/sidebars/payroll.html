@@ -314,36 +314,55 @@
 
     /* Mobile toggle button - IBM Design System */
     .jk-sidebar-toggle {
-        display: none;
+        display: none !important;
         position: fixed;
-        top: var(--ibm-spacing-05);
-        left: var(--ibm-spacing-05);
+        top: calc(var(--header-height) / 2 - 24px); /* Center vertically in header */
+        left: var(--ibm-spacing-04);
         z-index: 1002;
-        background: var(--ibm-gray-100);
-        border: 1px solid var(--ibm-gray-70);
-        width: 48px;
-        height: 48px;
+        background: white;
+        border: 1px solid var(--ibm-gray-20);
+        width: 40px;
+        height: 40px;
         border-radius: var(--ibm-border-radius-md);
-        box-shadow: var(--ibm-shadow-lg);
-        color: var(--ibm-gray-30);
+        box-shadow: var(--ibm-shadow-sm);
+        color: var(--ibm-gray-70);
         cursor: pointer;
         transition: all 0.2s cubic-bezier(0.2, 0, 0.38, 0.9);
-        font-size: var(--ibm-font-size-lg);
+        font-size: var(--ibm-font-size-md);
         align-items: center;
         justify-content: center;
+    }
+
+    /* Desktop - Hide toggle button */
+    @media (min-width: 769px) {
+        .jk-sidebar-toggle {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .jk-sidebar-toggle {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
     }
 
     .jk-sidebar-toggle:hover {
         background: var(--brand-purple);
         color: white;
         border-color: var(--brand-purple-700);
-        box-shadow: var(--ibm-shadow-xl);
+        box-shadow: var(--ibm-shadow-md);
         transform: translateY(-1px);
     }
 
     .jk-sidebar-toggle:active {
         transform: translateY(0);
-        box-shadow: var(--ibm-shadow-md);
+        box-shadow: var(--ibm-shadow-sm);
     }
 
     .jk-sidebar-toggle .fa-bars,
@@ -359,7 +378,7 @@
 
     .jk-sidebar-payroll.show ~ .jk-sidebar-toggle {
         left: auto;
-        right: var(--ibm-spacing-05);
+        right: var(--ibm-spacing-04);
     }
 
     .jk-sidebar-payroll.show ~ .jk-sidebar-toggle .fa-bars {
@@ -372,9 +391,33 @@
         transform: rotate(0) scale(1);
     }
 
-    @media (max-width: 1024px) {
+    @media (max-width: 768px) {
         .jk-sidebar-toggle {
-            display: flex;
+            display: flex !important;
+        }
+    }
+
+    /* Additional mobile optimizations */
+    @media (max-width: 768px) {
+        .jk-sidebar-toggle {
+            top: calc(var(--header-height) / 2 - 20px); /* Slightly smaller on mobile */
+            width: 36px;
+            height: 36px;
+            font-size: var(--ibm-font-size-sm);
+            left: var(--ibm-spacing-03);
+        }
+
+        .jk-sidebar-payroll.show ~ .jk-sidebar-toggle {
+            right: var(--ibm-spacing-03);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .jk-sidebar-toggle {
+            width: 32px;
+            height: 32px;
+            top: calc(var(--header-height) / 2 - 16px);
+            font-size: var(--ibm-font-size-xs);
         }
     }
 
@@ -404,6 +447,12 @@
     .jk-sidebar-toggle:focus {
         outline: 2px solid var(--brand-purple);
         outline-offset: 2px;
+    }
+
+    .jk-sidebar-toggle:focus {
+        outline: 2px solid var(--brand-purple);
+        outline-offset: 2px;
+        box-shadow: var(--ibm-shadow-md), 0 0 0 2px rgba(85, 52, 201, 0.1);
     }
 
     /* Loading states */
@@ -626,7 +675,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Close sidebar when clicking outside
     document.addEventListener('click', (e) => {
-        if (window.innerWidth <= 1024 && 
+        if (window.innerWidth <= 768 && 
             sidebar.classList.contains('show') && 
             !sidebar.contains(e.target) && 
             !toggleBtn.contains(e.target)) {
@@ -639,7 +688,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
-            if (window.innerWidth > 1024) {
+            if (window.innerWidth > 768) {
                 sidebar.classList.remove('show');
                 overlay.classList.remove('show');
                 document.body.style.overflow = '';

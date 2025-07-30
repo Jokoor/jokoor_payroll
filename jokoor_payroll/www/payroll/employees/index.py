@@ -23,13 +23,14 @@ def get_context(context):
         {"key": "employee_name", "label": "Employee Name"},
         {"key": "designation", "label": "Employee Designation"},
         {"key": "gender", "label": "Gender"},
-        {"key": "status_html", "label": "Status"}
+        {"key": "status_html", "label": "Status"},
+        {"key": "creation", "label": "Created At"}
     ]
     
     # Get employee data
     employee_list = frappe.get_list(
         "Employee", 
-        fields=["name", "employee_name", "designation", "gender", "status"], 
+        fields=["name", "employee_name", "designation", "gender", "status", "creation"], 
         limit=per_page
     )
     

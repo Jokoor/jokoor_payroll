@@ -7,6 +7,7 @@ def get_context(context):
     context.active_page = "employees"
     context.title = "Employee"
     context.url = f"employee/{employee_id}"
+    context.image = frappe.utils.get_url(frappe.db.get_value("Employee", employee_id, "image"))
     context.is_editable = True
     
     return context
