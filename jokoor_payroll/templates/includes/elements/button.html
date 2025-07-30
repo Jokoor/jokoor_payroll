@@ -1,0 +1,213 @@
+{# 
+  Reusable Button Component
+  Usage: 
+  1. Set button parameters
+  {% set button_id = "uniqueButtonId" %}  (optional)
+  {% set button_text = "Button Text" %}
+  {% set button_icon = "fa-icon-name" %}  (optional)
+  {% set button_type = "primary" %}  (optional, default: "primary", options: primary, secondary, outline, light, link)
+  {% set button_size = "md" %}  (optional, default: "md", options: sm, md, lg)
+  {% set button_class = "additional-classes" %}  (optional)
+  {% set button_attrs = 'data-bs-toggle="modal" data-bs-target="#myModal"' %}  (optional)
+  {% set button_onclick = "myFunction()" %}  (optional)
+  {% set is_dropdown = false %}  (optional, default: false)
+  {% set button_type_attr = "submit" %}  (optional, default: "button", options: button, submit)
+  
+  2. Include the button template
+  {% include "jokoor_payroll/templates/includes/elements/button.html" %}
+
+  For dropdown buttons:
+  {% set is_dropdown = true %}
+  {% set dropdown_items = [
+    {
+      "text": "Action 1",
+      "icon": "fa-cog",
+      "href": "#action1",
+      "onclick": "doAction1()"
+    }
+  ] %}
+#}
+
+{# Default values for optional parameters #}
+{% if button_id is not defined %}{% set button_id = "btn-" ~ range(10000)|random %}{% endif %}
+{% if button_icon is not defined %}{% set button_icon = "" %}{% endif %}
+{% if button_type is not defined %}{% set button_type = "primary" %}{% endif %}
+{% if button_size is not defined %}{% set button_size = "md" %}{% endif %}
+{% if button_class is not defined %}{% set button_class = "" %}{% endif %}
+{% if button_attrs is not defined %}{% set button_attrs = "" %}{% endif %}
+{% if button_onclick is not defined %}{% set button_onclick = "" %}{% endif %}
+{% if is_dropdown is not defined %}{% set is_dropdown = false %}{% endif %}
+{% if button_type_attr is not defined %}{% set button_type_attr = "button" %}{% endif %}
+
+{# Map button type to Bootstrap/custom class #}
+{% set button_type_class = {
+  "primary": "btn-primary",
+  "secondary": "btn-secondary",
+  "outline": "btn-outline-primary",
+  "light": "btn-light",
+  "link": "btn-link"
+} %}
+
+{# Map button size to Bootstrap class #}
+{% set button_size_class = {
+  "sm": "btn-sm",
+  "md": "",
+  "lg": "btn-lg"
+} %}
+
+{% if is_dropdown %}
+<div class="dropdown">
+  <button 
+    id="{{ button_id }}"
+    class="btn {{ button_type_class[button_type] }} {{ button_size_class[button_size] }} dropdown-toggle {{ button_class }}"
+    type="button"
+    data-bs-toggle="dropdown"
+    aria-expanded="false"
+    {% if button_onclick %}onclick="{{ button_onclick }}"{% endif %}
+    {{ button_attrs|safe }}
+  >
+    {% if button_icon %}<i class="fas {{ button_icon }} {% if button_text %}me-2{% endif %}"></i>{% endif %}
+    {{ button_text }}
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    {% for item in dropdown_items %}
+    <li>
+      <a class="dropdown-item" href="{{ item.href|default('#') }}" {% if item.onclick %}onclick="{{ item.onclick }}"{% endif %}>
+        {% if item.icon %}<i class="fas {{ item.icon }} me-2"></i>{% endif %}
+        {{ item.text }}
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+{% else %}
+<button 
+  id="{{ button_id }}"
+  class="btn {{ button_type_class[button_type] }} {{ button_size_class[button_size] }} {{ button_class }}"
+  {% if button_type_attr %}type="{{ button_type_attr }}"{% else %}type="button"{% endif %}
+  {% if button_onclick %}onclick="{{ button_onclick }}"{% endif %}
+  {{ button_attrs|safe }}
+>
+  {% if button_icon %}<i class="fas {{ button_icon }} {% if button_text %}me-2{% endif %}"></i>{% endif %}
+  {{ button_text }}
+</button>
+{% endif %}
+
+<style>
+  :root {
+    --primary-color: #6A3FBF;         /* Main purple color */
+    --primary-hover: #5932A3;         /* Darker purple for hover */
+    --primary-active: #502E94;        /* Even darker for active/pressed */
+    --primary-light: #E9E3F9;         /* Light purple for backgrounds */
+    --secondary-color: #6C757D;       /* Bootstrap secondary gray */
+    --light-color: #F8F9FA;           /* Bootstrap light color */
+    --text-on-primary: #FFFFFF;       /* Text color on primary background */
+  }
+  
+  /* Primary Button */
+  .btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--text-on-primary);
+    box-shadow: 0 2px 4px rgba(106, 63, 191, 0.1);
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .btn-primary:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+    box-shadow: 0 4px 8px rgba(106, 63, 191, 0.2);
+  }
+  
+  .btn-primary:active, .btn-primary:focus {
+    background-color: var(--primary-active) !important;
+    border-color: var(--primary-active) !important;
+    box-shadow: 0 2px 4px rgba(80, 46, 148, 0.3) !important;
+  }
+  
+  /* Outline Primary Button */
+  .btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    background-color: transparent;
+    box-shadow: 0 1px 2px rgba(106, 63, 191, 0.05);
+  }
+  
+  .btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--text-on-primary);
+    box-shadow: 0 2px 4px rgba(106, 63, 191, 0.1);
+  }
+  
+  .btn-outline-primary:active, .btn-outline-primary:focus {
+    background-color: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+    color: var(--text-on-primary) !important;
+    box-shadow: 0 2px 4px rgba(106, 63, 191, 0.2) !important;
+  }
+  
+  /* Light Button */
+  .btn-light {
+    background-color: var(--light-color);
+    border-color: #E4E6E9;
+    color: #495057;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+  
+  .btn-light:hover {
+    background-color: #E9ECEF;
+    border-color: #DFE2E6;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  
+  .btn-light:active, .btn-light:focus {
+    background-color: #E2E6EA !important;
+    border-color: #D8DEE2 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  /* Button Sizes */
+  .btn {
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+  }
+  
+  .btn-sm {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
+    border-radius: 4px;
+  }
+  
+  .btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 8px;
+  }
+  
+  /* Dropdown Styling */
+  .dropdown-menu {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 0.5rem 0;
+  }
+  
+  .dropdown-item {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    color: #495057;
+  }
+  
+  .dropdown-item:hover {
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+  }
+  
+  .dropdown-item:active {
+    background-color: var(--primary-color);
+    color: var(--text-on-primary);
+  }
+</style>

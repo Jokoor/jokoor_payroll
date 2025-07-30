@@ -1,0 +1,309 @@
+{% extends "templates/pages/base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="/assets/jokoor/css/jds.css">
+
+<!-- Page Header -->
+<div class="jds-card">
+    <div class="jds-card-header">
+        <div class="jds-header-left">
+            <h2>{{"hid" or "New Salary Structure" }}</h2>
+            <p class="jds-text-sm text-gray-500">Configure salary structure components and rules</p>
+        </div>
+        <div class="jds-header-right">
+            <button class="jds-btn jds-btn-secondary" onclick="window.location.href='/payroll/settings/salary-structure'">
+                Cancel
+            </button>
+            <button class="jds-btn jds-btn-primary" onclick="saveStructure()">
+                Save Structure
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Main Form -->
+<div class="jds-form-container">
+    <!-- Basic Information -->
+    <div class="jds-card">
+        <div class="jds-card-header">
+            <h3 class="jds-card-title">Basic Information</h3>
+        </div>
+        <div class="jds-card-body">
+            <div class="jds-form-row">
+                <div class="jds-form-group">
+                    <label class="jds-form-label">Structure Name</label>
+                    <input type="text" class="jds-form-control" id="structureName" name="name" required>
+                </div>
+                <div class="jds-form-group">
+                    <label class="jds-form-label">Base Salary</label>
+                    <div class="jds-input-group">
+                        <span class="jds-input-group-text">D</span>
+                        <input type="number" class="jds-form-control" id="baseSalary" name="baseSalary" required>
+                    </div>
+                </div>
+                <div class="jds-form-group">
+                    <label class="jds-form-label">Status</label>
+                    <select class="jds-form-control" id="status" name="status" required>
+                        <option value="active">Active</option>
+                        <option value="draft">Draft</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Earnings Section -->
+    <div class="jds-card">
+        <div class="jds-card-header">
+            <h3 class="jds-card-title">Earnings</h3>
+            <button class="jds-btn jds-btn-secondary jds-btn-sm" onclick="addComponent('earnings')">
+                <i class="fas fa-plus"></i>
+                Add Earning
+            </button>
+        </div>
+        <div class="jds-card-body">
+            <div class="jds-table-container">
+                <table class="jds-table" id="earningsTable">
+                    <thead>
+                        <tr>
+                            <th>Component Name</th>
+                            <th>Type</th>
+                            <th>Value</th>
+                            <th class="text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Earnings will be added here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deductions Section -->
+    <div class="jds-card">
+        <div class="jds-card-header">
+            <h3 class="jds-card-title">Deductions</h3>
+            <button class="jds-btn jds-btn-secondary jds-btn-sm" onclick="addComponent('deductions')">
+                <i class="fas fa-plus"></i>
+                Add Deduction
+            </button>
+        </div>
+        <div class="jds-card-body">
+            <div class="jds-table-container">
+                <table class="jds-table" id="deductionsTable">
+                    <thead>
+                        <tr>
+                            <th>Component Name</th>
+                            <th>Type</th>
+                            <th>Value</th>
+                            <th class="text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Deductions will be added here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .jds-form-container {
+        display: flex;
+        flex-direction: column;
+        gap: var(--jds-spacing-6);
+    }
+
+    .jds-card-title {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--jds-gray-900);
+    }
+
+    .jds-form-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--jds-spacing-6);
+        padding: var(--jds-spacing-6);
+    }
+
+    .jds-form-group {
+        margin: 0;
+    }
+
+    .jds-form-label {
+        display: block;
+        margin-bottom: var(--jds-spacing-2);
+        font-weight: 500;
+        color: var(--jds-gray-700);
+    }
+
+    .jds-form-control {
+        width: 100%;
+        padding: var(--jds-spacing-2) var(--jds-spacing-3);
+        border: 1px solid var(--jds-gray-300);
+        border-radius: var(--jds-radius-md);
+        font-size: 0.875rem;
+    }
+
+    .jds-form-control:focus {
+        outline: none;
+        border-color: var(--jds-purple);
+        box-shadow: 0 0 0 2px rgba(85, 52, 201, 0.1);
+    }
+
+    .jds-input-group {
+        display: flex;
+        align-items: center;
+    }
+
+    .jds-input-group-text {
+        padding: var(--jds-spacing-2) var(--jds-spacing-3);
+        background: var(--jds-gray-100);
+        border: 1px solid var(--jds-gray-300);
+        border-right: none;
+        border-radius: var(--jds-radius-md) 0 0 var(--jds-radius-md);
+        color: var(--jds-gray-600);
+    }
+
+    .jds-input-group .jds-form-control {
+        border-radius: 0 var(--jds-radius-md) var(--jds-radius-md) 0;
+    }
+
+    .jds-table td {
+        vertical-align: middle;
+    }
+
+    .jds-table input,
+    .jds-table select {
+        margin: 0;
+    }
+
+    .jds-component-formula {
+        font-family: monospace;
+        font-size: 0.875rem;
+    }
+
+    .jds-component-formula::placeholder {
+        color: var(--jds-gray-400);
+    }
+</style>
+
+<script>
+    let currentStructure = {
+        earnings: [],
+        deductions: []
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load existing data if editing
+        if (window.structureData) {
+            loadStructureData(window.structureData);
+        }
+    });
+
+    function addComponent(section) {
+        const component = {
+            name: '',
+            type: 'amount',
+            value: ''
+        };
+        
+        currentStructure[section].push(component);
+        updateComponentsTable(section);
+    }
+
+    function removeComponent(section, index) {
+        currentStructure[section].splice(index, 1);
+        updateComponentsTable(section);
+    }
+
+    function updateComponent(section, index, field, value) {
+        currentStructure[section][index][field] = value;
+        if (field === 'type') {
+            currentStructure[section][index].value = '';
+            updateComponentsTable(section);
+        }
+    }
+
+    function updateComponentsTable(section) {
+        const tbody = document.querySelector(`#${section}Table tbody`);
+        tbody.innerHTML = currentStructure[section].map((component, index) => `
+            <tr>
+                <td>
+                    <input type="text" 
+                           class="jds-form-control" 
+                           placeholder="Component Name"
+                           value="${component.name}"
+                           onchange="updateComponent('${section}', ${index}, 'name', this.value)">
+                </td>
+                <td>
+                    <select class="jds-form-control"
+                            onchange="updateComponent('${section}', ${index}, 'type', this.value)">
+                        <option value="amount" ${component.type === 'amount' ? 'selected' : ''}>Amount</option>
+                        <option value="formula" ${component.type === 'formula' ? 'selected' : ''}>Formula</option>
+                    </select>
+                </td>
+                <td>
+                    ${component.type === 'amount' ? 
+                        `<div class="jds-input-group">
+                            <span class="jds-input-group-text">D</span>
+                            <input type="number" 
+                                   class="jds-form-control" 
+                                   placeholder="Enter amount"
+                                   value="${component.value}"
+                                   onchange="updateComponent('${section}', ${index}, 'value', this.value)">
+                        </div>` :
+                        `<input type="text" 
+                                class="jds-form-control jds-component-formula" 
+                                placeholder="e.g., base_salary * 0.1"
+                                value="${component.value}"
+                                onchange="updateComponent('${section}', ${index}, 'value', this.value)">`
+                    }
+                </td>
+                <td class="text-right">
+                    <button class="jds-btn jds-btn-icon" onclick="removeComponent('${section}', ${index})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function loadStructureData(data) {
+        document.getElementById('structureName').value = data.name || '';
+        document.getElementById('baseSalary').value = data.base_salary || '';
+        document.getElementById('status').value = data.status || 'draft';
+        
+        currentStructure.earnings = data.earnings || [];
+        currentStructure.deductions = data.deductions || [];
+        
+        updateComponentsTable('earnings');
+        updateComponentsTable('deductions');
+    }
+
+    function saveStructure() {
+        const formData = {
+            name: document.getElementById('structureName').value,
+            base_salary: document.getElementById('baseSalary').value,
+            status: document.getElementById('status').value,
+            earnings: currentStructure.earnings,
+            deductions: currentStructure.deductions
+        };
+
+        frappe.call({
+            method: 'jokoor.api.payroll.save_salary_structure',
+            args: { structure: formData },
+            callback: function(response) {
+                if (response.message.success) {
+                    window.location.href = '/payroll/settings/salary-structure';
+                }
+            }
+        });
+    }
+</script>
+{% endblock %} 

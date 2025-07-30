@@ -1,0 +1,135 @@
+{% macro jk_table(id="datatable", columns=[], field_names=[], rows=[], calculation={}, show_total=false) %}
+<div class="jk-table-wrapper">
+    <div id="{{ id }}"></div>
+    {% if show_total %}
+    <div class="mt-4 text-right">
+        <div class="text-lg font-semibold">
+            Total Amount: $<span id="{{ id }}_total">0.00</span>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+(function() {
+    let tableData = {
+        rows: {{ rows | tojson }},
+        columns: {{ columns | tojson }},
+        fieldNames: {{ field_names | tojson }},
+        calculation: {{ calculation | tojson }},
+        totalAmount: 0
+    };
+
+    let datatable;
+
+    function formatNumber(num) {
+        return parseFloat(num || 0).toFixed(2);
+    }
+
+    function updateTotal() {
+        if (!tableData.calculation.target_field) return;
+        tableData.totalAmount = tableData.rows.reduce((sum, row) => {
+            return sum + parseFloat(row[tableData.calculation.target_field] || 0);
+        }, 0);
+        const totalElement = document.getElementById('{{ id }}_total');
+        if (totalElement) {
+            totalElement.textContent = formatNumber(tableData.totalAmount);
+        }
+    }
+
+    function calculateRow(row) {
+        if (!tableData.calculation.target_field) return row;
+        const qty = parseFloat(row.qty || 0);
+        const rate = parseFloat(row.rate || 0);
+        row[tableData.calculation.target_field] = formatNumber(qty * rate);
+        return row;
+    }
+
+    function addRow() {
+        const newRow = {};
+        tableData.fieldNames.forEach(field => {
+            newRow[field] = field === 'qty' ? 1 : 0;
+        });
+        tableData.rows.push(calculateRow(newRow));
+        datatable.refresh(tableData.rows);
+        updateTotal();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const columns = tableData.columns.map((col, i) => ({
+            name: tableData.fieldNames[i],
+            content: col,
+            editable: !tableData.calculation.target_field || 
+                     tableData.fieldNames[i] !== tableData.calculation.target_field,
+            align: ['qty', 'rate', 'amount'].includes(tableData.fieldNames[i]) ? 'right' : 'left',
+            format: (value) => ['qty', 'rate', 'amount'].includes(tableData.fieldNames[i]) ? 
+                formatNumber(value) : value
+        }));
+
+        datatable = new frappe.DataTable('#{{ id }}', {
+            columns: columns,
+            data: tableData.rows,
+            layout: 'fluid',
+            cellHeight: 40,
+            serialNoColumn: true,
+            checkboxColumn: false,
+            inlineFilters: true,
+            events: {
+                onDataChange: function(change) {
+                    const row = tableData.rows[change.rowIndex];
+                    if (tableData.calculation.onchange_fields && 
+                        tableData.calculation.onchange_fields.includes(change.column.name)) {
+                        row[change.column.name] = change.value;
+                        calculateRow(row);
+                        datatable.refresh(tableData.rows);
+                        updateTotal();
+                    } else {
+                        row[change.column.name] = change.value;
+                    }
+                }
+            }
+        });
+
+        // Add row button
+        const wrapper = document.getElementById('{{ id }}').closest('.jk-table-wrapper');
+        const toolbar = document.createElement('div');
+        toolbar.className = 'flex justify-between items-center mb-6';
+        toolbar.innerHTML = `
+            <button onclick="window.{{ id }}_addRow()" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                Add Row
+            </button>
+        `;
+        wrapper.insertBefore(toolbar, wrapper.firstChild);
+        
+        window.{{ id }}_addRow = addRow;
+        updateTotal();
+    });
+})();
+</script>
+
+<style>
+.jk-table-wrapper {
+    margin: 2rem 0;
+}
+.datatable {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+.dt-scrollable {
+    max-height: 400px;
+}
+.dt-row.selected {
+    background-color: rgba(85, 52, 201, 0.1) !important;
+}
+.dt-cell__content {
+    padding: 0.75rem 1rem;
+}
+.dt-cell--header .dt-cell__content {
+    font-weight: 600;
+}
+.dt-row:hover {
+    background-color: rgba(85, 52, 201, 0.05) !important;
+}
+</style>
+{% endmacro %}

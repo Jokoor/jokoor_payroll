@@ -1,0 +1,585 @@
+{% extends "templates/pages/base.html" %}
+
+{% block content %}
+<div class="jk-container">
+    <div class="jk-content-wrapper">
+        <div class="jk-card">
+            <div class="jk-card-header">
+                <div class="jk-card-title-wrapper">
+                    <h4 class="jk-card-title">Forms & Documents</h4>
+                    <p class="jk-card-subtitle">Manage tax forms and required documents for payroll processing</p>
+                </div>
+            </div>
+            <div class="jk-card-body">
+                <!-- Tax Forms Section -->
+                <div class="jk-section">
+                    <div class="jk-section-header">
+                        <div class="jk-section-title-group">
+                            <h5 class="jk-section-title">
+                                <i class="fas fa-file-alt jk-section-icon"></i>
+                                Tax Forms
+                            </h5>
+                            <p class="jk-section-description">Configure and manage tax forms required by GRA</p>
+                        </div>
+                    </div>
+
+                    <div class="jk-forms-grid">
+                        <!-- IT1 Form -->
+                        <div class="jk-form-card">
+                            <div class="jk-form-header">
+                                <div class="jk-form-icon">
+                                    <i class="fas fa-file-invoice"></i>
+                                </div>
+                                <div class="jk-form-title-group">
+                                    <h6 class="jk-form-title">IT1 Form</h6>
+                                    <p class="jk-form-subtitle">Monthly Tax Return</p>
+                                </div>
+                            </div>
+                            <div class="jk-form-body">
+                                <p class="jk-form-description">Monthly tax return form for employee income tax deductions</p>
+                                <div class="jk-form-meta">
+                                    <span class="jk-form-meta-item">
+                                        <i class="fas fa-calendar"></i>
+                                        Due: 15th of each month
+                                    </span>
+                                    <span class="jk-form-meta-item">
+                                        <i class="fas fa-file-pdf"></i>
+                                        PDF Format
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="jk-form-actions">
+                                <button class="jk-btn jk-btn-secondary" onclick="downloadForm('it1')">
+                                    <i class="fas fa-download"></i>
+                                    Download Template
+                                </button>
+                                <button class="jk-btn jk-btn-primary" onclick="uploadForm('it1')">
+                                    <i class="fas fa-upload"></i>
+                                    Upload Completed
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- SSF Form -->
+                        <div class="jk-form-card">
+                            <div class="jk-form-header">
+                                <div class="jk-form-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div class="jk-form-title-group">
+                                    <h6 class="jk-form-title">SSF Form</h6>
+                                    <p class="jk-form-subtitle">Social Security Return</p>
+                                </div>
+                            </div>
+                            <div class="jk-form-body">
+                                <p class="jk-form-description">Monthly social security contribution return form</p>
+                                <div class="jk-form-meta">
+                                    <span class="jk-form-meta-item">
+                                        <i class="fas fa-calendar"></i>
+                                        Due: 15th of each month
+                                    </span>
+                                    <span class="jk-form-meta-item">
+                                        <i class="fas fa-file-pdf"></i>
+                                        PDF Format
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="jk-form-actions">
+                                <button class="jk-btn jk-btn-secondary" onclick="downloadForm('ssf')">
+                                    <i class="fas fa-download"></i>
+                                    Download Template
+                                </button>
+                                <button class="jk-btn jk-btn-primary" onclick="uploadForm('ssf')">
+                                    <i class="fas fa-upload"></i>
+                                    Upload Completed
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Annual Return -->
+                        <div class="jk-form-card">
+                            <div class="jk-form-header">
+                                <div class="jk-form-icon">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <div class="jk-form-title-group">
+                                    <h6 class="jk-form-title">Annual Return</h6>
+                                    <p class="jk-form-subtitle">Year-End Tax Summary</p>
+                                </div>
+                            </div>
+                            <div class="jk-form-body">
+                                <p class="jk-form-description">Annual tax summary and reconciliation form</p>
+                                <div class="jk-form-meta">
+                                    <span class="jk-form-meta-item">
+                                        <i class="fas fa-calendar"></i>
+                                        Due: March 31st
+                                    </span>
+                                    <span class="jk-form-meta-item">
+                                        <i class="fas fa-file-pdf"></i>
+                                        PDF Format
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="jk-form-actions">
+                                <button class="jk-btn jk-btn-secondary" onclick="downloadForm('annual')">
+                                    <i class="fas fa-download"></i>
+                                    Download Template
+                                </button>
+                                <button class="jk-btn jk-btn-primary" onclick="uploadForm('annual')">
+                                    <i class="fas fa-upload"></i>
+                                    Upload Completed
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Document Templates Section -->
+                <div class="jk-section">
+                    <div class="jk-section-header">
+                        <div class="jk-section-title-group">
+                            <h5 class="jk-section-title">
+                                <i class="fas fa-file-contract jk-section-icon"></i>
+                                Document Templates
+                            </h5>
+                            <p class="jk-section-description">Manage payroll document templates</p>
+                        </div>
+                    </div>
+
+                    <div class="jk-templates-grid">
+                        <!-- Payslip Template -->
+                        <div class="jk-template-card">
+                            <div class="jk-template-header">
+                                <div class="jk-template-icon">
+                                    <i class="fas fa-receipt"></i>
+                                </div>
+                                <div class="jk-template-title-group">
+                                    <h6 class="jk-template-title">Payslip Template</h6>
+                                    <p class="jk-template-subtitle">Employee Payslip</p>
+                                </div>
+                            </div>
+                            <div class="jk-template-body">
+                                <p class="jk-template-description">Customize the payslip template for your employees</p>
+                                <div class="jk-template-meta">
+                                    <span class="jk-template-meta-item">
+                                        <i class="fas fa-file-pdf"></i>
+                                        PDF Format
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="jk-template-actions">
+                                <button class="jk-btn jk-btn-secondary" onclick="previewTemplate('payslip')">
+                                    <i class="fas fa-eye"></i>
+                                    Preview
+                                </button>
+                                <button class="jk-btn jk-btn-primary" onclick="customizeTemplate('payslip')">
+                                    <i class="fas fa-edit"></i>
+                                    Customize
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Tax Certificate -->
+                        <div class="jk-template-card">
+                            <div class="jk-template-header">
+                                <div class="jk-template-icon">
+                                    <i class="fas fa-certificate"></i>
+                                </div>
+                                <div class="jk-template-title-group">
+                                    <h6 class="jk-template-title">Tax Certificate</h6>
+                                    <p class="jk-template-subtitle">Annual Tax Statement</p>
+                                </div>
+                            </div>
+                            <div class="jk-template-body">
+                                <p class="jk-template-description">Annual tax certificate for employees</p>
+                                <div class="jk-template-meta">
+                                    <span class="jk-template-meta-item">
+                                        <i class="fas fa-file-pdf"></i>
+                                        PDF Format
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="jk-template-actions">
+                                <button class="jk-btn jk-btn-secondary" onclick="previewTemplate('tax_cert')">
+                                    <i class="fas fa-eye"></i>
+                                    Preview
+                                </button>
+                                <button class="jk-btn jk-btn-primary" onclick="customizeTemplate('tax_cert')">
+                                    <i class="fas fa-edit"></i>
+                                    Customize
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+function downloadForm(formType) {
+    fetch(`/api/method/jokoor.api.payroll.download_form?form_type=${formType}`, {
+        method: 'GET',
+        headers: {
+            'X-Frappe-CSRF-Token': frappe.csrf_token
+        }
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${formType}_template.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+    })
+    .catch(error => {
+        frappe.show_alert({
+            message: 'Error downloading form',
+            indicator: 'red'
+        });
+    });
+}
+
+function uploadForm(formType) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf';
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('form_type', formType);
+
+        fetch('/api/method/jokoor.api.payroll.upload_form', {
+            method: 'POST',
+            headers: {
+                'X-Frappe-CSRF-Token': frappe.csrf_token
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            frappe.show_alert({
+                message: 'Form uploaded successfully',
+                indicator: 'green'
+            });
+        })
+        .catch(error => {
+            frappe.show_alert({
+                message: 'Error uploading form',
+                indicator: 'red'
+            });
+        });
+    };
+    input.click();
+}
+
+function previewTemplate(templateType) {
+    window.open(`/api/method/jokoor.api.payroll.preview_template?template_type=${templateType}`, '_blank');
+}
+
+function customizeTemplate(templateType) {
+    frappe.show_alert({
+        message: 'Template customization coming soon',
+        indicator: 'blue'
+    });
+}
+</script>
+
+<style>
+/* Jokoor Design System Styles */
+:root {
+    --jk-primary: #5534c9;
+    --jk-primary-hover: #4425a3;
+    --jk-bg-light: #f9f7ff;
+    --jk-border: #e8e9ec;
+}
+
+.jk-container {
+    padding: 0;
+    max-width: 100%;
+    margin: 0;
+}
+
+.jk-content-wrapper {
+    background: var(--bg-color);
+    width: 100%;
+}
+
+.jk-card {
+    background: #fff;
+    border-bottom: 1px solid var(--jk-border);
+}
+
+.jk-card-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--jk-border);
+    background: var(--jk-bg-light);
+}
+
+.jk-card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.jk-card-subtitle {
+    color: #64748b;
+    font-size: 0.875rem;
+    margin: 0.25rem 0 0 0;
+}
+
+.jk-card-body {
+    padding: 1.5rem;
+}
+
+/* Sections */
+.jk-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    border: 1px solid var(--jk-border);
+    border-radius: 8px;
+}
+
+.jk-section:last-child {
+    margin-bottom: 0;
+}
+
+.jk-section-header {
+    margin-bottom: 1.5rem;
+}
+
+.jk-section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.jk-section-icon {
+    color: var(--jk-primary);
+    font-size: 1.125rem;
+}
+
+.jk-section-description {
+    color: #64748b;
+    font-size: 0.875rem;
+    margin: 0.25rem 0 0 0;
+}
+
+/* Forms Grid */
+.jk-forms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.jk-form-card {
+    border: 1px solid var(--jk-border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.jk-form-header {
+    padding: 1rem;
+    background: var(--jk-bg-light);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.jk-form-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--jk-primary);
+    color: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.jk-form-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.jk-form-subtitle {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0.25rem 0 0 0;
+}
+
+.jk-form-body {
+    padding: 1rem;
+}
+
+.jk-form-description {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0 0 1rem 0;
+}
+
+.jk-form-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.jk-form-meta-item {
+    font-size: 0.75rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.jk-form-actions {
+    padding: 1rem;
+    border-top: 1px solid var(--jk-border);
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Templates Grid */
+.jk-templates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.jk-template-card {
+    border: 1px solid var(--jk-border);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.jk-template-header {
+    padding: 1rem;
+    background: var(--jk-bg-light);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.jk-template-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--jk-primary);
+    color: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.jk-template-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.jk-template-subtitle {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0.25rem 0 0 0;
+}
+
+.jk-template-body {
+    padding: 1rem;
+}
+
+.jk-template-description {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0 0 1rem 0;
+}
+
+.jk-template-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.jk-template-meta-item {
+    font-size: 0.75rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.jk-template-actions {
+    padding: 1rem;
+    border-top: 1px solid var(--jk-border);
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Buttons */
+.jk-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.jk-btn-primary {
+    background-color: var(--jk-primary);
+    color: white;
+    border: none;
+}
+
+.jk-btn-primary:hover {
+    background-color: var(--jk-primary-hover);
+}
+
+.jk-btn-secondary {
+    background: #fff;
+    border: 1px solid var(--jk-border);
+    color: #64748b;
+}
+
+.jk-btn-secondary:hover {
+    background: var(--jk-bg-light);
+}
+
+.jk-btn i {
+    font-size: 0.875rem;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .jk-forms-grid,
+    .jk-templates-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .jk-form-actions,
+    .jk-template-actions {
+        flex-direction: column;
+    }
+    
+    .jk-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+{% endblock %} 

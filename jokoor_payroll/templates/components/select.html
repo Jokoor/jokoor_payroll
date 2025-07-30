@@ -1,0 +1,48 @@
+<!-- Include SlimSelect CSS -->
+<link href="https://cdn.jsdelivr.net/npm/slim-select@2.8.0/dist/slimselect.min.css" rel="stylesheet" />
+
+<!-- Your style guide CSS -->
+<link href="https://uiux.s3.amazonaws.com/style-guide/css/style-guide.css" rel="stylesheet">
+
+{% macro select(
+    id="",
+    label="",
+    options=[],
+    placeholder="Select an option",
+    search=true,
+    show_label=true,
+    width=0,
+    size="large",
+    value=""
+) %}
+<!-- <div class="jk-select-wrapper{% if width and width > 0 and width <= 12 %} col-{{ width }}{% endif %}"> -->
+    {% if show_label %}
+        <label for="{{ id }}" class="jk-form-label">{{ label }}</label>
+    {% endif %}
+    <select id="{{ id }}" name="{{ id }}" class="jk-form-select {% if size == 'large' %}is-large{% elif size == 'medium' %}is-medium{% elif size == 'small' %}is-small{% endif %}" data-search="{{ 'true' if search else 'false' }}">
+        <option value="" disabled selected hidden>{{ placeholder }}</option>
+        {% for opt in options %}
+            {% if opt is string %}
+                <option value="{{ opt }}"{% if opt == value %} selected{% endif %}>{{ opt }}</option>
+            {% else %}
+                <option value="{{ opt.value }}"{% if opt.selected %} selected{% endif %}>{{ opt.label }}</option>
+            {% endif %}
+        {% endfor %}
+    </select>
+<!-- </div> -->
+{% endmacro %}
+
+<script src="https://cdn.jsdelivr.net/npm/slim-select@2.8.0/dist/slimselect.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('select.jk-form-select').forEach(function(el) {
+      new SlimSelect({
+        select: el,
+        search: true,
+        showSearch: true,
+        searchPlaceholder: 'Search...'
+      });
+    });
+  });
+</script>
+

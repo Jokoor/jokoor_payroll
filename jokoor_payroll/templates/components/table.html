@@ -1,0 +1,106 @@
+{% macro table(
+    id="table",
+    type="standard",
+    columns=[],
+    rows=[],
+    has_sort=false,
+    classes=""
+) %}
+<table class="table-wrap {% if type == 'basic' %}is-auto-width{% endif %} {{ classes }}">
+    <thead>
+        <tr>
+            {% for column in columns %}
+            <th {% if has_sort %}class="sort"{% endif %}>{{ column }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% if rows %}
+            {% for row in rows %}
+            <tr class="clickable-row" {% if row.url %}data-href="{{ row.url }}"{% endif %}>
+                {% for cell in row.cells %}
+                <td {% if cell.class %}class="{{ cell.class }}"{% endif %}>
+                    {% if cell.type == 'composite' %}
+                    <span class="label label-{{ cell.label_type }}">{{ cell.label }}</span>
+                    {% elif cell.type == 'email' %}
+                    <span class="email">{{ cell.email }}</span>
+                    <span class="subject">{{ cell.subject }}</span>
+                    {% elif cell.type == 'mono' %}
+                    <span class="mono">{{ cell.value }}</span>
+                    {% elif cell.type == 'link' %}
+                    <a href="{{ cell.href }}">{{ cell.text }}</a>
+                    {% else %}
+                    {{ cell }}
+                    {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        {% else %}
+            <tr class="empty-state">
+                <td colspan="{{ columns|length }}">
+                    <div class="empty-state-content">
+                        <i class="fa fa-table"></i>
+                        <h3>No data available</h3>
+                        <p>There are no records to display at this time.</p>
+                    </div>
+                </td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
+
+<script>
+    (function() {
+        // Make rows clickable
+        document.querySelectorAll('.clickable-row').forEach(row => {
+            row.addEventListener('click', function() {
+                const url = this.getAttribute('data-href');
+                if (url) {
+                    window.location.href = url;
+                }
+            });
+        });
+    })();
+</script>
+
+<style>
+    .clickable-row {
+        cursor: pointer;
+    }
+    
+    .clickable-row:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px 0;
+    }
+
+    .empty-state-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        color: #666;
+    }
+
+    .empty-state-content i {
+        font-size: 48px;
+        color: #ccc;
+        margin-bottom: 10px;
+    }
+
+    .empty-state-content h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 500;
+    }
+
+    .empty-state-content p {
+        margin: 0;
+        font-size: 14px;
+    }
+</style>
+{% endmacro %}

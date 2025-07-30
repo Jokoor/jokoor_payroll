@@ -1,0 +1,141 @@
+{% extends "templates/web.html" %}
+
+
+{% block header %}{% endblock %}
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frappe Render Template Test</title>
+</head>
+
+<body>
+    <h1>Frappe Render Template Test</h1>
+    
+    <div>
+        <button onclick="renderEmployee1()">Render Employee 1</button>
+        <button onclick="renderEmployee2()">Render Employee 2</button>
+        <button onclick="renderEmployee3()">Render Employee 3</button>
+        <button onclick="renderMultipleEmployees()">Render Multiple Employees</button>
+        <button onclick="clearRenderArea()">Clear</button>
+    </div>
+    
+    <div id="renderOutput">
+        <p>Click a button above to render employee templates.</p>
+    </div>
+
+    <script>
+        // Sample employee data
+        const employees = {
+            employee1: {
+                name: "John Doe",
+                employee_id: "EMP001",
+                designation: "Software Engineer",
+                department: "Engineering",
+                email: "john.doe@company.com",
+                phone: "+1 (555) 123-4567",
+                status: "Active"
+            },
+            employee2: {
+                name: "Jane Smith",
+                employee_id: "EMP002",
+                designation: "Product Manager",
+                department: "Product",
+                email: "jane.smith@company.com",
+                phone: "+1 (555) 987-6543",
+                status: "Active"
+            },
+            employee3: {
+                name: "Bob Johnson",
+                employee_id: "EMP003",
+                designation: "Designer",
+                department: "Design",
+                email: "bob.johnson@company.com",
+                phone: "+1 (555) 456-7890",
+                status: "Inactive"
+            }
+        };
+
+        function renderEmployee1() {
+            try {
+                const renderedHTML = frappe.render_template("test_jinja.html", {
+                    employee: employees.employee1
+                });
+                
+                document.getElementById('renderOutput').innerHTML = renderedHTML;
+            } catch (error) {
+                console.error('Error rendering template:', error);
+                document.getElementById('renderOutput').innerHTML = '<p>Error rendering template: ' + error.message + '</p>';
+            }
+        }
+
+        function renderEmployee2() {
+            try {
+                const renderedHTML = frappe.render_template("jokoor_payroll/templates/test_jinja.html", {
+                    employee: employees.employee2
+                });
+                
+                document.getElementById('renderOutput').innerHTML = renderedHTML;
+            } catch (error) {
+                console.error('Error rendering template:', error);
+                document.getElementById('renderOutput').innerHTML = '<p>Error rendering template: ' + error.message + '</p>';
+            }
+        }
+
+        function renderEmployee3() {
+            try {
+                const renderedHTML = frappe.render_template("jokoor_payroll/templates/test_jinja.html", {
+                    employee: employees.employee3
+                });
+                
+                document.getElementById('renderOutput').innerHTML = renderedHTML;
+            } catch (error) {
+                console.error('Error rendering template:', error);
+                document.getElementById('renderOutput').innerHTML = '<p>Error rendering template: ' + error.message + '</p>';
+            }
+        }
+
+        function renderMultipleEmployees() {
+            try {
+                let allHTML = '';
+                
+                // Render all employees
+                Object.values(employees).forEach(employee => {
+                    const renderedHTML = frappe.render_template("jokoor_payroll/templates/test_jinja.html", {
+                        employee: employee
+                    });
+                    allHTML += renderedHTML;
+                });
+                
+                document.getElementById('renderOutput').innerHTML = allHTML;
+            } catch (error) {
+                console.error('Error rendering templates:', error);
+                document.getElementById('renderOutput').innerHTML = '<p>Error rendering templates: ' + error.message + '</p>';
+            }
+        }
+
+        function clearRenderArea() {
+            document.getElementById('renderOutput').innerHTML = '<p>Click a button above to render employee templates.</p>';
+        }
+
+        // Global functions that would be called from the rendered template
+        function editEmployee(employeeId) {
+            alert('Edit employee: ' + employeeId);
+            console.log('Edit employee:', employeeId);
+        }
+
+        function viewDetails(employeeId) {
+            alert('View details for employee: ' + employeeId);
+            console.log('View details for employee:', employeeId);
+        }
+    </script>
+    
+</body>
+</html>
+{% endblock %}

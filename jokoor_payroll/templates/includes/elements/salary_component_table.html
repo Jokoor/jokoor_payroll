@@ -1,0 +1,136 @@
+{#
+  Salary Component Table Component
+  Usage: {% include "jokoor_payroll/includes/elements/salary_component_table.html" with context %}
+  Required context variables:
+    components: list of salary component dicts
+#}
+<div class="card card-style">
+    <div class="card-header">
+        <div>
+            <h5 class="card-title mb-1">
+                <i class="fas fa-money-bill-wave me-2 text-purple"></i>
+                Manage Salary Components
+            </h5>
+            <p class="text-muted small mb-0">Configure earnings and deductions for payroll calculations</p>
+        </div>
+        <div class="actions">
+            {% include "jokoor_payroll/templates/includes/elements/bulk_action_dropdown.html" %}
+            <button class="btn btn-primary" id="addComponentButton" data-bs-toggle="modal" data-bs-target="#addComponentModal">
+                <i class="fas fa-plus me-2"></i> Add Component
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle" id="salaryComponentsTable">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAllComponents"></th>
+                        <th>Component Name</th>
+                        <th>Type</th>
+                        <th>Taxable</th>
+                        <th>Calculation Code</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for c in components %}
+                    <tr>
+                        <td><input type="checkbox" class="component-checkbox" value="{{ c.id }}"></td>
+                        <td>{{ c.name }}</td>
+                        <td>{{ c.type }}</td>
+                        <td>{% if c.taxable %}Yes{% else %}No{% endif %}</td>
+                        <td><code>{{ c.calculation_code }}</code></td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="5" class="text-center">No salary components found.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+.card-style { margin-bottom: 2rem; }
+.table thead th { vertical-align: middle; }
+.table-hover tbody tr:hover { background-color: #f3f4f6; }
+.component-checkbox, #selectAllComponents { cursor: pointer; }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// DataTableWithActions class and initialization
+class DataTableWithActions {
+    constructor(tableSelector, options = {}) {
+        this.tableSelector = tableSelector;
+        this.options = Object.assign({
+            actionDropdownId: 'bulkActionDropdown',
+            selectedCountId: 'selectedCount',
+            selectAllId: 'selectAllComponents',
+            checkboxClass: 'component-checkbox',
+            addButtonId: 'addComponentButton',
+            actions: {
+                delete: {
+                    id: 'deleteSelectedBtn',
+                    handler: this.defaultDeleteHandler.bind(this)
+                },
+                export: {
+                    id: 'exportSelectedBtn',
+                    handler: this.defaultExportHandler.bind(this)
+                }
+            }
+        }, options);
+        this.init();
+    }
+    init() {
+        this.table = document.querySelector(this.tableSelector);
+        this.selectAll = document.getElementById(this.options.selectAllId);
+        this.checkboxes = () => Array.from(document.getElementsByClassName(this.options.checkboxClass));
+        this.dropdown = document.getElementById(this.options.actionDropdownId);
+        this.selectedCount = document.getElementById(this.options.selectedCountId);
+        this.bindEvents();
+    }
+    bindEvents() {
+        if (this.selectAll) {
+            this.selectAll.addEventListener('change', () => {
+                this.checkboxes().forEach(cb => { cb.checked = this.selectAll.checked; });
+                this.updateActions();
+            });
+        }
+        this.checkboxes().forEach(cb => {
+            cb.addEventListener('change', () => {
+                if (!cb.checked) this.selectAll.checked = false;
+                this.updateActions();
+            });
+        });
+        // Action handlers
+        Object.values(this.options.actions).forEach(action => {
+            const btn = document.getElementById(action.id);
+            if (btn) {
+                btn.addEventListener('click', () => action.handler(this.getSelected()));
+            }
+        });
+    }
+    getSelected() {
+        return this.checkboxes().filter(cb => cb.checked).map(cb => cb.value);
+    }
+    updateActions() {
+        const selected = this.getSelected();
+        if (this.selectedCount) this.selectedCount.textContent = selected.length;
+        if (this.dropdown) this.dropdown.classList.toggle('d-none', selected.length === 0);
+    }
+    defaultDeleteHandler(selected) {
+        alert('Delete: ' + selected.join(', '));
+    }
+    defaultExportHandler(selected) {
+        alert('Export: ' + selected.join(', '));
+    }
+}
+// Initialize after DOM ready
+(function() {
+    document.addEventListener('DOMContentLoaded', function() {
+        new DataTableWithActions('#salaryComponentsTable');
+    });
+})();
+</script>

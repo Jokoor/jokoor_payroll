@@ -1,0 +1,48 @@
+{% macro textarea(id="textarea", label="Textarea Label", value="", placeholder="", required=false, error="",
+info="", max_height="250", classes="") %}
+<div class="textarea-wrap {{ classes }} {% if required %}is-required{% endif %} {% if error %}is-error{% endif %} {% if value %}has-value{% endif %}">
+    <label class="textarea-label" for="{{ id }}">{{ label }}</label>
+    <textarea class="textarea-input" id="{{ id }}" name="{{ id }}" 
+        {% if required %}required{% endif %}
+        data-max-height="{{ max_height }}">{{ value }}</textarea>
+    {% if error %}
+    <span class="textarea-error">{{ error }}</span>
+    {% endif %}
+    {% if info %}
+    <span class="textarea-info">{{ info }}</span>
+    {% endif %}
+</div>
+
+<script>
+    (function () {
+        const textarea = document.getElementById("{{ id }}");
+        const wrap = textarea.closest(".textarea-wrap");
+        const maxHeight = parseInt(textarea.getAttribute("data-max-height")) || 250;
+
+        function toggleHasValueClass() {
+            if (textarea.value) {
+                wrap.classList.add("has-value");
+            } else {
+                wrap.classList.remove("has-value");
+            }
+        }
+
+        function adjustHeight() {
+            textarea.style.height = 'auto';
+            const newHeight = Math.min(textarea.scrollHeight, maxHeight);
+            textarea.style.height = newHeight + 'px';
+        }
+
+        textarea.addEventListener("input", function() {
+            toggleHasValueClass();
+            adjustHeight();
+        });
+        textarea.addEventListener("focus", toggleHasValueClass);
+        textarea.addEventListener("blur", toggleHasValueClass);
+
+        // initialize on page load
+        toggleHasValueClass();
+        adjustHeight();
+    })();
+</script>
+{% endmacro %} 

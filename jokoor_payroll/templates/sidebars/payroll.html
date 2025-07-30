@@ -1,0 +1,649 @@
+{% block style %}
+<style>
+    :root {
+        --brand-purple: #5534c9;
+        --brand-purple-50: #f6f4fe;
+        --brand-purple-100: #ede9fd;
+        --brand-purple-600: #5534c9;
+        --brand-purple-700: #4c2eb3;
+        --brand-purple-800: #42289c;
+        
+        /* IBM Design System Colors */
+        --ibm-gray-10: #f4f4f4;
+        --ibm-gray-20: #e0e0e0;
+        --ibm-gray-30: #c6c6c6;
+        --ibm-gray-40: #a8a8a8;
+        --ibm-gray-50: #8d8d8d;
+        --ibm-gray-60: #6f6f6f;
+        --ibm-gray-70: #525252;
+        --ibm-gray-80: #393939;
+        --ibm-gray-90: #262626;
+        --ibm-gray-100: #161616;
+        
+        /* IBM Typography */
+        --ibm-font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        --ibm-font-size-xs: 0.75rem;
+        --ibm-font-size-sm: 0.875rem;
+        --ibm-font-size-md: 1rem;
+        --ibm-font-size-lg: 1.125rem;
+        --ibm-font-size-xl: 1.25rem;
+        --ibm-font-size-2xl: 1.5rem;
+        
+        /* IBM Spacing */
+        --ibm-spacing-01: 0.125rem;
+        --ibm-spacing-02: 0.25rem;
+        --ibm-spacing-03: 0.5rem;
+        --ibm-spacing-04: 0.75rem;
+        --ibm-spacing-05: 1rem;
+        --ibm-spacing-06: 1.5rem;
+        --ibm-spacing-07: 2rem;
+        --ibm-spacing-08: 2.5rem;
+        --ibm-spacing-09: 3rem;
+        --ibm-spacing-10: 4rem;
+        
+        /* IBM Border Radius */
+        --ibm-border-radius-sm: 0.25rem;
+        --ibm-border-radius-md: 0.5rem;
+        --ibm-border-radius-lg: 0.75rem;
+        
+        /* IBM Shadows */
+        --ibm-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+        --ibm-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
+        --ibm-shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.1);
+        --ibm-shadow-xl: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Sidebar container - IBM Design System */
+    .jk-sidebar-payroll {
+        width: 256px;
+        height: 100vh;
+        background: var(--ibm-gray-100);
+        color: var(--ibm-gray-30);
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 1001;
+        display: flex;
+        flex-direction: column;
+        font-family: var(--ibm-font-family);
+        transition: all 0.2s cubic-bezier(0.2, 0, 0.38, 0.9);
+        border-right: 1px solid var(--ibm-gray-80);
+        box-shadow: var(--ibm-shadow-lg);
+    }
+
+    /* Sidebar Header */
+    .jk-sidebar-header {
+        padding: var(--ibm-spacing-06) var(--ibm-spacing-05);
+        border-bottom: 1px solid var(--ibm-gray-80);
+        background: var(--ibm-gray-90);
+    }
+
+    .jk-sidebar-title {
+        font-size: var(--ibm-font-size-xl);
+        font-weight: 600;
+        color: white;
+        letter-spacing: -0.025em;
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    /* Navigation */
+    .jk-sidebar-nav {
+        flex: 1;
+        overflow-y: auto;
+        padding: var(--ibm-spacing-05) var(--ibm-spacing-03);
+    }
+
+    .jk-sidebar-nav::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .jk-sidebar-nav::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .jk-sidebar-nav::-webkit-scrollbar-thumb {
+        background: var(--ibm-gray-70);
+        border-radius: var(--ibm-border-radius-sm);
+    }
+
+    .jk-sidebar-nav::-webkit-scrollbar-thumb:hover {
+        background: var(--ibm-gray-60);
+    }
+
+    .jk-nav-section {
+        margin-bottom: var(--ibm-spacing-07);
+    }
+
+    .jk-nav-section:last-child {
+        margin-bottom: var(--ibm-spacing-03);
+    }
+
+    .jk-nav-section-title {
+        font-size: var(--ibm-font-size-xs);
+        font-weight: 600;
+        text-transform: uppercase;
+        color: var(--ibm-gray-50);
+        padding: 0 var(--ibm-spacing-04);
+        margin: var(--ibm-spacing-06) 0 var(--ibm-spacing-03);
+        letter-spacing: 0.1em;
+        line-height: 1.2;
+    }
+
+    .jk-nav-item {
+        display: flex;
+        align-items: center;
+        gap: var(--ibm-spacing-04);
+        padding: var(--ibm-spacing-03) var(--ibm-spacing-04);
+        border-radius: var(--ibm-border-radius-md);
+        color: var(--ibm-gray-30);
+        text-decoration: none;
+        transition: all 0.2s cubic-bezier(0.2, 0, 0.38, 0.9);
+        font-size: var(--ibm-font-size-sm);
+        font-weight: 400;
+        position: relative;
+        margin: var(--ibm-spacing-01) 0;
+        line-height: 1.4;
+        border: 1px solid transparent;
+    }
+
+    .jk-nav-item:hover {
+        background: var(--ibm-gray-90);
+        color: white;
+        border-color: var(--ibm-gray-70);
+        transform: translateX(2px);
+    }
+
+    .jk-nav-item.active {
+        background: var(--brand-purple);
+        color: white;
+        border-color: var(--brand-purple-700);
+        box-shadow: var(--ibm-shadow-md);
+    }
+
+    .jk-nav-item.active:hover {
+        background: var(--brand-purple-700);
+        border-color: var(--brand-purple-800);
+    }
+
+    .jk-nav-item.getting-started {
+        background: var(--ibm-gray-90);
+        border: 1px solid var(--ibm-gray-70);
+        margin-bottom: var(--ibm-spacing-03);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .jk-nav-item.getting-started .progress-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        width: 35%;
+        background: var(--brand-purple);
+        border-radius: 0 var(--ibm-border-radius-sm) var(--ibm-border-radius-sm) 0;
+        transition: width 0.3s ease;
+    }
+
+    .jk-nav-item i {
+        font-size: var(--ibm-font-size-lg);
+        width: 1.5rem;
+        text-align: center;
+        flex-shrink: 0;
+    }
+
+    .jk-nav-item .jk-nav-arrow {
+        margin-left: auto;
+        opacity: 0.6;
+        font-size: var(--ibm-font-size-xs);
+        transition: transform 0.2s cubic-bezier(0.2, 0, 0.38, 0.9);
+    }
+
+    .jk-nav-item.dashboard {
+        background: var(--brand-purple);
+        color: white;
+        margin-bottom: var(--ibm-spacing-03);
+        border-color: var(--brand-purple-700);
+        box-shadow: var(--ibm-shadow-md);
+    }
+
+    .jk-nav-item.dashboard:hover {
+        background: var(--brand-purple-700);
+        border-color: var(--brand-purple-800);
+        transform: translateX(2px);
+    }
+
+    .jk-nav-support {
+        margin-top: auto;
+        padding: var(--ibm-spacing-05);
+        border-top: 1px solid var(--ibm-gray-80);
+        background: var(--ibm-gray-90);
+    }
+
+    .jk-nav-support .jk-nav-item {
+        color: var(--ibm-gray-50);
+        border-color: transparent;
+    }
+
+    .jk-nav-support .jk-nav-item:hover {
+        color: var(--ibm-gray-30);
+        background: var(--ibm-gray-80);
+        border-color: var(--ibm-gray-60);
+    }
+
+    /* Submenu Styles */
+    .jk-nav-item.has-submenu {
+        cursor: pointer;
+    }
+
+    .jk-nav-item.has-submenu .jk-nav-arrow {
+        transition: transform 0.2s cubic-bezier(0.2, 0, 0.38, 0.9);
+    }
+
+    .jk-nav-item.has-submenu.expanded .jk-nav-arrow {
+        transform: rotate(90deg);
+    }
+
+    .jk-submenu {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s cubic-bezier(0.2, 0, 0.38, 0.9);
+        margin-left: var(--ibm-spacing-04);
+    }
+
+    .jk-submenu.expanded {
+        max-height: 500px;
+    }
+
+    .jk-submenu-item {
+        display: flex;
+        align-items: center;
+        gap: var(--ibm-spacing-04);
+        padding: var(--ibm-spacing-02) var(--ibm-spacing-04);
+        color: var(--ibm-gray-40);
+        text-decoration: none;
+        transition: all 0.2s cubic-bezier(0.2, 0, 0.38, 0.9);
+        font-size: var(--ibm-font-size-xs);
+        font-weight: 400;
+        border-radius: var(--ibm-border-radius-md);
+        margin: var(--ibm-spacing-01) 0;
+        line-height: 1.4;
+        border: 1px solid transparent;
+        position: relative;
+    }
+
+    .jk-submenu-item:hover {
+        background: var(--ibm-gray-90);
+        color: white;
+        border-color: var(--ibm-gray-70);
+        transform: translateX(4px);
+    }
+
+    .jk-submenu-item.active {
+        background: var(--brand-purple);
+        color: white;
+        border-color: var(--brand-purple-700);
+        box-shadow: var(--ibm-shadow-sm);
+    }
+
+    .jk-submenu-item.active:hover {
+        background: var(--brand-purple-700);
+        border-color: var(--brand-purple-800);
+    }
+
+    .jk-submenu-item i {
+        font-size: var(--ibm-font-size-sm);
+        width: 1.25rem;
+        text-align: center;
+        opacity: 0.8;
+        flex-shrink: 0;
+    }
+
+    /* Mobile styles */
+    @media (max-width: 768px) {
+        .jk-sidebar-payroll {
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.2, 0, 0.38, 0.9);
+            width: 280px;
+        }
+
+        .jk-sidebar-payroll.show {
+            transform: translateX(0);
+        }
+    }
+
+    /* Mobile toggle button - IBM Design System */
+    .jk-sidebar-toggle {
+        display: none;
+        position: fixed;
+        top: var(--ibm-spacing-05);
+        left: var(--ibm-spacing-05);
+        z-index: 1002;
+        background: var(--ibm-gray-100);
+        border: 1px solid var(--ibm-gray-70);
+        width: 48px;
+        height: 48px;
+        border-radius: var(--ibm-border-radius-md);
+        box-shadow: var(--ibm-shadow-lg);
+        color: var(--ibm-gray-30);
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.2, 0, 0.38, 0.9);
+        font-size: var(--ibm-font-size-lg);
+        align-items: center;
+        justify-content: center;
+    }
+
+    .jk-sidebar-toggle:hover {
+        background: var(--brand-purple);
+        color: white;
+        border-color: var(--brand-purple-700);
+        box-shadow: var(--ibm-shadow-xl);
+        transform: translateY(-1px);
+    }
+
+    .jk-sidebar-toggle:active {
+        transform: translateY(0);
+        box-shadow: var(--ibm-shadow-md);
+    }
+
+    .jk-sidebar-toggle .fa-bars,
+    .jk-sidebar-toggle .fa-times {
+        position: absolute;
+        transition: all 0.3s cubic-bezier(0.2, 0, 0.38, 0.9);
+    }
+
+    .jk-sidebar-toggle .fa-times {
+        opacity: 0;
+        transform: rotate(-180deg) scale(0.8);
+    }
+
+    .jk-sidebar-payroll.show ~ .jk-sidebar-toggle {
+        left: auto;
+        right: var(--ibm-spacing-05);
+    }
+
+    .jk-sidebar-payroll.show ~ .jk-sidebar-toggle .fa-bars {
+        opacity: 0;
+        transform: rotate(180deg) scale(0.8);
+    }
+
+    .jk-sidebar-payroll.show ~ .jk-sidebar-toggle .fa-times {
+        opacity: 1;
+        transform: rotate(0) scale(1);
+    }
+
+    @media (max-width: 1024px) {
+        .jk-sidebar-toggle {
+            display: flex;
+        }
+    }
+
+    /* Overlay - IBM Design System */
+    .jk-sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(22, 22, 22, 0.4);
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s cubic-bezier(0.2, 0, 0.38, 0.9);
+    }
+
+    .jk-sidebar-overlay.show {
+        display: block;
+        opacity: 1;
+    }
+
+    /* Focus states for accessibility */
+    .jk-nav-item:focus,
+    .jk-submenu-item:focus,
+    .jk-sidebar-toggle:focus {
+        outline: 2px solid var(--brand-purple);
+        outline-offset: 2px;
+    }
+
+    /* Loading states */
+    .jk-nav-item.loading {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    .jk-nav-item.loading::after {
+        content: '';
+        position: absolute;
+        right: var(--ibm-spacing-04);
+        width: 16px;
+        height: 16px;
+        border: 2px solid transparent;
+        border-top: 2px solid currentColor;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}
+
+<!-- IBM Plex Sans font -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&display=swap">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Overlay for mobile -->
+<div class="jk-sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Sidebar -->
+<aside class="jk-sidebar-payroll">
+    <div class="jk-sidebar-header">
+        <div class="jk-sidebar-title">
+            Payroll
+        </div>
+    </div>
+    
+    <nav class="jk-sidebar-nav">
+        <!-- Getting Started Section -->
+        <div class="jk-nav-section">
+            <a href="/payroll/getting-started" class="jk-nav-item getting-started {% if active_page == 'getting_started' %}active{% endif %}">
+                <i class="fas fa-star"></i>
+                Getting Started
+                <div class="progress-bar"></div>
+            </a>
+        </div>
+
+        <!-- Main Section -->
+        <div class="jk-nav-section">
+            <div class="jk-nav-section-title">Main</div>
+            <a href="/payroll" class="jk-nav-item {% if active_page == 'dashboard' %}active{% endif %}">
+                <i class="fas fa-chart-line"></i>
+                Dashboard
+            </a>
+            
+            <a href="/payroll/employees" class="jk-nav-item {% if active_page == 'employees' %}active{% endif %}">
+                <i class="fas fa-users"></i>
+                Employees
+            </a>
+            
+            <a href="/payroll/component" class="jk-nav-item {% if active_page == 'component' %}active{% endif %}">
+                <i class="fas fa-building"></i>
+                Salary Components
+            </a>
+            
+            <a href="/payroll/salary-structure" class="jk-nav-item {% if active_page == 'salary-structure' %}active{% endif %}">
+                <i class="fas fa-file-invoice-dollar"></i>
+                Salary Structures
+            </a>
+        </div>
+
+        <!-- Management Section -->
+        <div class="jk-nav-section">
+            <div class="jk-nav-section-title">Management</div>
+            <a href="/payroll/payrun" class="jk-nav-item {% if active_page == 'payrun' %}active{% endif %}">
+                <i class="fas fa-file-invoice-dollar"></i>
+                Payrun
+            </a>
+            
+            <a href="/payroll/payslip" class="jk-nav-item {% if active_page == 'payslip' %}active{% endif %}">
+                <i class="fas fa-receipt"></i>
+                Payslip
+            </a>
+            
+            <a href="/payroll/adjustment" class="jk-nav-item {% if active_page == 'adjustments' %}active{% endif %}">
+                <i class="fas fa-adjust"></i>
+                Salary Adjustments
+            </a>
+        </div>
+
+        <!-- Operations Section -->
+        <div class="jk-nav-section">
+            <div class="jk-nav-section-title">Operations</div>
+            <div class="jk-nav-item has-submenu {% if active_section == 'reports' %}expanded{% endif %}">
+                <i class="fas fa-chart-bar"></i>
+                Reports
+                <i class="fas fa-chevron-right jk-nav-arrow"></i>
+            </div>
+            <div class="jk-submenu {% if active_section == 'reports' %}expanded{% endif %}">
+                <a href="/payroll/reports/monthly-salary" class="jk-submenu-item {% if active_page == 'monthly_salary' %}active{% endif %}">
+                    <i class="fas fa-file-alt"></i>
+                    Monthly Salary
+                </a>
+                <a href="/payroll/reports/tax" class="jk-submenu-item {% if active_page == 'tax_reports' %}active{% endif %}">
+                    <i class="fas fa-receipt"></i>
+                    Tax Reports
+                </a>
+                <a href="/payroll/reports/benefits" class="jk-submenu-item {% if active_page == 'benefit_reports' %}active{% endif %}">
+                    <i class="fas fa-heartbeat"></i>
+                    Benefit Reports
+                </a>
+            </div>
+
+            <a href="/payroll/settings" class="jk-nav-item {% if active_page == 'settings' %}active{% endif %}">
+                <i class="fas fa-cog"></i>
+                Settings
+            </a>
+        </div>
+    </nav>
+
+    <!-- Support Section -->
+    <div class="jk-nav-support">
+        <a href="/payroll/support" class="jk-nav-item {% if active_page == 'support' %}active{% endif %}">
+            <i class="fas fa-life-ring"></i>
+            Contact Support
+        </a>
+    </div>
+</aside>
+
+<!-- Mobile toggle button -->
+<button class="jk-sidebar-toggle" id="sidebarToggle" aria-label="Toggle Menu">
+    <i class="fas fa-bars"></i>
+    <i class="fas fa-times"></i>
+</button>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.querySelector('.jk-sidebar-payroll');
+    const overlay = document.getElementById('sidebarOverlay');
+    const toggleBtn = document.getElementById('sidebarToggle');
+    const navLinks = document.querySelectorAll('.jk-nav-link.has-subitems');
+    const submenuTriggers = document.querySelectorAll('.jk-nav-item.has-submenu');
+    
+    // Toggle sidebar function
+    function toggleSidebar() {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+        document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
+    }
+
+    // Toggle subitems function
+    function toggleSubitems(e) {
+        if (!e.currentTarget.classList.contains('has-subitems')) return;
+        
+        e.preventDefault();
+        const isExpanded = e.currentTarget.classList.contains('expanded');
+        const subitems = e.currentTarget.nextElementSibling;
+        
+        // Close other subitems
+        navLinks.forEach(link => {
+            if (link !== e.currentTarget) {
+                link.classList.remove('expanded');
+                if (link.nextElementSibling) {
+                    link.nextElementSibling.classList.remove('expanded');
+                }
+            }
+        });
+
+        // Toggle current subitems
+        e.currentTarget.classList.toggle('expanded');
+        subitems.classList.toggle('expanded');
+    }
+
+    // Toggle submenu function
+    function toggleSubmenu(e) {
+        e.preventDefault();
+        const submenu = e.currentTarget.nextElementSibling;
+        const isExpanded = e.currentTarget.classList.contains('expanded');
+        
+        // Close all other submenus
+        submenuTriggers.forEach(trigger => {
+            if (trigger !== e.currentTarget) {
+                trigger.classList.remove('expanded');
+                trigger.nextElementSibling.classList.remove('expanded');
+            }
+        });
+        
+        // Toggle current submenu
+        e.currentTarget.classList.toggle('expanded');
+        submenu.classList.toggle('expanded');
+        
+        // If this submenu was closed and is now being opened, scroll it into view
+        if (!isExpanded) {
+            setTimeout(() => submenu.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+        }
+    }
+
+    // Add click events
+    toggleBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleSidebar();
+    });
+
+    overlay.addEventListener('click', toggleSidebar);
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', toggleSubitems);
+    });
+
+    submenuTriggers.forEach(trigger => {
+        trigger.addEventListener('click', toggleSubmenu);
+    });
+
+    // Close sidebar when clicking outside
+    document.addEventListener('click', (e) => {
+        if (window.innerWidth <= 1024 && 
+            sidebar.classList.contains('show') && 
+            !sidebar.contains(e.target) && 
+            !toggleBtn.contains(e.target)) {
+            toggleSidebar();
+        }
+    });
+
+    // Handle window resize
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        }, 250);
+    });
+});</script>

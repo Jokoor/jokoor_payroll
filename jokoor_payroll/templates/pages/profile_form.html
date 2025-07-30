@@ -1,0 +1,104 @@
+{% extends "templates/pages/profile.html" %}
+
+{% block page_content %}
+<div class="jk-page-container">
+  <div class="jk-card-simple jk-card-wide">
+    <form class="jk-form" enctype="multipart/form-data">
+      <div class="jk-form-section">
+        <div class="jk-form-row">
+          <div class="jk-form-col">
+            {% from "templates/components/uploader.html" import uploader %}
+            {{ uploader(id="employee-photo", label="Employee Photo") }}
+          </div>
+          
+          <div class="jk-form-col">
+            {% from "templates/components/input.html" import input %}
+            {{ input(
+              id="employee_name",
+              label="Full Name",
+              value="Jane Doe",
+              required=true,
+              size="small"
+            ) }}
+            {% from "templates/components/input.html" import input %}
+            {{ input(
+              id="employee_email",
+              label="Email",
+              value="jane.doe@company.com",
+              required=true
+            ) }}
+          </div>
+          <div class="jk-form-col"></div>
+        </div>
+      </div>
+      <div class="jk-form-section">
+        <div class="jk-form-row">
+          <div class="jk-form-col">
+            {% from "templates/components/select.html" import select %}
+            {{ select(
+              id="department",
+              label="Department",
+              options=[
+                {"value": "hr", "label": "HR"},
+                {"value": "engineering", "label": "Engineering"},
+                {"value": "sales", "label": "Sales"},
+                {"value": "support", "label": "Support"}
+              ],
+              placeholder="Select department",
+              search=true
+            ) }}
+          </div>
+          <div class="jk-form-col">
+            {% from "templates/components/select.html" import select %}
+            {{ select(
+              id="role",
+              label="Role",
+              options=[
+                {"value": "developer", "label": "Developer"},
+                {"value": "hr_manager", "label": "HR Manager"},
+                {"value": "sales_exec", "label": "Sales Executive"},
+                {"value": "support_agent", "label": "Support Agent"}
+              ],
+              placeholder="Select role",
+              search=true
+            ) }}
+          </div>
+          <div class="jk-form-col">
+            {% from "templates/components/select.html" import select %}
+            {{ select(
+              id="status",
+              label="Status",
+              options=[
+                {"value": "active", "label": "Active"},
+                {"value": "inactive", "label": "Inactive"},
+                {"value": "on_leave", "label": "On Leave"}
+              ],
+              placeholder="Select status",
+              search=false
+            ) }}
+          </div>
+        </div>
+      </div>
+      <div class="jk-form-section">
+        <div class="jk-form-row">
+          <div class="jk-form-col">
+            {% from "templates/components/textarea.html" import textarea %}
+            {{ textarea(
+              id="bio",
+              label="Bio",
+              value="Jane is a senior developer with 5 years of experience.",
+              required=false,
+              max_height="200"
+            ) }}
+          </div>
+        </div>
+      </div>
+      <div class="jk-form-actions">
+        {% from "templates/components/button.html" import button %}
+        {{ button(text="Save", type="primary", size="medium", icon="save") }}
+        {{ button(text="Cancel", type="secondary", size="small") }}
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

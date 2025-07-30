@@ -1,0 +1,150 @@
+<link href="https://uiux.s3.amazonaws.com/style-guide/css/style-guide.css" rel="stylesheet">
+
+
+
+{% macro list_table(
+    id="list-table",
+    page_size_options=[20, 100, 500, 1000, 5000, 'All'],
+    page_size=20,
+    on_page_size_change_name="onPageSizeChange",
+    filters=[],
+    add_button={},
+    columns=[],
+    rows=[],
+    has_sort=true
+) %}
+<div class="list-table-container">
+    <div class="list-table-header">
+        <div class="list-table-page-size">
+            <label for="{{ id }}-page-size" class="list-table-page-size-label">Show</label>
+            <select id="{{ id }}-page-size" class="list-table-page-size-select">
+                {% for opt in page_size_options %}
+                    <option value="{{ opt }}" {% if opt == page_size %}selected{% endif %}>{{ opt }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="list-table-filters">
+            {% from "templates/components/select_filter.html" import select_filter %}
+            {{ select_filter(
+                id=id ~ "-filters",
+            ) }}
+        </div>
+        <div class="list-table-actions">
+            {% if add_button %}
+                {% from "templates/components/button.html" import button %}
+                {% if add_button.url %}
+                    <a href="{{ add_button.url }}">
+                        {{ button(
+                            text=add_button.text or "Add New",
+                            type=add_button.type or "primary",
+                            size=add_button.size or "small",
+                            icon=add_button.icon or "plus"
+                        ) }}
+                    </a>
+                {% else %}
+                    {{ button(
+                        text=add_button.text or "Add New",
+                        type=add_button.type or "primary",
+                        size=add_button.size or "small",
+                        icon=add_button.icon or "plus"
+                    ) }}
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="list-table-content">
+        {% from "templates/components/table.html" import table %}
+        {{ table(
+            id=id,
+            columns=columns,
+            rows=rows,
+            has_sort=has_sort
+        ) }}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var select = document.getElementById('{{ id }}-page-size');
+        if (select) {
+            select.addEventListener('change', function() {
+                // You can replace this with your own handler or query param logic
+                var url = new URL(window.location.href);
+                url.searchParams.set('page_size', this.value);
+                window.location.href = url.toString();
+            });
+        }
+    });
+</script>
+
+<style>
+    .list-table-container {
+        margin-bottom: 20px;
+    }
+    .list-table-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        gap: 20px;
+        background: #fff;
+        padding: 18px 24px 12px 24px;
+        border-radius: 8px;
+        box-shadow: 0 1px 2px rgba(16,30,54,0.03);
+    }
+    .list-table-page-size {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+    }
+    .list-table-page-size-label {
+        font-size: 15px;
+        color: #6c757d;
+        font-weight: 500;
+    }
+    .list-table-page-size-select {
+        font-size: 15px;
+        padding: 2px 8px;
+        border-radius: 4px;
+        border: 1px solid #e3e6ed;
+        background: #f8f9fa;
+        min-width: 60px;
+    }
+    .list-table-filters {
+        display: flex;
+        gap: 12px;
+        flex: 1;
+        min-width: 0;
+        justify-content: flex-start;
+    }
+    .segment-term-inputs {
+        display: flex;
+        gap: 12px;
+    }
+    .segment-term-inputs > * {
+        min-width: 120px !important;
+        width: auto !important;
+        max-width: 240px;
+        font-size: 16px !important;
+        padding: 6px 14px !important;
+    }
+    .list-table-actions {
+        margin-left: auto;
+    }
+    .list-table-actions a {
+        text-decoration: none;
+    }
+    @media (max-width: 768px) {
+        .list-table-header {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+            padding: 12px 8px 8px 8px;
+        }
+        .list-table-actions {
+            margin-left: 0;
+        }
+    }
+</style>
+{% endmacro %} 

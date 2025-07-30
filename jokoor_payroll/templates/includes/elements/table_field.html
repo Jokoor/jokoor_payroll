@@ -1,0 +1,538 @@
+{# Table Field Component #}
+<style>
+    .jk-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        overflow: hidden;
+        background: white;
+    }
+    
+    .jk-table th,
+    .jk-table td {
+        padding: 1rem;
+        border: 1px solid #e2e8f0;
+        vertical-align: middle;
+    }
+    
+    .jk-table th {
+        background: #f8fafc;
+        font-weight: 600;
+        text-align: left;
+        font-size: 0.875rem;
+        color: #4a5568;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .jk-table td {
+        background: white;
+    }
+    
+    .jk-table-input,
+    .jk-table-select,
+    .jk-select-input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        color: #2d3748;
+        background: white;
+        transition: all 0.2s;
+        height: 42px;
+    }
+
+    .jk-table-input:focus,
+    .jk-table-select:focus,
+    .jk-select-input:focus {
+        outline: none;
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+    }
+
+    .jk-table-input:hover,
+    .jk-table-select:hover,
+    .jk-select-input:hover {
+        border-color: #4299e1;
+    }
+
+    .jk-table-input::placeholder,
+    .jk-table-select::placeholder,
+    .jk-select-input::placeholder {
+        color: #a0aec0;
+    }
+
+    .jk-table-input[type="number"] {
+        -moz-appearance: textfield;
+    }
+
+    .jk-table-input[type="number"]::-webkit-outer-spin-button,
+    .jk-table-input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    
+    .jk-table-btn {
+        padding: 0.75rem 1.25rem;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        height: 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .jk-table-btn-add {
+        background: #4299e1;
+        color: white;
+        margin-bottom: 1.5rem;
+        min-width: 120px;
+    }
+
+    .jk-table-btn-add:hover {
+        background: #3182ce;
+    }
+
+    .jk-table-btn-add i {
+        font-size: 1rem;
+    }
+    
+    .jk-table-btn-remove {
+        background: #f56565;
+        color: white;
+        padding: 0.5rem;
+        width: 36px;
+        height: 36px;
+        border-radius: 4px;
+    }
+
+    .jk-table-btn-remove:hover {
+        background: #e53e3e;
+    }
+
+    .jk-table-btn-remove i {
+        font-size: 1rem;
+    }
+
+    /* Custom Select Styling */
+    .jk-select-container {
+        position: relative;
+        width: 100%;
+    }
+
+    .jk-select-dropdown {
+        position: fixed;
+        min-width: 200px;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        max-height: 300px;
+        overflow-y: auto;
+        z-index: 99999;
+        display: none;
+        box-shadow: 0 4px 15px -1px rgba(0, 0, 0, 0.1), 0 2px 8px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .jk-select-search {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: none;
+        border-bottom: 1px solid #e2e8f0;
+        outline: none;
+        font-size: 0.875rem;
+        color: #2d3748;
+        height: 42px;
+    }
+
+    .jk-select-search::placeholder {
+        color: #a0aec0;
+    }
+
+    .jk-select-option {
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        transition: all 0.2s;
+    }
+
+    .jk-select-option:hover {
+        background: #f7fafc;
+    }
+
+    .jk-select-avatar {
+        width: 32px;
+        height: 32px;
+        background: #ebf4ff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.875rem;
+        color: #4299e1;
+        font-weight: 500;
+    }
+
+    .jk-select-label {
+        font-weight: 500;
+        color: #2d3748;
+        font-size: 0.875rem;
+    }
+
+    .jk-select-sublabel {
+        font-size: 0.75rem;
+        color: #718096;
+    }
+
+    .jk-table-container {
+        margin-bottom: 2rem;
+    }
+
+    .jk-table-actions {
+        display: flex;
+        justify-content: center;
+    }
+
+    /* Readonly and Disabled States */
+    .jk-table-input:disabled,
+    .jk-table-select:disabled,
+    .jk-select-input:disabled,
+    .jk-table-input[readonly],
+    .jk-table-select[readonly],
+    .jk-select-input[readonly] {
+        background-color: #f7fafc;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+    /* Required Field Indicator */
+    .jk-table th.required:after {
+        content: "*";
+        color: #f56565;
+        margin-left: 4px;
+    }
+</style>
+
+<div class="jk-table-container">
+    <table class="jk-table" id="{{ field_name }}_table">
+        <thead>
+            <tr>
+                {% for column in field.columns %}
+                <th>{{ column.label }}</th>
+                {% endfor %}
+                <th width="80px">Action</th>
+            </tr>
+        </thead>
+        <tbody id="{{ field_name }}_tbody">
+            {% if field_value and field_value|length > 0 %}
+                {% for row in field_value %}
+                <tr>
+                    {% for column in field.columns %}
+                    <td>
+                        {% if column.type == 'select' %}
+                        <div class="jk-select-container">
+                            {% set selected_option = none %}
+                            {% for option in column.options %}
+                                {% if option.value == row[column.name] %}
+                                    {% set selected_option = option %}
+                                {% endif %}
+                            {% endfor %}
+                            <input type="text" 
+                                   class="jk-select-input"
+                                   readonly
+                                   placeholder="{{ column.placeholder or 'Select...' }}"
+                                   onclick="toggleDropdown_{{ field_name }}_{{ column.name }}(this)"
+                                   value="{{ selected_option.label if selected_option else '' }}"
+                                   data-field="{{ column.name }}">
+                            <input type="hidden" 
+                                   name="{{ field_name }}[{{ loop.index0 }}][{{ column.name }}]"
+                                   value="{{ row[column.name] }}">
+                            <div class="jk-select-dropdown">
+                                <input type="text" 
+                                       class="jk-select-search"
+                                       placeholder="Search..."
+                                       onkeyup="filterOptions_{{ field_name }}_{{ column.name }}(this)">
+                                <div class="jk-select-options">
+                                    {% for option in column.options %}
+                                    <div class="jk-select-option" 
+                                         onclick="selectOption_{{ field_name }}_{{ column.name }}(this)"
+                                         data-value="{{ option.value }}"
+                                         data-label="{{ option.label }}">
+                                        <div class="jk-select-avatar">{{ option.label[0] }}</div>
+                                        <div>
+                                            <div class="jk-select-label">{{ option.label }}</div>
+                                            <div class="jk-select-sublabel">{{ option.sublabel or '' }}</div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <input type="{{ column.type or 'text' }}" 
+                               class="jk-table-input"
+                               name="{{ field_name }}[{{ loop.index0 }}][{{ column.name }}]"
+                               value="{{ row[column.name] }}"
+                               {% if column.required %}required{% endif %}
+                               {% if column.readonly %}readonly{% endif %}
+                               {% if column.disabled %}disabled{% endif %}
+                               {% if column.min %}min="{{ column.min }}"{% endif %}
+                               {% if column.max %}max="{{ column.max }}"{% endif %}
+                               {% if column.step %}step="{{ column.step }}"{% endif %}
+                               placeholder="{{ column.placeholder or '' }}"
+                               onchange="handleTableChange_{{ field_name }}()">
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                    <td>
+                        <div class="jk-table-actions">
+                            <button type="button" 
+                                    class="jk-table-btn jk-table-btn-remove"
+                                    onclick="removeTableRow_{{ field_name }}(this)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+    
+    <button type="button" 
+            class="jk-table-btn jk-table-btn-add"
+            onclick="addTableRow_{{ field_name }}()">
+        <i class="fas fa-plus"></i> Add Row
+    </button>
+</div>
+
+<input type="hidden" 
+       id="{{ field_name }}_data" 
+       name="{{ field_name }}" 
+       value="{{ field_value|tojson|safe if field_value else '[]' }}">
+
+<script>
+    // Store columns configuration
+    const columns_{{ field_name }} = {{ field.columns|tojson|safe }};
+
+    function addTableRow_{{ field_name }}() {
+        console.log('Adding row to {{ field_name }}...');
+        const tbody = document.getElementById('{{ field_name }}_tbody');
+        if (!tbody) {
+            console.error('Table body not found for {{ field_name }}');
+            return;
+        }
+        
+        const newRow = document.createElement('tr');
+        const rowIndex = tbody.children.length;
+        
+        let rowHtml = '';
+        columns_{{ field_name }}.forEach(column => {
+            if (column.type === 'select') {
+                rowHtml += `
+                    <td>
+                        <div class="jk-select-container">
+                            <input type="text" 
+                                   class="jk-select-input"
+                                   readonly
+                                   placeholder="${column.placeholder || 'Select...'}"
+                                   onclick="toggleDropdown_{{ field_name }}_${column.name}(this)"
+                                   data-field="${column.name}">
+                            <input type="hidden" 
+                                   name="{{ field_name }}[${rowIndex}][${column.name}]">
+                            <div class="jk-select-dropdown">
+                                <input type="text" 
+                                       class="jk-select-search"
+                                       placeholder="Search..."
+                                       onkeyup="filterOptions_{{ field_name }}_${column.name}(this)">
+                                <div class="jk-select-options">
+                                    ${column.options.map(option => `
+                                        <div class="jk-select-option" 
+                                             onclick="selectOption_{{ field_name }}_${column.name}(this)"
+                                             data-value="${option.value}"
+                                             data-label="${option.label}">
+                                            <div class="jk-select-avatar">${option.label[0]}</div>
+                                            <div>
+                                                <div class="jk-select-label">${option.label}</div>
+                                                <div class="jk-select-sublabel">${option.sublabel || ''}</div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                `;
+            } else {
+                const columnType = column.type || 'text';
+                const columnRequired = column.required ? 'required' : '';
+                const columnReadonly = column.readonly ? 'readonly' : '';
+                const columnDisabled = column.disabled ? 'disabled' : '';
+                const columnMin = column.min ? `min="${column.min}"` : '';
+                const columnMax = column.max ? `max="${column.max}"` : '';
+                const columnStep = column.step ? `step="${column.step}"` : '';
+                const columnPlaceholder = column.placeholder || '';
+                
+                rowHtml += `
+                    <td>
+                        <input type="${columnType}" 
+                               class="jk-table-input"
+                               name="{{ field_name }}[${rowIndex}][${column.name}]"
+                               ${columnRequired}
+                               ${columnReadonly}
+                               ${columnDisabled}
+                               ${columnMin}
+                               ${columnMax}
+                               ${columnStep}
+                               placeholder="${columnPlaceholder}"
+                               onchange="handleTableChange_{{ field_name }}()">
+                    </td>
+                `;
+            }
+        });
+        
+        rowHtml += `
+            <td>
+                <div class="jk-table-actions">
+                    <button type="button" 
+                            class="jk-table-btn jk-table-btn-remove"
+                            onclick="removeTableRow_{{ field_name }}(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        
+        newRow.innerHTML = rowHtml;
+        tbody.appendChild(newRow);
+        handleTableChange_{{ field_name }}();
+    }
+
+    function removeTableRow_{{ field_name }}(button) {
+        const row = button.closest('tr');
+        if (row) {
+            row.remove();
+            handleTableChange_{{ field_name }}();
+        }
+    }
+
+    function handleTableChange_{{ field_name }}() {
+        const table = document.getElementById('{{ field_name }}_table');
+        if (!table) return;
+        
+        const rows = Array.from(table.querySelectorAll('tbody tr'));
+        const data = rows.map((row, index) => {
+            const inputs = row.querySelectorAll('input[type="text"], input[type="number"], input[type="hidden"], select');
+            const rowData = {};
+            inputs.forEach(input => {
+                const name = input.name.match(/\[(\w+)\]$/)[1];
+                rowData[name] = input.value;
+                
+                // Calculate total if quantity and price are set
+                if (name === 'quantity' || name === 'price') {
+                    const quantity = parseFloat(rowData['quantity']) || 0;
+                    const price = parseFloat(rowData['price']) || 0;
+                    const total = quantity * price;
+                    
+                    // Update total input in the same row
+                    const totalInput = row.querySelector('input[name$="[total]"]');
+                    if (totalInput) {
+                        totalInput.value = total.toFixed(2);
+                        rowData['total'] = total.toFixed(2);
+                    }
+                }
+            });
+            return rowData;
+        });
+        
+        // Update hidden input with JSON data
+        const hiddenInput = document.getElementById('{{ field_name }}_data');
+        if (hiddenInput) {
+            hiddenInput.value = JSON.stringify(data);
+        }
+    }
+
+    {% for column in field.columns %}
+    {% if column.type == 'select' %}
+    function toggleDropdown_{{ field_name }}_{{ column.name }}(input) {
+        const container = input.closest('.jk-select-container');
+        const dropdown = container.querySelector('.jk-select-dropdown');
+        const allDropdowns = document.querySelectorAll('.jk-select-dropdown');
+        
+        // Close all other dropdowns
+        allDropdowns.forEach(d => {
+            if (d !== dropdown) {
+                d.style.display = 'none';
+            }
+        });
+        
+        // Position the dropdown relative to the input
+        const rect = input.getBoundingClientRect();
+        dropdown.style.top = rect.bottom + 'px';
+        dropdown.style.left = rect.left + 'px';
+        dropdown.style.width = rect.width + 'px';
+        
+        // Check if dropdown would go off screen at bottom
+        const dropdownHeight = 300; // max-height of dropdown
+        if (rect.bottom + dropdownHeight > window.innerHeight) {
+            // Position above input if it would go off screen at bottom
+            dropdown.style.top = (rect.top - dropdownHeight) + 'px';
+        }
+        
+        // Toggle current dropdown
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        
+        // Focus search input
+        if (dropdown.style.display === 'block') {
+            const search = dropdown.querySelector('.jk-select-search');
+            search.focus();
+            search.value = '';
+            filterOptions_{{ field_name }}_{{ column.name }}(search);
+        }
+    }
+
+    function filterOptions_{{ field_name }}_{{ column.name }}(search) {
+        const container = search.closest('.jk-select-container');
+        const options = container.querySelectorAll('.jk-select-option');
+        const query = search.value.toLowerCase();
+        
+        options.forEach(option => {
+            const label = option.getAttribute('data-label').toLowerCase();
+            option.style.display = label.includes(query) ? 'flex' : 'none';
+        });
+    }
+
+    function selectOption_{{ field_name }}_{{ column.name }}(option) {
+        const container = option.closest('.jk-select-container');
+        const input = container.querySelector('.jk-select-input');
+        const hiddenInput = container.querySelector('input[type="hidden"]');
+        const dropdown = container.querySelector('.jk-select-dropdown');
+        
+        input.value = option.getAttribute('data-label');
+        hiddenInput.value = option.getAttribute('data-value');
+        dropdown.style.display = 'none';
+        
+        handleTableChange_{{ field_name }}();
+    }
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.jk-select-container')) {
+            document.querySelectorAll('.jk-select-dropdown').forEach(d => {
+                d.style.display = 'none';
+            });
+        }
+    });
+    {% endif %}
+    {% endfor %}
+</script>

@@ -1,0 +1,51 @@
+{% macro jk_input(name, label, type="text", value="", placeholder="", required=false, disabled=false, width="", on_change={}, classes="") %}
+<div class="jk-input-group {% if width %}w-{{ width }}{% endif %} {{ classes }}">
+    {% if label %}
+    <label for="{{ name }}" class="jk-input-label">
+        {{ label }}
+        {% if required %}
+        <span class="jk-required">*</span>
+        {% endif %}
+    </label>
+    {% endif %}
+    
+    <div class="jk-input-wrapper">
+        <input type="{{ type }}"
+               id="{{ name }}"
+               name="{{ name }}"
+               class="jk-input"
+               placeholder="{{ placeholder }}"
+               {% if required %}required{% endif %}
+               {% if disabled %}disabled{% endif %}
+               {% if value %}value="{{ value }}"{% endif %}
+               {% if on_change %}
+               data-targets='{{ on_change.targets | tojson }}'
+               data-formula='{{ on_change.formula }}'
+               onchange="handleInputChange(this)"
+               {% endif %}>
+    </div>
+</div>
+{% endmacro %}
+
+<script>
+function handleInputChange(input) {
+    const value = parseFloat(input.value || 0);
+    const targets = JSON.parse(input.dataset.targets || '[]');
+    const formula = input.dataset.formula;
+    
+    targets.forEach(target => {
+        const targetElement = document.getElementById(target);
+        if (targetElement) {
+            // Execute formula with current value
+            const result = eval(formula.replace('value', value));
+            
+            // Update target element
+            if (targetElement.tagName === 'INPUT') {
+                targetElement.value = result;
+            } else {
+                targetElement.textContent = result;
+            }
+        }
+    });
+}
+</script>

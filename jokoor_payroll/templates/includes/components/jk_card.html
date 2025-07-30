@@ -1,0 +1,22 @@
+{% macro jk_card(title="", subtitle="", value="", icon="", trend=0, trend_label="", color="primary", width="3") %}
+<div class="jk-card w-{{ width }}">
+    <div class="jk-card-content">
+        <div class="jk-card-icon {{ color }}">
+            <i class="{{ icon }}"></i>
+        </div>
+        <div class="jk-card-info">
+            <h3 class="jk-card-title">{{ title }}</h3>
+            {% if subtitle %}
+            <p class="jk-card-subtitle">{{ subtitle }}</p>
+            {% endif %}
+            <div class="jk-card-value">{{ value }}</div>
+            {% if trend != 0 %}
+            <div class="jk-card-trend {% if trend > 0 %}positive{% elif trend < 0 %}negative{% endif %}">
+                <i class="fas fa-{% if trend > 0 %}arrow-up{% elif trend < 0 %}arrow-down{% endif %}"></i>
+                <span>{{ trend }}% {{ trend_label }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endmacro %}

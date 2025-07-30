@@ -1,0 +1,460 @@
+{% block style %}
+<style>
+    :root {
+        --brand-purple: #5534c9;
+        --brand-purple-50: #f6f4fe;
+        --brand-purple-100: #ede9fd;
+        --brand-purple-600: #5534c9;
+        --brand-purple-700: #4c2eb3;
+        --brand-purple-800: #42289c;
+    }
+
+    /* Sidebar container */
+    .jk-sidebar-accounts {
+        width: 240px;
+        height: 100vh;
+        background: #ffffff;
+        color: #1a1a1a;
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 1001;
+        display: flex;
+        flex-direction: column;
+        font-family: system-ui, -apple-system, sans-serif;
+        transition: all 0.3s ease;
+        border-right: 1px solid #e5e7eb;
+    }
+
+    /* Navigation */
+    .jk-sidebar-nav {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem 0.75rem;
+    }
+
+    .jk-sidebar-nav::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .jk-sidebar-nav::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .jk-sidebar-nav::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 2px;
+    }
+
+    .jk-nav-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .jk-nav-section:last-child {
+        margin-bottom: 0.5rem;
+    }
+
+    .jk-nav-section-title {
+        font-size: 0.6875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #64748b;
+        padding: 0 0.75rem;
+        margin: 1.25rem 0 0.5rem;
+        letter-spacing: 0.05em;
+    }
+
+    .jk-nav-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.625rem 0.75rem;
+        border-radius: 0.375rem;
+        color: #4b5563;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        font-size: 0.875rem;
+        font-weight: 500;
+        position: relative;
+        margin: 0.125rem 0;
+    }
+
+    .jk-nav-item:hover {
+        background: var(--brand-purple-50);
+        color: var(--brand-purple-600);
+    }
+
+    .jk-nav-item.active {
+        background: var(--brand-purple-50);
+        color: var(--brand-purple-600);
+    }
+
+    .jk-nav-item i {
+        font-size: 1.125rem;
+        width: 1.5rem;
+        text-align: center;
+        color: #64748b;
+        transition: color 0.2s;
+    }
+
+    .jk-nav-item:hover i,
+    .jk-nav-item.active i {
+        color: var(--brand-purple-600);
+    }
+
+    .jk-nav-item .jk-nav-arrow {
+        margin-left: auto;
+        opacity: 0.5;
+        font-size: 0.75rem;
+    }
+
+    .jk-nav-support {
+        margin-top: auto;
+        padding: 1rem;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .jk-nav-support .jk-nav-item {
+        color: #64748b;
+    }
+
+    .jk-nav-support .jk-nav-item:hover {
+        color: var(--brand-purple-600);
+    }
+
+    /* Mobile styles */
+    @media (max-width: 768px) {
+        .jk-sidebar-accounts {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .jk-sidebar-accounts.show {
+            transform: translateX(0);
+        }
+    }
+
+    /* Mobile toggle button */
+    .jk-sidebar-toggle {
+        display: none;
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        z-index: 1002;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        width: 40px;
+        height: 40px;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        color: #64748b;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 1.25rem;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .jk-sidebar-toggle:hover {
+        background: var(--brand-purple-50);
+        color: var(--brand-purple-600);
+        border-color: var(--brand-purple-100);
+    }
+
+    .jk-sidebar-toggle .fa-bars,
+    .jk-sidebar-toggle .fa-times {
+        position: absolute;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .jk-sidebar-toggle .fa-times {
+        opacity: 0;
+        transform: rotate(-180deg) scale(0.8);
+    }
+
+    .jk-sidebar-accounts.show ~ .jk-sidebar-toggle {
+        left: auto;
+        right: 1rem;
+    }
+
+    .jk-sidebar-accounts.show ~ .jk-sidebar-toggle .fa-bars {
+        opacity: 0;
+        transform: rotate(180deg) scale(0.8);
+    }
+
+    .jk-sidebar-accounts.show ~ .jk-sidebar-toggle .fa-times {
+        opacity: 1;
+        transform: rotate(0) scale(1);
+    }
+
+    .jk-nav-item.has-submenu {
+        cursor: pointer;
+    }
+
+    .jk-nav-item.has-submenu .jk-nav-arrow {
+        transition: transform 0.2s ease;
+    }
+
+    .jk-nav-item.has-submenu.expanded .jk-nav-arrow {
+        transform: rotate(90deg);
+    }
+
+    .jk-submenu {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    .jk-submenu.expanded {
+        max-height: 500px;
+    }
+
+    .jk-submenu-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 0.75rem 0.5rem 2.75rem;
+        color: #4b5563;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        border-radius: 0.375rem;
+        margin: 0.125rem 0;
+    }
+
+    .jk-submenu-item:hover {
+        background: var(--brand-purple-50);
+        color: var(--brand-purple-600);
+    }
+
+    .jk-submenu-item.active {
+        background: var(--brand-purple-50);
+        color: var(--brand-purple-600);
+    }
+
+    .jk-submenu-item i {
+        font-size: 1rem;
+        width: 1.25rem;
+        text-align: center;
+        opacity: 0.9;
+        color: #64748b;
+    }
+
+    .jk-submenu-item:hover i,
+    .jk-submenu-item.active i {
+        color: var(--brand-purple-600);
+    }
+
+    @media (max-width: 1024px) {
+        .jk-sidebar-toggle {
+            display: flex;
+        }
+    }
+
+    /* Overlay */
+    .jk-sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(2px);
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .jk-sidebar-overlay.show {
+        display: block;
+        opacity: 1;
+    }
+</style>
+{% endblock %}
+
+<!-- Font Awesome and Inter font -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+
+
+<!-- Overlay for mobile -->
+<div class="jk-sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Sidebar -->
+<aside class="jk-sidebar-accounts">
+    
+    <div class="jk-sidebar-header">
+        <div class="jk-pl-4 jk-pt-4 jk-mt-4">
+            <img src="https://uiux.s3.amazonaws.com/style-guide/images/logo.png" alt="Jokoor Logo" class="jk-w-10 jk-h-10">
+        </div>
+        <hr class="is-thin">
+    </div>
+    
+    <nav class="jk-sidebar-nav">
+        <!-- Profile Section -->
+        <div class="jk">
+            <a href="/account/profile" class="jk-nav-item {% if active_page == 'profile' %}active{% endif %}">
+                <i class="fas fa-user"></i>
+                Profile Settings
+            </a>
+            <hr class="is-thin">
+            <a href="/account/security" class="jk-nav-item {% if active_page == 'security' %}active{% endif %}">
+                <i class="fas fa-shield-alt"></i>
+                Security
+            </a>
+            <hr class="is-thin">
+            <a href="/account/billing" class=" jk-nav-item {% if active_page == 'billing' %}active{% endif %}">
+                <i class="fas fa-credit-card"></i>
+                Billing & Plans
+            </a>
+            <hr class="is-thin">
+        </div>
+
+        <!-- Organization Section -->
+        <div class="jk-nav-section">
+            <a href="/account/my-organisation" class="jk-nav-item {% if active_page == 'my-organisation' %}active{% endif %}">
+                <i class="fas fa-building"></i>
+                My Organisation
+            </a>
+            <hr class="is-thin">
+            <div class="jk-nav-item has-submenu {% if active_section == 'team' %}expanded{% endif %}">
+                <i class="fas fa-users"></i>
+                Team Members
+                <i class="fas fa-chevron-right jk-nav-arrow"></i>
+            </div>
+
+            <hr class="is-thin">
+            <div class="jk-submenu {% if active_section == 'team' %}expanded{% endif %}">
+                <a href="/account/team/members" class="jk-submenu-item {% if active_page == 'team_members' %}active{% endif %}">
+                    <i class="fas fa-user-friends"></i>
+                    Members
+                </a>
+                <a href="/account/team/invites" class="jk-submenu-item {% if active_page == 'team_invites' %}active{% endif %}">
+                    <i class="fas fa-envelope"></i>
+                    Invitations
+                </a>
+            </div>
+        </div>
+
+        <!-- Access Control Section -->
+        <div class="">
+            <div class="jk-nav-item has-submenu {% if active_section == 'roles' %}expanded{% endif %}">
+                <i class="fas fa-user-tag"></i>
+                Roles
+                <i class="fas fa-chevron-right jk-nav-arrow"></i>
+            </div>
+            <hr class="is-thin">
+            <div class="jk-submenu {% if active_section == 'roles' %}expanded{% endif %}">
+                <a href="/account/roles/list" class="jk-submenu-item {% if active_page == 'roles_list' %}active{% endif %}">
+                    <i class="fas fa-list"></i>
+                    All Roles
+                </a>
+                <a href="/account/roles/new" class="jk-submenu-item {% if active_page == 'roles_new' %}active{% endif %}">
+                    <i class="fas fa-plus"></i>
+                    Create Role
+                </a>
+            </div>
+            <a href="/account/permissions" class="jk-nav-item {% if active_page == 'permissions' %}active{% endif %}">
+                <i class="fas fa-lock"></i>
+                Permissions
+            </a>
+            <hr class="is-thin">
+            <a href="/account/api-keys" class="jk-nav-item {% if active_page == 'api_keys' %}active{% endif %}">
+                <i class="fas fa-key"></i>
+                API Keys
+            </a>
+        </div>
+        <hr class="is-thin">
+    </nav>
+
+    <!-- Support Section -->
+    <div class="jk-nav-support">
+        <a href="/account/support" class="jk-nav-item {% if active_page == 'support' %}active{% endif %}">
+            <i class="fas fa-life-ring"></i>
+            Contact Support
+        </a>
+    </div>
+</aside>
+
+<!-- Mobile toggle button -->
+<button class="jk-sidebar-toggle" id="sidebarToggle" aria-label="Toggle Menu">
+    <i class="fas fa-bars"></i>
+    <i class="fas fa-times"></i>
+</button>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.querySelector('.jk-sidebar-accounts');
+    const overlay = document.getElementById('sidebarOverlay');
+    const toggleBtn = document.getElementById('sidebarToggle');
+    const submenuTriggers = document.querySelectorAll('.jk-nav-item.has-submenu');
+    
+    // Toggle sidebar function
+    function toggleSidebar() {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+        document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
+    }
+
+    // Toggle submenu function
+    function toggleSubmenu(e) {
+        e.preventDefault();
+        const submenu = e.currentTarget.nextElementSibling;
+        const isExpanded = e.currentTarget.classList.contains('expanded');
+        
+        // Close all other submenus
+        submenuTriggers.forEach(trigger => {
+            if (trigger !== e.currentTarget) {
+                trigger.classList.remove('expanded');
+                trigger.nextElementSibling.classList.remove('expanded');
+            }
+        });
+        
+        // Toggle current submenu
+        e.currentTarget.classList.toggle('expanded');
+        submenu.classList.toggle('expanded');
+        
+        // If this submenu was closed and is now being opened, scroll it into view
+        if (!isExpanded) {
+            setTimeout(() => submenu.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+        }
+    }
+
+    // Add click events
+    toggleBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleSidebar();
+    });
+
+    overlay.addEventListener('click', toggleSidebar);
+
+    submenuTriggers.forEach(trigger => {
+        trigger.addEventListener('click', toggleSubmenu);
+    });
+
+    // Close sidebar when clicking outside
+    document.addEventListener('click', (e) => {
+        if (window.innerWidth <= 1024 && 
+            sidebar.classList.contains('show') && 
+            !sidebar.contains(e.target) && 
+            !toggleBtn.contains(e.target)) {
+            toggleSidebar();
+        }
+    });
+
+    // Handle window resize
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        }, 250);
+    });
+});</script> 

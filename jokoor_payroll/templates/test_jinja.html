@@ -1,0 +1,153 @@
+<div class="employee-card">
+    <div class="employee-header">
+        <h3>{{ employee.name }}</h3>
+        <span class="employee-id">ID: {{ employee.employee_id }}</span>
+    </div>
+    
+    <div class="employee-details">
+        <div class="detail-row">
+            <label>Position:</label>
+            <span>{{ employee.designation }}</span>
+        </div>
+        
+        <div class="detail-row">
+            <label>Department:</label>
+            <span>{{ employee.department }}</span>
+        </div>
+        
+        <div class="detail-row">
+            <label>Email:</label>
+            <span>{{ employee.email }}</span>
+        </div>
+        
+        <div class="detail-row">
+            <label>Phone:</label>
+            <span>{{ employee.phone }}</span>
+        </div>
+        
+        <div class="detail-row">
+            <label>Status:</label>
+            <span class="status-badge status-{{ employee.status.lower() }}">
+                {{ employee.status }}
+            </span>
+        </div>
+    </div>
+    
+    <div class="employee-actions">
+        <button class="btn btn-primary" onclick="editEmployee('{{ employee.employee_id }}')">
+            Edit Employee
+        </button>
+        <button class="btn btn-secondary" onclick="viewDetails('{{ employee.employee_id }}')">
+            View Details
+        </button>
+    </div>
+</div>
+
+<style>
+    .employee-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        padding: 20px;
+        margin: 20px;
+        max-width: 400px;
+    }
+    
+    .employee-header {
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .employee-header h3 {
+        margin: 0 0 5px 0;
+        color: #2c3e50;
+        font-size: 18px;
+    }
+    
+    .employee-id {
+        color: #7f8c8d;
+        font-size: 14px;
+    }
+    
+    .employee-details {
+        margin-bottom: 20px;
+    }
+    
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 0;
+        border-bottom: 1px solid #f8f9fa;
+    }
+    
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+    
+    .detail-row label {
+        font-weight: 500;
+        color: #6c757d;
+        min-width: 80px;
+    }
+    
+    .detail-row span {
+        color: #2c3e50;
+    }
+    
+    .status-badge {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+    
+    .status-active {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status-inactive {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .employee-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+    
+    .btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-primary {
+        background: #007bff;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: #0056b3;
+    }
+    
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .btn-secondary:hover {
+        background: #545b62;
+    }
+</style>

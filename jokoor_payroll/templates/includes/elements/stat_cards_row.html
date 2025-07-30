@@ -1,0 +1,33 @@
+{# 
+  Reusable Stat Cards Row Component
+  Usage:
+  1. Set the stat cards data
+  {% set stat_cards = [
+      {"title": "Total Employees", "count": "166", "icon": "fa-users", "color": "primary"},
+      {"title": "Active", "count": "112", "icon": "fa-user-check", "color": "success"},
+      # ... more cards
+  ] %}
+  
+  2. Include the template
+  {% include "jokoor_payroll/templates/includes/elements/stat_cards_row.html" %}
+  
+  Required parameters:
+  - stat_cards: Array of stat card objects with:
+    - title (optional): Title for the card
+    - count: Value to display
+    - icon: FontAwesome icon class
+    - color: Card color (primary, success, warning, danger, info)
+#}
+
+<div class="row">
+    {% for card in stat_cards %}
+    <div class="col-md-{{ 12 // stat_cards|length }}">
+        {% set card_type = 'stat_card' %}
+        {% set title = card.title %}
+        {% set count = card.count %}
+        {% set icon = card.icon %}
+        {% set color = card.color %}
+        {% include "jokoor_payroll/templates/includes/elements/card.html" %}
+    </div>
+    {% endfor %}
+</div>

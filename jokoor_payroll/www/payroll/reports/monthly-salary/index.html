@@ -1,0 +1,27 @@
+{% extends "jokoor_payroll/templates/pages/base.html" %}
+
+{% block content %}
+<div class="jk-page-header">
+    <div class="jk-header-content">
+        <h2 class="jk-page-title">Monthly Salary Report</h2>
+        {% if subtitle %}
+        <p class="jk-page-subtitle">{{ subtitle }}</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="jk-card">
+    <div class="d-flex justify-content-end align-items-center mb-4">
+        <div class="text-end text-muted">
+            {{ month_year }}
+        </div>
+    </div>
+
+    {# Include report view component directly using report object #}
+    {% include "jokoor_payroll/templates/includes/elements/report_view.html" %}
+</div>
+{% endblock %}
+
+{% block script %}
+<!-- No additional scripts needed as they're included in the report_table component -->
+{% endblock %}

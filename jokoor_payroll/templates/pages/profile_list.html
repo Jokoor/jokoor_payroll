@@ -1,0 +1,89 @@
+{% extends "templates/pages/profile.html" %}
+
+{% block page_content %}
+<div class="jk-page-container">
+  <div class="jk-card-simple jk-card-wide">
+    {% from "templates/components/list_table.html" import list_table %}
+    {{ list_table(
+        id="employee-list",
+        page_size=20,
+        page_size_options=[20, 100, 500, 1000, 5000, 'All'],
+        filters=[
+            {
+                "type": "select",
+                "id": "department-filter",
+                "options": [
+                    {"value": "hr", "label": "HR"},
+                    {"value": "engineering", "label": "Engineering"},
+                    {"value": "sales", "label": "Sales"},
+                    {"value": "support", "label": "Support"}
+                ],
+                "placeholder": "Department",
+                "searchable": true
+            },
+            {
+                "type": "select",
+                "id": "status-filter",
+                "options": [
+                    {"value": "active", "label": "Active"},
+                    {"value": "inactive", "label": "Inactive"},
+                    {"value": "on_leave", "label": "On Leave"}
+                ],
+                "placeholder": "Status",
+                "searchable": false
+            }
+        ],
+        add_button={
+            "text": "Add Employee",
+            "type": "primary",
+            "size": "small",
+            "icon": "plus"
+        },
+        columns=["Name", "Email", "Department", "Role", "Status"],
+        rows=[
+            {
+                "url": "/employees/jane-doe",
+                "cells": [
+                    "Jane Doe",
+                    "jane.doe@company.com",
+                    "Engineering",
+                    "Developer",
+                    {"type": "composite", "label": "Active", "label_type": "success"}
+                ]
+            },
+            {
+                "url": "/employees/john-smith",
+                "cells": [
+                    "John Smith",
+                    "john.smith@company.com",
+                    "HR",
+                    "HR Manager",
+                    {"type": "composite", "label": "On Leave", "label_type": "warning"}
+                ]
+            },
+            {
+                "url": "/employees/sam-lee",
+                "cells": [
+                    "Sam Lee",
+                    "sam.lee@company.com",
+                    "Sales",
+                    "Sales Executive",
+                    {"type": "composite", "label": "Inactive", "label_type": "danger"}
+                ]
+            },
+            {
+                "url": "/employees/lisa-ray",
+                "cells": [
+                    "Lisa Ray",
+                    "lisa.ray@company.com",
+                    "Support",
+                    "Support Agent",
+                    {"type": "composite", "label": "Active", "label_type": "success"}
+                ]
+            }
+        ],
+        has_sort=true
+    ) }}
+  </div>
+</div>
+{% endblock %}

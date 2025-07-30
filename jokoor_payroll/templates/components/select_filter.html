@@ -1,0 +1,62 @@
+{% macro select_filter(
+    id="",
+    options=[],
+    placeholder="Select an option",
+    search=true,
+    width=0
+) %}
+<div class="jk-select-filter-wrapper{% if width and width > 0 and width <= 12 %} col-{{ width }}{% endif %}">
+    <select id="{{ id }}" name="{{ id }}" class="jk-select-filter" data-search="{{ 'true' if search else 'false' }}">
+        <option value="" disabled selected hidden>{{ placeholder }}</option>
+        {% for opt in options %}
+            {% if opt is string %}
+                <option value="{{ opt }}">{{ opt }}</option>
+            {% else %}
+                <option value="{{ opt.value }}"{% if opt.selected %} selected{% endif %}>{{ opt.label }}</option>
+            {% endif %}
+        {% endfor %}
+    </select>
+</div>
+<style>
+.jk-select-filter-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.col-1 { flex: 0 0 8.33%; max-width: 8.33%; }
+.col-2 { flex: 0 0 16.66%; max-width: 16.66%; }
+.col-3 { flex: 0 0 25%; max-width: 25%; }
+.col-4 { flex: 0 0 33.33%; max-width: 33.33%; }
+.col-5 { flex: 0 0 41.66%; max-width: 41.66%; }
+.col-6 { flex: 0 0 50%; max-width: 50%; }
+.col-7 { flex: 0 0 58.33%; max-width: 58.33%; }
+.col-8 { flex: 0 0 66.66%; max-width: 66.66%; }
+.col-9 { flex: 0 0 75%; max-width: 75%; }
+.col-10 { flex: 0 0 83.33%; max-width: 83.33%; }
+.col-11 { flex: 0 0 91.66%; max-width: 91.66%; }
+.col-12 { flex: 0 0 100%; max-width: 100%; }
+</style>
+<script>
+$(function() {
+    $("#{{ id }}").select2({
+        width: "100%",
+        dropdownAutoWidth: true,
+        dropdownParent: $("#{{ id }}").parent(),
+        placeholder: "{{ placeholder }}",
+        {% if not search %}
+        minimumResultsForSearch: Infinity,
+        {% endif %}
+        dropdownCssClass: 'jk-select-filter-dropdown'
+    });
+});
+</script>
+<style>
+.select2-container--default .jk-select-filter-dropdown.select2-dropdown {
+    min-width: 260px !important;
+    width: 320px !important;
+    max-width: 90vw;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(16,30,54,0.10);
+}
+</style>
+{% endmacro %} 

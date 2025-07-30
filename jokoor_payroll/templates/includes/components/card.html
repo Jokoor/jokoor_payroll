@@ -1,0 +1,292 @@
+{% set brand_purple = '#5534c9' %}
+{% set brand_purple_50 = '#f6f4fe' %}
+{% set brand_purple_100 = '#ede9fd' %}
+{% set brand_purple_600 = '#5534c9' %}
+{% set brand_purple_700 = '#4c2eb3' %}
+{% set brand_purple_800 = '#42289c' %}
+
+<style>
+    .jk-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding: 0 1rem;
+    }
+
+    .jk-section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin: 2rem 1rem 1rem;
+    }
+
+    .jk-trend-up {
+        color: #16a34a;
+    }
+
+    .jk-trend-down {
+        color: #dc2626;
+    }
+
+    .jk-chart-placeholder {
+        width: 100%;
+        height: 200px;
+        background: #f8fafc;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        font-size: 0.875rem;
+    }
+
+    .jk-card {
+        background: #ffffff;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+        border: 1px solid #e5e7eb;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        grid-column: span 3;
+    }
+
+    /* Carbon Design System Grid System */
+    @media (min-width: 320px) {
+        .jk-card { grid-column: span 12; }
+    }
+
+    @media (min-width: 672px) {
+        .jk-card.width-1 { grid-column: span 3; }
+        .jk-card.width-2 { grid-column: span 6; }
+        .jk-card.width-3 { grid-column: span 9; }
+        .jk-card.width-4 { grid-column: span 12; }
+    }
+
+    @media (min-width: 1056px) {
+        .jk-card.width-1 { grid-column: span 2; }
+        .jk-card.width-2 { grid-column: span 4; }
+        .jk-card.width-3 { grid-column: span 6; }
+        .jk-card.width-4 { grid-column: span 8; }
+        .jk-card.width-5 { grid-column: span 10; }
+        .jk-card.width-6 { grid-column: span 12; }
+    }
+
+    @media (min-width: 1312px) {
+        .jk-card.width-1 { grid-column: span 1; }
+        .jk-card.width-2 { grid-column: span 2; }
+        .jk-card.width-3 { grid-column: span 3; }
+        .jk-card.width-4 { grid-column: span 4; }
+        .jk-card.width-5 { grid-column: span 5; }
+        .jk-card.width-6 { grid-column: span 6; }
+        .jk-card.width-7 { grid-column: span 7; }
+        .jk-card.width-8 { grid-column: span 8; }
+        .jk-card.width-9 { grid-column: span 9; }
+        .jk-card.width-10 { grid-column: span 10; }
+        .jk-card.width-11 { grid-column: span 11; }
+        .jk-card.width-12 { grid-column: span 12; }
+    }
+
+    .jk-card:hover {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transform: translateY(-1px);
+    }
+
+    .jk-card-header {
+        padding: 1rem;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .jk-card-title {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1f2937;
+        line-height: 1.5;
+    }
+
+    .jk-card-subtitle {
+        margin-top: 0.25rem;
+        font-size: 0.875rem;
+        color: #64748b;
+    }
+
+    .jk-card-body {
+        padding: 1rem;
+        flex: 1;
+    }
+
+    .jk-card-footer {
+        padding: 1rem;
+        border-top: 1px solid #e5e7eb;
+        background: #f8fafc;
+        border-radius: 0 0 0.5rem 0.5rem;
+    }
+
+    /* Stat Card Styles */
+    .jk-stat-card {
+        text-align: center;
+        padding: 1.25rem;
+    }
+
+    .jk-stat-icon {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 0.5rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+    }
+
+    .jk-stat-count {
+        font-size: 2rem;
+        font-weight: 600;
+        line-height: 1.25;
+        margin-bottom: 0.5rem;
+    }
+
+    .jk-stat-title {
+        font-size: 0.875rem;
+        color: #64748b;
+        margin: 0;
+    }
+
+    /* Color Variants */
+    .jk-card.primary .jk-stat-icon,
+    .jk-card.primary .jk-card-header {
+        background: #f6f4fe;
+        color: #5534c9;
+    }
+
+    .jk-card.primary .jk-stat-count {
+        color: #5534c9;
+    }
+
+    .jk-card.success .jk-stat-icon,
+    .jk-card.success .jk-card-header {
+        background: #f0fdf4;
+        color: #16a34a;
+    }
+
+    .jk-card.success .jk-stat-count {
+        color: #16a34a;
+    }
+
+    .jk-card.info .jk-stat-icon,
+    .jk-card.info .jk-card-header {
+        background: #eff6ff;
+        color: #2563eb;
+    }
+
+    .jk-card.info .jk-stat-count {
+        color: #2563eb;
+    }
+
+    .jk-card.warning .jk-stat-icon,
+    .jk-card.warning .jk-card-header {
+        background: #fefce8;
+        color: #ca8a04;
+    }
+
+    .jk-card.warning .jk-stat-count {
+        color: #ca8a04;
+    }
+
+    .jk-card.danger .jk-stat-icon,
+    .jk-card.danger .jk-card-header {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+    .jk-card.danger .jk-stat-count {
+        color: #dc2626;
+    }
+
+    /* Action Card Styles */
+    .jk-card-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .jk-card-action-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .jk-card-action-btn.primary {
+        background: #5534c9;
+        color: white;
+    }
+
+    .jk-card-action-btn.primary:hover {
+        background: #4c2eb3;
+    }
+
+    .jk-card-action-btn.secondary {
+        background: white;
+        border-color: #e5e7eb;
+        color: #475569;
+    }
+
+    .jk-card-action-btn.secondary:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+    }
+</style>
+
+{% if card_type == 'stat' %}
+<div class="jk-card {{ color }} width-{{ width|default(3) }} {{ classes }}">
+    <div class="jk-stat-card">
+        <div class="jk-stat-icon">
+            <i class="fas {{ icon }}"></i>
+        </div>
+        <div class="jk-stat-count">{{ count }}</div>
+        <h3 class="jk-stat-title">{{ title }}</h3>
+    </div>
+    {% if footer %}
+    <div class="jk-card-footer">{{ footer | safe }}</div>
+    {% endif %}
+</div>
+
+{% else %}
+<div class="jk-card {{ color }} width-{{ width|default(3) }} {{ classes }}">
+    {% if title %}
+    <div class="jk-card-header">
+        <div>
+            <h3 class="jk-card-title">{{ title }}</h3>
+            {% if subtitle %}
+            <div class="jk-card-subtitle">{{ subtitle }}</div>
+            {% endif %}
+        </div>
+        {% if actions %}
+        <div class="jk-card-actions">
+            {{ actions | safe }}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    <div class="jk-card-body">
+        {{ content | safe }}
+    </div>
+
+    {% if footer %}
+    <div class="jk-card-footer">{{ footer | safe }}</div>
+    {% endif %}
+</div>
+{% endif %}

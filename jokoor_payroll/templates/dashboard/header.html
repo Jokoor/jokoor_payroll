@@ -1,0 +1,81 @@
+<!-- Header component -->
+<div class="jk-header">
+    <h1 class="jk-header-title">{{ page_title|default('Dashboard') }}</h1>
+    <div class="jk-header-actions">
+        <div class="jk-dropdown">
+            <button class="jk-dropdown-button" id="org-dropdown-button">
+                {{ current_org|default('Jokoor Inc.') }}
+                <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 11L3 6L3.7 5.3L8 9.6L12.3 5.3L13 6L8 11Z" fill="currentColor"/>
+                </svg>
+            </button>
+            <div class="jk-dropdown-menu" id="org-dropdown-menu">
+                <div class="jk-dropdown-item">
+                    <div class="org-item">
+                        <div class="org-name">Jokoor</div>
+                        <div class="org-id" data-id="5612897430" onclick="copyOrgId(this)">5612897430</div>
+                    </div>
+                </div>
+                <div class="jk-dropdown-item">
+                    <div class="org-item">
+                        <div class="org-name">Royal SMB</div>
+                        <div class="org-id" data-id="7824519630" onclick="copyOrgId(this)">7824519630</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .org-item {
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+    }
+    
+    .org-name {
+        font-weight: 500;
+        margin-bottom: 4px;
+    }
+    
+    .org-id {
+        font-size: 0.8rem;
+        color: #6f6f6f;
+        cursor: pointer;
+        padding: 2px 4px;
+        border-radius: 4px;
+        background-color: #f4f4f4;
+        display: inline-block;
+        transition: background-color 0.2s;
+    }
+    
+    .org-id:hover {
+        background-color: #e0e0e0;
+    }
+    
+    .org-id.copied {
+        background-color: #d1f0d5;
+        color: #24a148;
+    }
+</style>
+
+<script>
+    function copyOrgId(element) {
+        const id = element.getAttribute('data-id');
+        navigator.clipboard.writeText(id).then(() => {
+            // Visual feedback
+            element.classList.add('copied');
+            element.textContent = 'Copied!';
+            
+            // Reset after 2 seconds
+            setTimeout(() => {
+                element.classList.remove('copied');
+                element.textContent = id;
+            }, 2000);
+        });
+        
+        // Prevent dropdown from closing
+        event.stopPropagation();
+    }
+</script> 

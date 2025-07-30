@@ -1,0 +1,362 @@
+{#
+  Generic Data Table With Actions Component
+  Usage: {% include "jokoor_payroll/templates/includes/elements/data_table_with_actions.html" %}
+  Required context variables:
+    columns: list of dicts with 'key' and 'label'
+    data: list of dicts (rows)
+    The rest of the context is for the dropdown/actions as before.
+  
+  Optional row click configuration:
+    row_click_type: 'modal' or 'page' (default is 'none' - no click action)
+    row_click_target: 
+      - For modal: modal ID to open (e.g., '#editComponentModal')
+      - For page: URL pattern with {id} placeholder (e.g., '/component/view/{id}')
+#}
+
+{# Set default row click behavior if not specified #}
+{% set row_click_type = row_click_type if row_click_type is defined else 'none' %}
+{% set row_click_target = row_click_target if row_click_target is defined else '' %}
+
+<div class="card shadow-sm rounded-lg border-0 mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center py-4 px-4 bg-white border-bottom">
+        <div>
+            <h5 class="card-title fw-bold mb-1">
+                <i class="fas fa-table me-2 text-primary"></i>
+                {{ table_title or "Manage Data" }}
+            </h5>
+            {% if table_subtitle %}<p class="text-muted small mb-0">{{ table_subtitle }}</p>{% endif %}
+        </div>
+        <div class="actions d-flex align-items-center gap-3">
+            {% include "jokoor_payroll/templates/includes/elements/bulk_action_dropdown.html" %}
+            <button class="btn btn-primary rounded-3 px-4 py-2 d-flex align-items-center" id="addComponentButton" data-bs-toggle="modal" data-bs-target="#addComponentModal">
+                <i class="fas fa-plus me-2"></i> <span>Add</span>
+            </button>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table align-middle mb-0 table-striped" id="salaryComponentsTable">
+            <thead>
+                <tr class="bg-light">
+                    <th class="border-bottom-0 ps-4 py-3" width="40">
+                        <div class="form-check">
+                            <input class="form-check-input rounded-sm border-2" type="checkbox" id="selectAllComponents">
+                        </div>
+                    </th>
+                    {% for col in columns %}
+                        <th class="border-bottom-0 py-3 {% if loop.first %}ps-3{% endif %} text-uppercase fw-semibold" style="font-size: 12px; letter-spacing: 0.7px; color: #6c757d;">{{ col.label }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+            {% for row in data %}
+                <tr {% if row_click_type != 'none' %}class="clickable-row" data-id="{{ row.id or row.name }}" data-click-type="{{ row_click_type }}" data-click-target="{{ row_click_target }}"{% endif %}>
+                    <td class="ps-4 py-3 checkbox-cell">
+                        <div class="form-check">
+                            <input class="form-check-input rounded-sm border-2 component-checkbox" type="checkbox" value="{{ row.id or row.name }}">
+                        </div>
+                    </td>
+                    {% for col in columns %}
+                        <td class="py-3 {% if loop.first %}ps-3{% endif %}">
+                            {% if col.type == 'icon' and col.key in row and row[col.key] %}
+                                <div class="icon-circle">
+                                    <i class="fas {{ row[col.key] }}"></i>
+                                </div>
+                            {% elif col.type == 'image' %}
+                                {% set avatar_mode = avatar_mode if avatar_mode is defined else 'image' %}
+                                {% if avatar_mode == 'initials' %}
+                                    <div class="avatar-initials">{{ row.avatar_initials }}</div>
+                                {% else %}
+                                    {% if col.key in row and row[col.key] %}
+                                        <img src="{{ row[col.key] }}" alt="" class="avatar-img">
+                                    {% elif row.avatar_initials %}
+                                        <div class="avatar-initials">{{ row.avatar_initials }}</div>
+                                    {% else %}
+                                        <div class="avatar-initials">?</div>
+                                    {% endif %}
+                                {% endif %}
+                            {% elif col.key == 'taxable' %}
+                                {% if col.key in row %}
+                                    {% if row[col.key] %}
+                                        <span class="status-badge status-success">Yes</span>
+                                    {% else %}
+                                        <span class="status-badge status-danger">No</span>
+                                    {% endif %}
+                                {% endif %}
+                            {% else %}
+                                <span class="text-dark fw-medium">{{ row[col.key] if col.key in row else '' }}</span>
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% else %}
+                <tr><td colspan="{{ columns|length + 1 }}" class="text-center py-5 text-secondary">No data found.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+/* Modern professional styling */
+.table { 
+    font-size: 14px; 
+    color: #495057;
+}
+
+.table tr {
+    border-color: #f1f3f5;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+    --bs-table-accent-bg: rgba(248, 249, 250, 0.5);
+}
+
+.form-check-input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.form-check-input:checked {
+    background-color: #4361ee;
+    border-color: #4361ee;
+}
+
+.icon-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    text-align: center;
+}
+
+.icon-circle i {
+    font-size: 15px;
+}
+
+.fa-dollar-sign.text-success {
+    color: #fff !important;
+    background-color: #10b981;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fa-minus-circle.text-danger {
+    color: #fff !important;
+    background-color: #ef4444;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-initials {
+    display: inline-flex;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #e0e7ff;
+    color: #4f46e5;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.avatar-img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.status-success {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.status-danger {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+/* Better hover effects */
+.table-hover tbody tr:hover {
+    background-color: rgba(67, 97, 238, 0.03);
+}
+
+#addComponentButton {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+#addComponentButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Row click styling */
+.clickable-row {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.clickable-row:hover {
+    background-color: rgba(67, 97, 238, 0.05) !important;
+}
+
+.checkbox-cell {
+    position: relative;
+    z-index: 10;
+}
+</style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// DataTableWithActions class and initialization
+class DataTableWithActions {
+    constructor(tableSelector, options = {}) {
+        this.tableSelector = tableSelector;
+        this.options = Object.assign({
+            actionDropdownId: 'bulkActionDropdown',
+            selectedCountId: 'selectedCount',
+            selectAllId: 'selectAllComponents',
+            checkboxClass: 'component-checkbox',
+            addButtonId: 'addComponentButton',
+            actions: {
+                delete: {
+                    id: 'deleteSelectedBtn',
+                    handler: this.defaultDeleteHandler.bind(this)
+                },
+                export: {
+                    id: 'exportSelectedBtn',
+                    handler: this.defaultExportHandler.bind(this)
+                }
+            }
+        }, options);
+        
+        // Wait for DOM to be fully loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.init());
+        } else {
+            this.init();
+        }
+    }
+    init() {
+        this.table = document.querySelector(this.tableSelector);
+        this.selectAll = document.getElementById(this.options.selectAllId);
+        this.checkboxes = () => Array.from(document.getElementsByClassName(this.options.checkboxClass));
+        this.dropdown = document.getElementById(this.options.actionDropdownId);
+        this.selectedCount = document.getElementById(this.options.selectedCountId);
+        this.bindEvents();
+    }
+    bindEvents() {
+        if (this.selectAll) {
+            this.selectAll.addEventListener('change', () => {
+                this.checkboxes().forEach(cb => { cb.checked = this.selectAll.checked; });
+                this.updateActions();
+            });
+        }
+        this.checkboxes().forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                if (!cb.checked) this.selectAll.checked = false;
+                this.updateActions();
+                // Stop propagation to prevent row click when clicking on checkbox
+                e.stopPropagation();
+            });
+        });
+        // Action handlers
+        Object.values(this.options.actions).forEach(action => {
+            const btn = document.getElementById(action.id);
+            if (btn) {
+                btn.addEventListener('click', () => action.handler(this.getSelected()));
+            }
+        });
+    }
+    getSelected() {
+        return this.checkboxes().filter(cb => cb.checked).map(cb => cb.value);
+    }
+    updateActions() {
+        const selected = this.getSelected();
+        if (this.selectedCount) this.selectedCount.textContent = selected.length;
+        if (this.dropdown) this.dropdown.classList.toggle('d-none', selected.length === 0);
+    }
+    defaultDeleteHandler(selected) {
+        alert('Delete: ' + selected.join(', '));
+    }
+    defaultExportHandler(selected) {
+        alert('Export: ' + selected.join(', '));
+    }
+}
+// Initialize after DOM ready
+document.addEventListener('DOMContentLoaded', function() {
+    new DataTableWithActions('#salaryComponentsTable');
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Direct handler: Setting up row click handlers');
+    
+    // Direct click handler on the table to use event delegation
+    const table = document.querySelector('#salaryComponentsTable');
+    if (table) {
+        table.addEventListener('click', function(e) {
+            // Find closest row (if any)
+            const row = e.target.closest('tr.clickable-row');
+            if (!row) return;
+            
+            // Ignore clicks on checkbox cell
+            if (e.target.closest('.checkbox-cell') || e.target.closest('.form-check') || e.target.classList.contains('component-checkbox')) {
+                console.log('Direct handler: Click on checkbox, ignoring');
+                return;
+            }
+            
+            console.log('Direct handler: Row clicked', row.dataset);
+            
+            const clickType = row.dataset.clickType;
+            const clickTarget = row.dataset.clickTarget;
+            const rowId = row.dataset.id;
+            
+            if (clickType === 'modal' && clickTarget) {
+                console.log('Direct handler: Opening modal', clickTarget);
+                const modal = document.querySelector(clickTarget);
+                if (modal) {
+                    // Set ID if there's a hidden input
+                    const idInput = modal.querySelector('input[name="id"]');
+                    if (idInput) idInput.value = rowId;
+                    
+                    // Show the modal
+                    console.log('Direct handler: Showing modal');
+                    const modalInstance = bootstrap.Modal.getOrCreateInstance(modal);
+                    modalInstance.show();
+                }
+            } else if (clickType === 'page' && clickTarget) {
+                const url = clickTarget.replace('{id}', rowId);
+                window.location.href = url;
+            }
+        });
+    }
+});
+</script>

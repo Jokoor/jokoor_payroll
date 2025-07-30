@@ -1,0 +1,80 @@
+{% macro custom_date(
+    id="input-date",
+    label="Date",
+    value="",
+    placeholder="Select date",
+    required=false,
+    error="",
+    info="",
+    size="large",
+    classes=""
+) %}
+<div class="input-text-wrap is-calendar {{ classes }} {% if size == 'large' %}is-large{% endif %} {% if required %}is-required{% endif %} {% if error %}is-error{% endif %} {% if value %}has-value{% endif %}">
+    <label class="input-text-label" for="{{ id }}">{{ label }}</label>
+    <input
+        type="date"
+        id="{{ id }}"
+        name="{{ id }}"
+        value="{{ value }}"
+        class="input-text input-date-range-single"
+        {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+        {% if required %}required{% endif %}
+    >
+    {% if error %}
+    <span class="input-error">{{ error }}</span>
+    {% endif %}
+    {% if info %}
+    <span class="input-info">{{ info }}</span>
+    {% endif %}
+</div>
+<style>
+    .input-text[type="date"] {
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid #d1d5db; /* match your input border */
+  background: transparent;
+  font-size: 1.125rem;
+  padding: 0.75rem 0; /* match your input padding */
+  color: #222;
+  border-radius: 0;
+  outline: none;
+  box-shadow: none;
+  appearance: none;
+  transition: border-color 0.2s;
+}
+
+.input-text[type="date"]:focus {
+  border-bottom: 2px solid #3b82f6; /* match your input focus color */
+  background: transparent;
+}
+
+.input-text[type="date"]::-webkit-input-placeholder { color: #9ca3af; }
+.input-text[type="date"]::-moz-placeholder { color: #9ca3af; }
+.input-text[type="date"]:-ms-input-placeholder { color: #9ca3af; }
+.input-text[type="date"]::placeholder { color: #9ca3af; }
+</style>
+<script>
+    $("#input-date-range-single").daterangepicker({
+  singleDatePicker: true
+});
+    (function () {
+        const input = document.getElementById("{{ id }}");
+        const wrap = input.closest(".input-text-wrap");
+
+        function toggleHasValueClass() {
+            if (input.value) {
+                wrap.classList.add("has-value");
+            } else {
+                wrap.classList.remove("has-value");
+            }
+        }
+
+        input.addEventListener("input", toggleHasValueClass);
+        input.addEventListener("focus", toggleHasValueClass);
+        input.addEventListener("blur", toggleHasValueClass);
+
+        // initialize on page load
+        toggleHasValueClass();
+    })();
+</script>
+{% endmacro %}

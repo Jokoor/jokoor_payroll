@@ -1,0 +1,6 @@
+{% macro card(title, value, classes="", value_classes="") %}
+<div class="card is-metric col-6 {{ classes }}">
+    <h4>{{ title }}</h4>
+    <p class="card-data {{ value_classes }}">{{ value }}</p>
+</div>
+{% endmacro %}

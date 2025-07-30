@@ -1,0 +1,432 @@
+{% extends "templates/pages/base.html" %}
+
+{% block content %}
+<div class="jk-container">
+    <div class="jk-content-wrapper">
+        <div class="jk-card">
+            <div class="jk-card-header">
+                <div class="jk-card-title-wrapper">
+                    <h4 class="jk-card-title">Tax Settings</h4>
+                    <p class="jk-card-subtitle">Configure tax rates and thresholds for payroll processing</p>
+                </div>
+            </div>
+            <div class="jk-card-body">
+                <!-- Tax Configuration Section -->
+                <div class="jk-section">
+                    <div class="jk-section-header">
+                        <div class="jk-section-title-group">
+                            <h5 class="jk-section-title">
+                                <i class="fas fa-percentage jk-section-icon"></i>
+                                Income Tax Rates
+                            </h5>
+                            <p class="jk-section-description">Configure income tax rates according to GRA (Gambia Revenue Authority) guidelines</p>
+                        </div>
+                    </div>
+
+                    <form id="taxForm" action="/api/method/jokoor.api.payroll.set_tax_rates" method="POST" class="jk-form">
+                        <div class="jk-form-group">
+                            <label class="jk-form-label">Tax Year</label>
+                            <select class="jk-form-control" name="tax_year" required>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                            </select>
+                        </div>
+
+                        <div class="jk-tax-brackets">
+                            <div class="jk-tax-bracket">
+                                <div class="jk-form-group">
+                                    <label class="jk-form-label">First Bracket (0 - 12,000 GMD)</label>
+                                    <div class="jk-input-group">
+                                        <input type="number" class="jk-form-control" name="bracket1_rate" value="0" min="0" max="100" step="0.1" required>
+                                        <span class="jk-input-addon">%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="jk-tax-bracket">
+                                <div class="jk-form-group">
+                                    <label class="jk-form-label">Second Bracket (12,001 - 20,000 GMD)</label>
+                                    <div class="jk-input-group">
+                                        <input type="number" class="jk-form-control" name="bracket2_rate" value="15" min="0" max="100" step="0.1" required>
+                                        <span class="jk-input-addon">%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="jk-tax-bracket">
+                                <div class="jk-form-group">
+                                    <label class="jk-form-label">Third Bracket (20,001 - 30,000 GMD)</label>
+                                    <div class="jk-input-group">
+                                        <input type="number" class="jk-form-control" name="bracket3_rate" value="20" min="0" max="100" step="0.1" required>
+                                        <span class="jk-input-addon">%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="jk-tax-bracket">
+                                <div class="jk-form-group">
+                                    <label class="jk-form-label">Fourth Bracket (30,001 GMD and above)</label>
+                                    <div class="jk-input-group">
+                                        <input type="number" class="jk-form-control" name="bracket4_rate" value="25" min="0" max="100" step="0.1" required>
+                                        <span class="jk-input-addon">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="jk-form-actions">
+                            <button type="submit" class="jk-btn jk-btn-primary">
+                                <i class="fas fa-save"></i>
+                                Save Tax Rates
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Social Security Section -->
+                <div class="jk-section">
+                    <div class="jk-section-header">
+                        <div class="jk-section-title-group">
+                            <h5 class="jk-section-title">
+                                <i class="fas fa-shield-alt jk-section-icon"></i>
+                                Social Security (SSF)
+                            </h5>
+                            <p class="jk-section-description">Configure Social Security Fund contributions</p>
+                        </div>
+                    </div>
+
+                    <form id="ssfForm" action="/api/method/jokoor.api.payroll.set_ssf_rates" method="POST" class="jk-form">
+                        <div class="jk-form-group">
+                            <label class="jk-form-label">Employee Contribution Rate</label>
+                            <div class="jk-input-group">
+                                <input type="number" class="jk-form-control" name="employee_rate" value="5" min="0" max="100" step="0.1" required>
+                                <span class="jk-input-addon">%</span>
+                            </div>
+                        </div>
+
+                        <div class="jk-form-group">
+                            <label class="jk-form-label">Employer Contribution Rate</label>
+                            <div class="jk-input-group">
+                                <input type="number" class="jk-form-control" name="employer_rate" value="10" min="0" max="100" step="0.1" required>
+                                <span class="jk-input-addon">%</span>
+                            </div>
+                        </div>
+
+                        <div class="jk-form-group">
+                            <label class="jk-form-label">Maximum Contribution Base</label>
+                            <div class="jk-input-group">
+                                <input type="number" class="jk-form-control" name="max_base" value="50000" min="0" step="1000" required>
+                                <span class="jk-input-addon">GMD</span>
+                            </div>
+                        </div>
+
+                        <div class="jk-form-actions">
+                            <button type="submit" class="jk-btn jk-btn-primary">
+                                <i class="fas fa-save"></i>
+                                Save SSF Rates
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Tax Exemptions Section -->
+                <div class="jk-section">
+                    <div class="jk-section-header">
+                        <div class="jk-section-title-group">
+                            <h5 class="jk-section-title">
+                                <i class="fas fa-gift jk-section-icon"></i>
+                                Tax Exemptions
+                            </h5>
+                            <p class="jk-section-description">Configure tax exemptions and allowances</p>
+                        </div>
+                    </div>
+
+                    <form id="exemptionForm" action="/api/method/jokoor.api.payroll.set_tax_exemptions" method="POST" class="jk-form">
+                        <div class="jk-form-group">
+                            <label class="jk-form-label">Personal Allowance</label>
+                            <div class="jk-input-group">
+                                <input type="number" class="jk-form-control" name="personal_allowance" value="12000" min="0" step="1000" required>
+                                <span class="jk-input-addon">GMD</span>
+                            </div>
+                        </div>
+
+                        <div class="jk-form-group">
+                            <label class="jk-form-label">Dependent Allowance (per child)</label>
+                            <div class="jk-input-group">
+                                <input type="number" class="jk-form-control" name="dependent_allowance" value="2000" min="0" step="100" required>
+                                <span class="jk-input-addon">GMD</span>
+                            </div>
+                        </div>
+
+                        <div class="jk-form-group">
+                            <label class="jk-form-label">Maximum Dependents</label>
+                            <input type="number" class="jk-form-control" name="max_dependents" value="3" min="0" max="10" required>
+                        </div>
+
+                        <div class="jk-form-actions">
+                            <button type="submit" class="jk-btn jk-btn-primary">
+                                <i class="fas fa-save"></i>
+                                Save Exemptions
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+// Form submission handlers
+document.getElementById('taxForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    submitForm(this, 'Tax rates');
+});
+
+document.getElementById('ssfForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    submitForm(this, 'SSF rates');
+});
+
+document.getElementById('exemptionForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    submitForm(this, 'Tax exemptions');
+});
+
+function submitForm(form, type) {
+    const formData = new FormData(form);
+    const data = {};
+    formData.forEach((value, key) => data[key] = value);
+
+    fetch(form.action, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Frappe-CSRF-Token': frappe.csrf_token
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        frappe.show_alert({
+            message: `${type} saved successfully`,
+            indicator: 'green'
+        });
+    })
+    .catch(error => {
+        frappe.show_alert({
+            message: `Error saving ${type}`,
+            indicator: 'red'
+        });
+    });
+}
+</script>
+
+<style>
+/* Jokoor Design System Styles */
+:root {
+    --jk-primary: #5534c9;
+    --jk-primary-hover: #4425a3;
+    --jk-bg-light: #f9f7ff;
+    --jk-border: #e8e9ec;
+}
+
+.jk-container {
+    padding: 0;
+    max-width: 100%;
+    margin: 0;
+}
+
+.jk-content-wrapper {
+    background: var(--bg-color);
+    width: 100%;
+}
+
+.jk-card {
+    background: #fff;
+    border-bottom: 1px solid var(--jk-border);
+}
+
+.jk-card-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--jk-border);
+    background: var(--jk-bg-light);
+}
+
+.jk-card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0;
+}
+
+.jk-card-subtitle {
+    color: #64748b;
+    font-size: 0.875rem;
+    margin: 0.25rem 0 0 0;
+}
+
+.jk-card-body {
+    padding: 1.5rem;
+}
+
+/* Sections */
+.jk-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    border: 1px solid var(--jk-border);
+    border-radius: 8px;
+}
+
+.jk-section:last-child {
+    margin-bottom: 0;
+}
+
+.jk-section-header {
+    margin-bottom: 1.5rem;
+}
+
+.jk-section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.jk-section-icon {
+    color: var(--jk-primary);
+    font-size: 1.125rem;
+}
+
+.jk-section-description {
+    color: #64748b;
+    font-size: 0.875rem;
+    margin: 0.25rem 0 0 0;
+}
+
+/* Form */
+.jk-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.jk-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.jk-form-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.jk-form-control {
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--jk-border);
+    border-radius: 6px;
+    font-size: 0.875rem;
+    color: var(--text-color);
+}
+
+.jk-form-control:focus {
+    outline: none;
+    border-color: var(--jk-primary);
+    box-shadow: 0 0 0 2px rgba(85, 52, 201, 0.1);
+}
+
+.jk-input-group {
+    display: flex;
+    align-items: center;
+}
+
+.jk-input-group .jk-form-control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.jk-input-addon {
+    padding: 0.625rem 0.875rem;
+    background: var(--jk-bg-light);
+    border: 1px solid var(--jk-border);
+    border-left: none;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+/* Tax Brackets */
+.jk-tax-brackets {
+    display: grid;
+    gap: 1rem;
+}
+
+.jk-tax-bracket {
+    padding: 1rem;
+    border: 1px solid var(--jk-border);
+    border-radius: 6px;
+    background: var(--jk-bg-light);
+}
+
+/* Buttons */
+.jk-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.jk-btn-primary {
+    background-color: var(--jk-primary);
+    color: white;
+    border: none;
+}
+
+.jk-btn-primary:hover {
+    background-color: var(--jk-primary-hover);
+}
+
+.jk-btn i {
+    font-size: 0.875rem;
+}
+
+/* Form Actions */
+.jk-form-actions {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--jk-border);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .jk-section {
+        padding: 1rem;
+    }
+    
+    .jk-input-group {
+        flex-direction: column;
+    }
+    
+    .jk-input-group .jk-form-control {
+        border-radius: 6px;
+    }
+    
+    .jk-input-addon {
+        border-radius: 6px;
+        border: 1px solid var(--jk-border);
+        margin-top: 0.5rem;
+    }
+}
+</style>
+{% endblock %} 

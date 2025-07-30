@@ -1,0 +1,84 @@
+{% macro uploader(id="input-image", label="Upload Image", value="") %}
+<style>
+    .image-uploader-box {
+        width: 200px;
+        height: 200px;
+        border: 2px dashed #ccc;
+        border-radius: 8px;
+        cursor: pointer;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #999;
+        text-align: center;
+        font-size: 14px;
+        background-size: cover;
+        background-position: center;
+        overflow: hidden;
+        transition: border-color 0.2s;
+        margin-top: 1rem;
+    }
+
+    .image-uploader-box:hover {
+        border-color: #666;
+    }
+
+    .image-uploader-box input[type="file"] {
+        display: none;
+    }
+
+    .image-uploader-box.has-image {
+        color: transparent;
+    }
+</style>
+
+<div class="input-text-wrap has-value">
+    <label class="input-text-label jk-text-lg" for="{{ id }}">{{ label }}</label>
+    <!-- <div class="image-uploader-box{% if value %} has-image{% endif %}" id="uploader-{{ id }}"
+         {% if value %}style="background-image: url('{{ value }}');"{% endif %}>
+        Click to upload
+        <input type="file" id="{{ id }}" accept="image/*">
+    </div> -->
+    <div class="image-uploader-box{% if value %} has-image{% endif %}" id="uploader-{{ id }}"
+     {% if value %}style="background-image: url('{{ value }}');"{% endif %}>
+    Click to upload
+    <input type="file" id="{{ id }}" accept="image/*">
+</div>
+</div>
+
+<!-- Hidden input to store base64 for backend -->
+<input type="hidden" id="base64-{{ id }}" name="base64_{{ id }}">
+
+<script>
+    (function() {
+        const uploaderBox = document.getElementById("uploader-{{ id }}");
+        const fileInput = document.getElementById("{{ id }}");
+        const base64Input = document.getElementById("base64-{{ id }}");
+
+        uploaderBox.addEventListener("click", () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener("change", function () {
+            const file = this.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const base64 = e.target.result;
+                    uploaderBox.style.backgroundImage = `url('${base64}')`;
+                    uploaderBox.classList.add("has-image");
+
+                    // Store in hidden input
+                    base64Input.value = base64;
+
+                    // Optional: Log to console
+                    console.log("Base64 Image:", base64);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    })();
+</script>
+{% endmacro %}

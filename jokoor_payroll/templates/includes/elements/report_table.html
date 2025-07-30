@@ -1,0 +1,490 @@
+{% set report_table_id = report_table_id | default('report-table-' ~ frappe.utils.now_datetime().strftime('%Y%m%d%H%M%S%f')) %}
+{% set show_export = show_export | default(true) %}
+{% set export_filename = report.export_filename | default('') %}
+{% set table_class = table_class | default('') %}
+{% set currency_symbol = report.currency_symbol | default('') %}
+{% set columns = report.columns | default([]) %}
+{% set data = report.data | default([]) %}
+{% set sections = report.sections | default([]) %}
+{% set show_sections = sections is not none and sections|length > 0 %}
+{% set show_total = report.show_total | default(true) %}
+{% set enable_scroll = enable_scroll | default(true) %}
+{% set freeze_columns = report.freeze_columns | default(0) %}
+{% set default_column_width = default_column_width | default(120) %}
+{% set grand_total = report.grand_total | default(None) %}
+
+<div class="carbon-report-container">
+    {% if show_export %}
+    <div class="carbon-report-actions">
+        <button class="carbon-btn carbon-btn-secondary export-excel-btn" data-table-id="{{ report_table_id }}" data-filename="{{ export_filename }}">
+            <i class="fas fa-file-excel"></i>
+            Export to Excel
+        </button>
+    </div>
+    {% endif %}
+
+    <div class="carbon-table-card">
+        <div class="carbon-table-wrapper">
+            <table id="{{ report_table_id }}" class="carbon-table {{ table_class }}" data-freeze-columns="{{ freeze_columns }}">
+                <colgroup>
+                    {% for column in columns %}
+                    <col width="{{ column.width|replace('px', '') if column.width else default_column_width }}">
+                    {% endfor %}
+                </colgroup>
+                <thead>
+                    <tr>
+                        {% for column in columns %}
+                        <th 
+                            class="carbon-table-header {% if column.align == 'right' %}carbon-text-right{% elif column.align == 'center' %}carbon-text-center{% endif %}" 
+                            data-column-type="{{ column.type | default('data') }}"
+                            width="{{ column.width|replace('px', '') if column.width else default_column_width }}"
+                        >
+                            {{ column.label }}
+                        </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if show_sections %}
+                        {# Render data with sections #}
+                        {% for section in sections %}
+                            {# Section Header #}
+                            <tr class="carbon-section-header">
+                                <td colspan="{{ columns|length }}">{{ section.title }}</td>
+                            </tr>
+                            
+                            {# Section Rows #}
+                            {% for row in section.data %}
+                                {% if row.is_total %}
+                                <tr class="carbon-subtotal-row">
+                                    {% for column in columns %}
+                                    <td class="carbon-table-cell carbon-text-bold {% if column.align == 'right' %}carbon-text-right{% elif column.align == 'center' %}carbon-text-center{% endif %}">
+                                        {{ row[column.key] }}
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                {% else %}
+                                <tr class="carbon-data-row">
+                                    {% for column in columns %}
+                                    <td class="carbon-table-cell {% if column.align == 'right' %}carbon-text-right{% elif column.align == 'center' %}carbon-text-center{% endif %}">
+                                        {{ row[column.key] }}
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {# Section Total - if configured #}
+                            {% if section.has_total and section.total %}
+                            <tr class="carbon-subtotal-row">
+                                {% for column in columns %}
+                                <td class="carbon-table-cell carbon-text-bold {% if column.align == 'right' %}carbon-text-right{% elif column.align == 'center' %}carbon-text-center{% endif %}">
+                                    {% if loop.first %}
+                                        {{ section.total_label | default('Total') }}
+                                    {% else %}
+                                        {{ section.total[column.key] }}
+                                    {% endif %}
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {# Grand Total Row - only if show_total is true #}
+                        {% if grand_total and show_total %}
+                        <tr class="carbon-grand-total-row">
+                            {% for column in columns %}
+                            <td class="carbon-table-cell carbon-text-bold {% if column.align == 'right' %}carbon-text-right{% elif column.align == 'center' %}carbon-text-center{% endif %}">
+                                {{ grand_total[column.key] }}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endif %}
+                    {% else %}
+                        {# Render flat data #}
+                        {% if data and data|length > 0 %}
+                            {% for row in data %}
+                            <tr class="{% if row.is_total %}carbon-grand-total-row{% elif row.is_subtotal %}carbon-subtotal-row{% elif row.is_header %}carbon-section-header{% else %}carbon-data-row{% endif %}">
+                                {% for column in columns %}
+                                <td class="carbon-table-cell {% if row.is_total or row.is_subtotal %}carbon-text-bold{% endif %} {% if column.align == 'right' %}carbon-text-right{% elif column.align == 'center' %}carbon-text-center{% endif %}">
+                                    {{ row[column.key] }}
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                            
+                            {# Calculate and show total row if show_total is true for flat data #}
+                            {% if show_total and not data[0].is_total %}
+                            <tr class="carbon-grand-total-row">
+                                {% for column in columns %}
+                                    {% if loop.first %}
+                                        <td class="carbon-table-cell carbon-text-bold">Total</td>
+                                    {% else %}
+                                        {% if column.type == 'number' %}
+                                            <td class="carbon-table-cell carbon-text-bold carbon-text-right">
+                                                {% set total_value = namespace(value=0) %}
+                                                {% for row in data %}
+                                                    {% set row_value = row[column.key]|replace("GMD ", "")|replace(",", "")|float %}
+                                                    {% set total_value.value = total_value.value + row_value %}
+                                                {% endfor %}
+                                                GMD {{ "%.2f"|format(total_value.value)|replace(".", ",")|replace(",", ".")|replace(".", ",", 1) }}
+                                            </td>
+                                        {% else %}
+                                            <td class="carbon-table-cell"></td>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                            {% endif %}
+                        {% else %}
+                            <tr class="carbon-empty-state">
+                                <td colspan="{{ columns|length }}" class="carbon-empty-message">
+                                    <div class="carbon-empty-content">
+                                        <i class="fas fa-chart-bar"></i>
+                                        <h4>No data to display</h4>
+                                        <p>Try adjusting your filters or check back later.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Clean Minimal Theme - Report Table Component */
+.carbon-report-container {
+    margin-bottom: 2rem;
+}
+
+.carbon-report-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.carbon-table-card {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.carbon-table-wrapper {
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+.carbon-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: #495057;
+}
+
+/* Table Headers */
+.carbon-table-header {
+    background: #f8f9fa;
+    color: #495057;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 1rem 1.25rem;
+    border-bottom: 2px solid #e0e0e0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    white-space: nowrap;
+    text-align: left;
+}
+
+/* Table Cells */
+.carbon-table-cell {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #f4f4f4;
+    vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Data Rows */
+.carbon-data-row {
+    transition: background-color 0.2s ease;
+}
+
+.carbon-data-row:hover {
+    background-color: #f8f9fa;
+}
+
+/* Section Headers */
+.carbon-section-header {
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.carbon-section-header .carbon-table-cell {
+    color: #495057;
+    font-weight: 700;
+    font-size: 0.875rem;
+    padding: 1.25rem 1.25rem;
+    border-bottom: none;
+}
+
+/* Subtotal Rows */
+.carbon-subtotal-row {
+    background: #f8f9fa;
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.carbon-subtotal-row .carbon-table-cell {
+    color: #495057;
+    font-weight: 600;
+    padding: 1.125rem 1.25rem;
+}
+
+/* Grand Total Row */
+.carbon-grand-total-row {
+    background: #f8f9fa;
+    border-top: 2px solid #dee2e6;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.carbon-grand-total-row .carbon-table-cell {
+    color: #495057;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    padding: 1.25rem 1.25rem;
+}
+
+/* Text Alignment */
+.carbon-text-right {
+    text-align: right;
+}
+
+.carbon-text-center {
+    text-align: center;
+}
+
+.carbon-text-bold {
+    font-weight: 700;
+}
+
+/* Empty State */
+.carbon-empty-state {
+    background: #ffffff;
+}
+
+.carbon-empty-message {
+    padding: 3rem 1.25rem;
+    text-align: center;
+}
+
+.carbon-empty-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.carbon-empty-content i {
+    font-size: 3rem;
+    color: #c1c7cd;
+}
+
+.carbon-empty-content h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #495057;
+    margin: 0;
+}
+
+.carbon-empty-content p {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin: 0;
+}
+
+/* Clean Button Styles */
+.carbon-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    line-height: 1;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.carbon-btn-secondary {
+    background: #ffffff;
+    color: #007bff;
+    border: 1px solid #007bff;
+}
+
+.carbon-btn-secondary:hover {
+    background: #f8f9fa;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.carbon-btn i {
+    font-size: 0.875rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .carbon-table-cell {
+        padding: 0.75rem 1rem;
+        font-size: 0.8125rem;
+    }
+    
+    .carbon-table-header {
+        padding: 0.75rem 1rem;
+        font-size: 0.6875rem;
+    }
+    
+    .carbon-report-actions {
+        justify-content: stretch;
+    }
+    
+    .carbon-btn {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+/* Scrollbar Styling */
+.carbon-table-wrapper::-webkit-scrollbar {
+    height: 8px;
+}
+
+.carbon-table-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.carbon-table-wrapper::-webkit-scrollbar-thumb {
+    background: #c1c7cd;
+    border-radius: 4px;
+}
+
+.carbon-table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #8d8d8d;
+}
+</style>
+
+<script>
+// Excel export functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Excel export functionality
+    document.querySelectorAll('.export-excel-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const tableId = this.getAttribute('data-table-id');
+            const filename = this.getAttribute('data-filename') || 'report';
+            exportTableToExcel(tableId, filename);
+        });
+    });
+    
+    function exportTableToExcel(tableID, filename = 'report') {
+        const table = document.getElementById(tableID);
+        if (!table) {
+            console.error('Table not found:', tableID);
+            return;
+        }
+        
+        try {
+            // Check if XLSX is available
+            if (typeof XLSX === 'undefined') {
+                console.error('XLSX library not loaded');
+                alert('Excel export library not loaded. Please refresh the page and try again.');
+                return;
+            }
+            
+            // Create a workbook and worksheet
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.table_to_sheet(table);
+            
+            // Add the worksheet to the workbook
+            XLSX.utils.book_append_sheet(wb, ws, 'Report');
+            
+            // Generate the file
+            XLSX.writeFile(wb, `${filename}.xlsx`);
+            
+            console.log('Excel file exported successfully:', filename);
+        } catch (error) {
+            console.error('Error exporting to Excel:', error);
+            alert('Error exporting to Excel. Please try again.');
+        }
+    }
+    
+    // Apply frozen columns
+    document.querySelectorAll('.carbon-table').forEach(function(table) {
+        const freezeColumns = parseInt(table.getAttribute('data-freeze-columns') || 0);
+        
+        if (freezeColumns > 0) {
+            // Make freeze columns sticky
+            for (let i = 0; i < freezeColumns; i++) {
+                let leftPosition = 0;
+                
+                // Calculate left position for each frozen column
+                if (i > 0) {
+                    for (let j = 0; j < i; j++) {
+                        const colWidth = table.querySelector(`col:nth-child(${j+1})`).getAttribute('width');
+                        if (colWidth) {
+                            leftPosition += parseInt(colWidth);
+                        } else {
+                            leftPosition += 120; // Default width
+                        }
+                    }
+                }
+                
+                const cells = table.querySelectorAll(`th:nth-child(${i+1}), td:nth-child(${i+1})`);
+                cells.forEach(function(cell) {
+                    cell.style.position = 'sticky';
+                    cell.style.left = `${leftPosition}px`;
+                    cell.style.backgroundColor = i === 0 ? 'white' : '#fafafa';
+                    cell.style.zIndex = 5 - i;
+                });
+                
+                // Add shadow to indicate scrolling for the last frozen column
+                if (i === freezeColumns - 1) {
+                    const tds = table.querySelectorAll(`td:nth-child(${i+1})`);
+                    tds.forEach(function(td) {
+                        td.style.borderRight = '1px solid #e0e0e0';
+                        const shadow = document.createElement('div');
+                        shadow.className = 'carbon-column-shadow';
+                        shadow.style.cssText = `
+                            position: absolute;
+                            top: 0;
+                            right: 0;
+                            bottom: 0;
+                            width: 4px;
+                            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+                            pointer-events: none;
+                        `;
+                        td.appendChild(shadow);
+                    });
+                }
+            }
+        }
+    });
+});
+</script>
+
+<!-- Include the SheetJS library for Excel export -->
+<script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>

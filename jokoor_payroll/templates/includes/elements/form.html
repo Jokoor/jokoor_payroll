@@ -1,0 +1,488 @@
+{# 
+  Reusable Form Component
+  Usage: 
+  1. Set form parameters
+  {% set form_id = "uniqueFormId" %}
+  {% set form_action = "/api/endpoint" %}
+  {% set form_method = "POST" %}  (optional)
+  {% set form_editable = true %}  (optional, default: true)
+  {% set form_is_new = false %}  (optional, default: false)
+  {% set form_locked = false %}  (optional, default: false) - When true, form cannot be edited at all
+  {% set form_initial_state = 'view' %}  (optional, default: 'view', can be 'view' or 'edit')
+  {% set show_submit_button = true %}  (optional, default: true) - When false, the submit button is hidden
+  {% set submit_button_text = "Save Changes" %}  (optional, default: "Save Changes")
+  {% set submit_button_position = "right" %}  (optional, default: "right", can be "left", "right", "center")
+  {% set form_sections = [
+    {
+      "title": "Section Title",
+      "icon": "fa-info-circle",
+      "description": "Section description",
+      "width": 12,  (optional, default: 12)
+      "fields": [
+        {
+          "type": "text",
+          "name": "field_name",
+          "label": "Field Label",
+          "required": true,
+          "placeholder": "Placeholder text",
+          "width": 6,
+          ...other field properties
+        }
+      ]
+    }
+  ] %}
+
+  2. Include the form template
+  {% include "jokoor_payroll/templates/includes/elements/form.html" %}
+#}
+
+<div class="form-component {% if form_locked|default(false) %}form-locked{% endif %}">
+    <form id="{{ form_id }}" 
+          action="{{ form_action }}" 
+          method="{{ form_method|default('POST') }}" 
+          {% if form_class %}class="{{ form_class }} {% if not form_editable|default(true) %}not-editable{% endif %}"{% else %}class="{% if not form_editable|default(true) %}not-editable{% endif %}"{% endif %}
+          {% if form_validate %}class="needs-validation {% if not form_editable|default(true) %}not-editable{% endif %}" novalidate{% endif %}>
+        
+        {# Show status indicator for locked forms #}
+        {% if form_locked|default(false) %}
+        <div class="lock-indicator">
+            <i class="fas fa-lock me-2"></i> This form is locked and cannot be edited
+        </div>
+        {% endif %}
+        
+        {# Show controls only if the form is editable and not locked #}
+        {% if not form_locked|default(false) %}
+        <div class="form-actions">
+            {# Always show save button for new forms or when in edit mode #}
+            {% if form_is_new|default(false) or form_initial_state|default('view') == 'edit' %}
+            <button type="button" class="btn btn-outline-primary save-changes-btn">
+                <i class="fas fa-save me-2"></i> Save Changes
+            </button>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <div class="row section-row">
+            {% for section in form_sections %}
+            <div class="col-md-{{ section.width|default(12) }} section-col mb-4">
+                <div class="card shadow-sm h-100 {% if form_locked|default(false) %}card-locked{% endif %}">
+                    <div class="card-body p-4">
+                        <div class="section-header">
+                            <div class="section-icon">
+                                <i class="fas {{ section.icon|default('fa-file-alt') }} fa-sm"></i>
+                            </div>
+                            <h5 class="section-title">{{ section.title }}</h5>
+                            {% if section.description %}
+                            <div class="section-description">{{ section.description }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            {% if section.has_logo_upload %}
+                            <div class="col-lg-3 mb-4">
+                                <div class="logo-upload-container">
+                                    <div class="upload-box">
+                                        <div class="upload-icon">
+                                            <i class="fas {{ section.logo_icon|default('fa-building') }} fa-4x"></i>
+                                        </div>
+                                        <p class="upload-text">{{ section.logo_text|default('Upload your logo') }}</p>
+                                    </div>
+                                    <div class="d-grid">
+                                        <button type="button" class="btn btn-sm btn-outline-primary change-logo-btn" {% if not form_editable|default(true) or form_locked|default(false) %}disabled{% endif %}>Change Logo</button>
+                                    </div>
+                                    <p class="upload-help-text mt-2">{{ section.logo_help_text|default('Recommended size: 200x200px') }}</p>
+                                    <input type="file" style="display: none;">
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-9">
+                                <div class="row">
+                            {% endif %}
+                            
+                            {% for field in section.fields %}
+                                {% set field_type = field.type %}
+                                {% set field_name = field.name %}
+                                {% set field_label = field.label %}
+                                {% set field_required = field.required|default(false) %}
+                                {% set field_width = field.width|default(12) %}
+                                {% set field_placeholder = field.placeholder|default('') %}
+                                {% set field_value = field.value|default('') %}
+                                {% set field_help = field.help|default('') %}
+                                {% set field_icon = field.icon|default('') %}
+                                {% set field_disabled = form_locked|default(false) or (not form_editable|default(true) and not form_is_new|default(false)) or field.disabled|default(false) %}
+                                {% set field_readonly = form_locked|default(false) or (not form_editable|default(true) and not form_is_new|default(false)) or field.readonly|default(false) %}
+                                {% set field_options = field.options|default([]) %}
+                                
+                                {% include "jokoor_payroll/templates/includes/elements/form_field.html" %}
+                            {% endfor %}
+                            
+                            {% if section.has_logo_upload %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if form_editable|default(true) and form_buttons and not form_locked|default(false) %}
+        <div class="form-actions mt-4">
+            {{ form_buttons }}
+        </div>
+        {% endif %}
+        
+        {% if show_submit_button|default(true) %}
+        <div class="form-actions mt-4 text-{{ submit_button_position|default('right') }}">
+            {% set button_id = form_id ~ "-submit-button" %}
+            {% set button_text = submit_button_text|default('Save Changes') %}
+            {% set button_icon = "fa-save" %}
+            {% set button_type = "primary" %}
+            {% set button_class = "submit-form-button" %}
+            {% set button_type_attr = "submit" %}
+            {% include "jokoor_payroll/templates/includes/elements/button.html" %}
+        </div>
+        {% endif %}
+        
+        {# Store initial state in a hidden input element #}
+        <input type="hidden" id="{{ form_id }}-initial-state" value="{{ form_initial_state|default('view') }}">
+    </form>
+</div>
+
+<style>
+    /* Form Component Styles */
+    .form-component {
+        position: relative;
+        margin: 0 auto;
+        max-width: 100%;
+    }
+    
+    .form-component .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+    }
+    
+    /* Lock indicator styling */
+    .form-component .lock-indicator {
+        position: absolute;
+        top: -60px;
+        right: 0;
+        display: flex;
+        align-items: center;
+        padding: 0.6rem 1rem;
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        color: #6c757d;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    
+    .form-component .lock-indicator i {
+        color: #6c757d;
+    }
+    
+    /* Locked form styling */
+    .form-locked .card-locked {
+        background-color: #f8f9fa;
+        border-left: 3px solid #6c757d;
+    }
+    
+    .form-locked .form-control,
+    .form-locked .form-select {
+        background-color: #f8f9fa !important;
+        border-color: #ced4da !important;
+        pointer-events: none !important;
+    }
+    
+    /* Read-only mode styling (when not editable) */
+    .form-component .form-label {
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-component .form-control,
+    .form-component .form-select {
+        border-radius: 8px;
+        padding: 0.6rem 0.75rem;
+        border: 1.5px solid #E5E7EB;
+        font-size: 0.95rem;
+        min-height: 46px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+        transition: all 0.2s ease;
+    }
+    
+    .form-component .form-control:focus,
+    .form-component .form-select:focus {
+        border-color: #4F46E5;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    
+    .form-component .form-control::placeholder {
+        color: #9CA3AF;
+        font-size: 0.9rem;
+    }
+    
+    .form-component .form-control.has-icon,
+    .form-component .form-select.has-icon {
+        padding-right: 2.5rem;
+    }
+    
+    .form-component .input-group-text {
+        background-color: #F9FAFB;
+        border: 1.5px solid #E5E7EB;
+        border-left: none;
+        border-radius: 0 8px 8px 0;
+        color: #6B7280;
+    }
+    
+    .form-component .save-changes-btn {
+        padding: 0.5rem 1.25rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        border-radius: 6px;
+        color: #4F46E5;
+        border-color: #4F46E5;
+        background-color: white;
+        transition: all 0.2s ease;
+    }
+    
+    .form-component .save-changes-btn:hover {
+        background-color: #4F46E5;
+        color: white;
+    }
+    
+    .form-component .section-row {
+        margin-right: -0.75rem;
+        margin-left: -0.75rem;
+    }
+    
+    .form-component .section-col {
+        padding-right: 0.75rem;
+        padding-left: 0.75rem;
+    }
+    
+    .form-component .section-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-component .section-icon {
+        height: 28px;
+        width: 28px;
+        background-color: rgba(79, 70, 229, 0.1);
+        color: #4F46E5;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        box-shadow: 0 2px 4px rgba(79, 70, 229, 0.1);
+    }
+    
+    .form-component .section-title {
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 0;
+    }
+    
+    .form-component .section-description {
+        color: #6B7280;
+        font-size: 0.875rem;
+        margin-left: auto;
+    }
+    
+    .form-component .card {
+        border-radius: 12px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.07);
+        overflow: hidden;
+        border: 1px solid rgba(229, 231, 235, 0.8);
+        transition: all 0.3s ease;
+    }
+    
+    .form-component .card:hover {
+        box-shadow: 0 15px 30px -8px rgba(0, 0, 0, 0.12), 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+    }
+    
+    .form-component .card-body {
+        padding: 1.75rem;
+    }
+    
+    .form-component .logo-upload-container {
+        width: 200px;
+        margin-bottom: 1rem;
+    }
+    
+    .form-component .upload-box {
+        border: 2px dashed #E5E7EB;
+        border-radius: 10px;
+        padding: 1.5rem 1rem;
+        text-align: center;
+        margin-bottom: 0.75rem;
+        transition: all 0.2s ease;
+    }
+    
+    .form-component .upload-box:hover {
+        border-color: #4F46E5;
+        background-color: rgba(79, 70, 229, 0.02);
+    }
+    
+    .form-component .upload-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto;
+        color: #9CA3AF;
+        opacity: 0.5;
+    }
+    
+    .form-component .upload-text {
+        font-size: 0.8rem;
+        color: #6B7280;
+        margin-top: 0.75rem;
+    }
+    
+    .form-component .upload-help-text {
+        font-size: 0.75rem;
+        color: #6B7280;
+    }
+    
+    .form-component .change-logo-btn {
+        font-size: 0.875rem;
+        padding: 0.5rem 0;
+        border-radius: 6px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const formComponent = document.querySelector('.form-component');
+        if (!formComponent) return;
+        
+        // Check if form is locked, if so, no need to set up event listeners
+        if (formComponent.classList.contains('form-locked')) {
+            return;
+        }
+        
+        // Initialize form validation if needed
+        const form = formComponent.querySelector('form');
+        if (form) {
+            // Add editing-enabled class based on initial state
+            const formId = form.id;
+            const formEl = document.getElementById(formId);
+            
+            // Set initial state - always editable
+            updateFormState(true);
+            
+            // Function to toggle edit mode
+            function updateFormState(isEditable) {
+                // Toggle all form inputs
+                const inputs = formEl.querySelectorAll('input, select, textarea, button:not(.save-changes-btn)');
+                inputs.forEach(input => {
+                    input.disabled = false; // Always enabled
+                    if (input.tagName !== 'BUTTON') {
+                        input.readOnly = false; // Always editable
+                    }
+                });
+                
+                // Always show editing enabled
+                formEl.classList.add('editing-enabled');
+                
+                // Update card styling for edit mode
+                const cards = formEl.querySelectorAll('.card');
+                cards.forEach(card => {
+                    card.classList.remove('read-only-mode');
+                });
+                
+                // Always show submit button
+                const submitBtn = document.getElementById(`${formId}-submit-button`);
+                if (submitBtn) {
+                    submitBtn.style.display = 'inline-flex';
+                }
+            }
+            
+            if (form.classList.contains('needs-validation')) {
+                form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            }
+        }
+        
+        // Handle logo change button and upload boxes
+        const logoButtons = formComponent.querySelectorAll('.change-logo-btn, .upload-box');
+        logoButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // In a real implementation, this would trigger a file upload dialog
+                const event = new CustomEvent('logo:change', {
+                    bubbles: true,
+                    detail: { button: this }
+                });
+                this.dispatchEvent(event);
+                
+                // If you have a file input, you could automatically click it
+                const fileInput = this.closest('.logo-upload-container')?.querySelector('input[type="file"]');
+                if (fileInput) {
+                    fileInput.click();
+                }
+            });
+        });
+        
+        // Handle file input changes if any
+        const fileInputs = formComponent.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(input => {
+            input.addEventListener('change', function(e) {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    const uploadBox = this.closest('.logo-upload-container')?.querySelector('.upload-box');
+                    
+                    reader.onload = function(e) {
+                        if (uploadBox) {
+                            // Create image and set as background or replace content
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.style.width = '100%';
+                            img.style.height = '100%';
+                            img.style.objectFit = 'contain';
+                            
+                            // Clear and append the new image
+                            uploadBox.innerHTML = '';
+                            uploadBox.appendChild(img);
+                        }
+                        
+                        // Dispatch custom event for form file change
+                        const changeEvent = new CustomEvent('form:filechange', {
+                            bubbles: true,
+                            detail: { 
+                                file: this.files[0],
+                                fileData: e.target.result,
+                                input: this
+                            }
+                        });
+                        document.dispatchEvent(changeEvent);
+                    };
+                    
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        });
+        
+        // Handle save button click
+        const saveBtn = formComponent.querySelector('.save-changes-btn');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', function() {
+                // In a real implementation, this would submit the form
+                if (form) {
+                    form.requestSubmit();
+                }
+            });
+        }
+    });
+</script>

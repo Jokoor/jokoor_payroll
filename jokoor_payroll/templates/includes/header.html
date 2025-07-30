@@ -1,0 +1,97 @@
+<header class="jk-header">
+    <div class="jk-breadcrumb">
+        {% if form_title %}
+        <h3>{{ form_title }}</h3>
+        {% endif %}
+    </div>
+    <div class="jk-header-actions">
+        <div class="jk-user-menu">
+            <button class="jk-user-button" id="userMenuButton">
+                <div class="jk-user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span>{{ frappe.session.user }}</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="jk-user-dropdown" id="userDropdown">
+                <a href="/app/user-profile" class="jk-dropdown-item">
+                    <i class="fas fa-user-cog"></i>
+                    My Profile
+                </a>
+                <div class="jk-dropdown-divider"></div>
+                <a href="#" class="jk-dropdown-item" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<script>
+    // Preloader Handler
+   
+
+    // User dropdown toggle
+    const userMenuButton = document.getElementById('userMenuButton');
+    const userDropdown = document.getElementById('userDropdown');
+
+    userMenuButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userDropdown.classList.toggle('show');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!userDropdown.contains(e.target)) {
+            userDropdown.classList.remove('show');
+        }
+    });
+
+    // Logout functionality
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        fetch('/api/method/logout', {
+            method: 'GET',
+            credentials: 'same-origin',
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(() => {
+                window.location.href = '/login';
+            })
+            .catch(error => {
+                console.error('Logout error:', error);
+                window.location.href = '/login';
+            });
+    });
+
+    // Session keepalive
+    const KEEPALIVE_INTERVAL = 10 * 60 * 1000; // 10 minutes
+
+    function pingServer() {
+        fetch('/api/method/frappe.auth.ping', {
+            method: 'GET',
+            credentials: 'same-origin',
+            headers: {
+                'Accept': 'application/json',
+                'X-Frappe-CSRF-Token': frappe.csrf_token || ''
+            }
+        }).catch(console.error);
+    }
+
+    setInterval(pingServer, KEEPALIVE_INTERVAL);
+
+    let idleTimer;
+    function resetIdleTimer() {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(pingServer, 2 * 60 * 1000);
+    }
+
+    ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(
+        event => document.addEventListener(event, resetIdleTimer, true)
+    );
+
+    resetIdleTimer();
+</script>

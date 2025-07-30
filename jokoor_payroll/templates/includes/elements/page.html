@@ -1,0 +1,285 @@
+{# 
+  Reusable Page Component with Sidebar
+  Usage:
+  1. Set the page parameters
+  {% set page_title = "Page Title" %}
+  {% set breadcrumb_items = [{"label": "Home", "url": "/"}, {"label": "Current", "url": "#"}] %}
+  {% set has_search = true %}  # Optional
+  {% set has_actions = false %}  # Optional, default: false - Set to true to show the actions dropdown
+  {% set action_items = [] %}  # Optional - The items to show in the actions dropdown
+  {% set is_editable = false %}  # Optional, default: false - Set to true to show the edit button
+  {% set target_form_id = "yourFormId" %}  # Optional - The ID of the form to toggle edit mode
+  {% set page_entity = "Entity" %}  # Optional - The entity name for the edit button
+  {% set content = your_page_content %}
+  
+  2. Include the template
+  {% include "jokoor_payroll/templates/includes/elements/page.html" %}
+  
+  Parameters:
+  - page_title: Main page title (required)
+  - subtitle: Optional subtitle for the page
+  - breadcrumb_items: Array of breadcrumb objects {label, url}
+  - has_search: If true, displays a search box
+  - has_actions: If true, displays the actions dropdown (default: false)
+  - action_items: The items to show in the actions dropdown
+  - is_editable: If true, displays an edit button (default: false)
+  - target_form_id: The ID of the form to toggle edit mode
+  - page_entity: The entity name for the edit button
+  - content: Main content of the page
+#}
+
+{% extends "jokoor_payroll/templates/pages/base.html" %}
+
+{# Default values for optional parameters #}
+{% if subtitle is not defined %}{% set subtitle = '' %}{% endif %}
+{% if has_search is not defined %}{% set has_search = false %}{% endif %}
+{% if has_actions is not defined %}{% set has_actions = false %}{% endif %}
+{% if is_editable is not defined %}{% set is_editable = false %}{% endif %}
+{% if target_form_id is not defined %}{% set target_form_id = '' %}{% endif %}
+{% if breadcrumb_items is not defined %}{% set breadcrumb_items = [] %}{% endif %}
+{% if page_entity is not defined %}{% set page_entity = '' %}{% endif %}
+{% if action_items is not defined %}{% set action_items = [] %}{% endif %}
+
+{% block content %}
+<div class="dashboard-page-wrapper">
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header mb-4">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                <div class="page-title-wrapper">
+                    {% if breadcrumb_items and breadcrumb_items|length > 0 %}
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-2">
+                            {% for item in breadcrumb_items %}
+                            <li class="breadcrumb-item {% if loop.last %}active{% endif %}">
+                                {% if not loop.last %}<a href="{{ item.url }}">{{ item.label }}</a>{% else %}{{ item.label }}{% endif %}
+                            </li>
+                            {% endfor %}
+                        </ol>
+                    </nav>
+                    {% endif %}
+                    
+                    <h1 class="page-title">{{ page_title }}</h1>
+                    {% if subtitle %}
+                    <p class="page-subtitle text-muted mb-0">{{ subtitle }}</p>
+                    {% endif %}
+                </div>
+                
+                <div class="d-flex flex-column flex-md-row mt-3 mt-md-0">
+                    {% if has_search %}
+                    <div class="search-wrapper me-md-3 mb-3 mb-md-0">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                            <input type="text" class="form-control border-start-0 ps-0" placeholder="Search...">
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="page-buttons-wrapper d-flex align-items-center gap-2">
+                        {% if is_editable %}
+                        {% set button_id = "page-edit-button" %}
+                        {% set button_text = "Edit " ~ page_entity %}
+                        {% set button_icon = "fa-edit" %}
+                        {% set button_type = "primary" %}
+                        {% include "jokoor_payroll/templates/includes/elements/button.html" %}
+                        {% endif %}
+                        
+                        {% if has_actions %}
+                        {% set button_id = "actionDropdown" %}
+                        {% set button_text = "Actions" %}
+                        {% set button_icon = "fa-ellipsis-h" %}
+                        {% set button_type = "light" %}
+                        {% set is_dropdown = true %}
+                        {% set dropdown_items = action_items|default([]) %}
+                        {% include "jokoor_payroll/templates/includes/elements/button.html" %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Page Content -->
+        <div class="page-content">
+            {{ content }}
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Dashboard Page Styles */
+    .dashboard-page-wrapper {
+        display: flex;
+        width: 100%;
+        min-height: 100vh;
+    }
+    
+    /* Main Content Area */
+    .main-content {
+        margin-left: 220px !important;
+        padding: 1.5rem 2rem !important;
+        width: calc(100% - 220px) !important;
+        min-height: 100vh;
+    }
+    
+    /* Page Styles */
+    .page-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 0.25rem;
+    }
+    
+    .page-subtitle {
+        font-size: 0.925rem;
+        color: #6b7280;
+    }
+    
+    .breadcrumb {
+        padding: 0;
+        margin-bottom: 0.75rem;
+        font-size: 0.825rem;
+    }
+    
+    .breadcrumb-item a {
+        color: #4f46e5;
+        text-decoration: none;
+    }
+    
+    .breadcrumb-item.active {
+        color: #6b7280;
+    }
+    
+    .search-wrapper .input-group {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .search-wrapper .form-control {
+        height: 42px;
+    }
+    
+    .search-wrapper .input-group-text {
+        padding: 0 15px;
+    }
+    
+    .actions-wrapper {
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 991.98px) {
+        .main-content {
+            margin-left: 0 !important;
+            width: 100% !important;
+            padding: 1.25rem 1rem !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block script %}
+<script>
+    // Execute when the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add custom class to body
+        document.body.classList.add('dashboard-page');
+        
+        // Initialize tooltips if Bootstrap is available
+        if (typeof bootstrap !== 'undefined') {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        }
+        
+        // Active menu item in the sidebar
+        const currentPath = window.location.pathname;
+        const sidebarItems = document.querySelectorAll('.sidebar-item');
+        
+        sidebarItems.forEach(item => {
+            const href = item.getAttribute('href') || '';
+            // Check if the current path includes the href and it's not just the root path
+            if (href && href !== '/' && currentPath.includes(href)) {
+                item.classList.add('active');
+                
+                // If it's inside a submenu, expand the parent
+                const parentMenu = item.closest('.sidebar-submenu');
+                if (parentMenu) {
+                    const parentToggle = parentMenu.previousElementSibling;
+                    if (parentToggle && parentToggle.classList.contains('sidebar-dropdown-toggle')) {
+                        parentToggle.classList.add('active');
+                        parentMenu.style.display = 'block';
+                    }
+                }
+            }
+        });
+        
+        // Initialize search functionality if search is enabled
+        const searchInput = document.querySelector('.search-wrapper input');
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                // You can implement search functionality here or dispatch a custom event
+                const event = new CustomEvent('page:search', {
+                    bubbles: true,
+                    detail: { searchTerm: e.target.value }
+                });
+                document.dispatchEvent(event);
+            });
+        }
+        
+        // Toggle edit mode if is_editable is true
+        const editButton = document.getElementById('page-edit-button');
+        if (editButton) {
+            let editMode = false;
+            const targetFormId = '{{ target_form_id }}';
+            
+            editButton.addEventListener('click', function() {
+                // Toggle edit mode
+                editMode = !editMode;
+                
+                // Update button text and style
+                if (editMode) {
+                    const buttonIcon = editButton.querySelector('i');
+                    if (buttonIcon) {
+                        buttonIcon.classList.remove('fa-edit');
+                        buttonIcon.classList.add('fa-eye');
+                    }
+                    
+                    // Change button text to "View"
+                    const buttonText = editButton.textContent.replace('Edit', 'View').trim();
+                    editButton.innerHTML = `<i class="fas fa-eye me-2"></i>${buttonText}`;
+                    
+                    // Update button style
+                    editButton.classList.remove('btn-primary');
+                    editButton.classList.add('btn-outline-primary');
+                } else {
+                    const buttonIcon = editButton.querySelector('i');
+                    if (buttonIcon) {
+                        buttonIcon.classList.remove('fa-eye');
+                        buttonIcon.classList.add('fa-edit');
+                    }
+                    
+                    // Change button text back to "Edit"
+                    const entityText = '{{ page_entity }}';
+                    editButton.innerHTML = `<i class="fas fa-edit me-2"></i>Edit ${entityText}`;
+                    
+                    // Update button style
+                    editButton.classList.remove('btn-outline-primary');
+                    editButton.classList.add('btn-primary');
+                }
+                
+                // Dispatch event to toggle form edit mode
+                document.dispatchEvent(new CustomEvent('form:toggleedit', {
+                    detail: {
+                        targetFormId: targetFormId,
+                        editMode: editMode
+                    }
+                }));
+            });
+        }
+    });
+</script>
+{% endblock %}

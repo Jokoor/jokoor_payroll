@@ -1,0 +1,1260 @@
+{% extends "jokoor_payroll/templates/pages/base.html" %}
+
+{% block content %}
+<div class="jk-page-header">
+    <div class="jk-header-content">
+        <h2 class="jk-page-title">{{ title }}</h2>
+        {% if subtitle %}
+        <p class="jk-page-subtitle">{{ subtitle }}</p>
+        {% endif %}
+    </div>
+    <div class="jk-header-actions">
+        <!-- Search Bar -->
+        <div class="jk-search-wrapper">
+            <i class="fas fa-search jk-search-icon"></i>
+            <input type="text" class="jk-search-input" placeholder="Search">
+        </div>
+        
+        <!-- View Toggles -->
+        
+        
+        <!-- Filter Button -->
+        <button class="jk-btn jk-btn-secondary jk-filter-btn" onclick="openFilterModal()">
+            <i class="fas fa-filter"></i>
+            <span class="jk-filter-text">Filter</span>
+        </button>
+        
+        <!-- Filter Modal -->
+        <div class="jk-modal-overlay" id="filterModal">
+            <div class="jk-modal">
+                <div class="jk-modal-header">
+                    <h3 class="jk-modal-title">Filter Options</h3>
+                    <button class="jk-modal-close" onclick="closeFilterModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="jk-modal-body">
+                    <form id="filterForm" class="jk-filter-form">
+                        <div class="jk-form-group">
+                            <label class="jk-form-label">Status</label>
+                            <select class="jk-form-select" name="status">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                                <option value="draft">Draft</option>
+                                <option value="submitted">Submitted</option>
+                            </select>
+                        </div>
+                        
+                        <div class="jk-form-group">
+                            <label class="jk-form-label">Date Range</label>
+                            <div class="jk-date-range">
+                                <input type="date" class="jk-form-input" name="date_from" placeholder="From">
+                                <span class="jk-date-separator">to</span>
+                                <input type="date" class="jk-form-input" name="date_to" placeholder="To">
+                            </div>
+                        </div>
+                        
+                        <div class="jk-form-group">
+                            <label class="jk-form-label">Sort By</label>
+                            <select class="jk-form-select" name="sort_by">
+                                <option value="name">Name</option>
+                                <option value="created">Created Date</option>
+                                <option value="modified">Modified Date</option>
+                                <option value="status">Status</option>
+                            </select>
+                        </div>
+                        
+                        <div class="jk-form-group">
+                            <label class="jk-form-label">Sort Order</label>
+                            <select class="jk-form-select" name="sort_order">
+                                <option value="asc">Ascending</option>
+                                <option value="desc">Descending</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="jk-modal-footer">
+                    <button class="jk-btn jk-btn-secondary" onclick="clearFilters()">
+                        Clear All
+                    </button>
+                    <button class="jk-btn jk-btn-primary" onclick="applyFilters()">
+                        Apply Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Actions Button -->
+        <div class="jk-actions-dropdown">
+            <button class="jk-btn jk-btn-secondary jk-actions-btn" onclick="toggleActionsDropdown()">
+                Actions
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="jk-dropdown-menu" id="actionsDropdown">
+                <button class="jk-dropdown-item" onclick="handleImport()">
+                    <i class="fas fa-upload"></i>
+                    Import
+                </button>
+                <button class="jk-dropdown-item" onclick="handleExport()">
+                    <i class="fas fa-download"></i>
+                    Export
+                </button>
+                <div class="jk-dropdown-divider"></div>
+                <button class="jk-dropdown-item jk-dropdown-danger" onclick="handleDelete()">
+                    <i class="fas fa-trash"></i>
+                    Delete
+                </button>
+            </div>
+        </div>
+        
+        <!-- Add New Button -->
+        <button class="jk-btn jk-btn-primary" onclick="window.location.href='{{ add_new_url }}'">
+            <i class="fas fa-plus"></i>
+            Add New
+        </button>
+    </div>
+</div>
+
+<div class="jk-list-container">
+    <div class="jk-card">
+        <div class="jk-table-container">
+            <table class="jk-table" id="dataTable">
+                <thead>
+                    <tr>
+                        <th class="jk-select-column">
+                            <div class="jk-checkbox-wrapper">
+                                <input type="checkbox" id="selectAll" onchange="window.toggleSelectAll()" class="jk-checkbox">
+                                <label for="selectAll" class="jk-checkbox-label"></label>
+                            </div>
+                        </th>
+                        {% for column in columns %}
+                        <th class="jk-sortable" data-key="{{ column.key }}" onclick="sortTable('{{ column.key }}')">
+                            <div class="jk-th-content">
+                                <span>{{ column.label }}</span>
+                                <i class="fas fa-sort jk-sort-icon"></i>
+                            </div>
+                        </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    {% for row in data %}
+                    <tr {% if row.url %}data-url="{{ row.url }}" class="jk-clickable-row"{% endif %}>
+                        <td class="jk-select-column" onclick="event.stopPropagation()">
+                            <div class="jk-checkbox-wrapper">
+                                <input type="checkbox" class="jk-checkbox jk-row-select" value="{{ row[primary_key] }}" onchange="window.updateSelectedCount()">
+                                <label class="jk-checkbox-label"></label>
+                            </div>
+                        </td>
+                        {% for column in columns %}
+                        <td>{{ row[column.key] }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if data %}
+        <div class="jk-list-footer">
+            <div class="jk-footer-content">
+                <div class="jk-items-per-page">
+                    <span class="jk-label">Items per page:</span>
+                    <div class="jk-select-wrapper">
+                        <select id="itemsPerPage" class="jk-select" onchange="window.changeItemsPerPage()">
+                            {% if per_page == 20 %}
+                            <option value="20" selected>20</option>
+                            {% else %}
+                            <option value="20">20</option>
+                            {% endif %}
+                            {% if per_page == 100 %}
+                            <option value="100" selected>100</option>
+                            {% else %}
+                            <option value="100">100</option>
+                            {% endif %}
+                            {% if per_page == 1000 %}
+                            <option value="1000" selected>1000</option>
+                            {% else %}
+                            <option value="1000">1000</option>
+                            {% endif %}
+                            {% if per_page == 5000 %}
+                            <option value="5000" selected>5000</option>
+                            {% else %}
+                            <option value="5000">5000</option>
+                            {% endif %}
+                        </select>
+                        <i class="fas fa-chevron-down jk-select-arrow"></i>
+                    </div>
+                    <span class="jk-selected-count">0 selected</span>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="jk-empty-state">
+            <div class="jk-empty-content">
+                <i class="fas fa-database"></i>
+                <h3>No data found</h3>
+                <p>There are no items to display at the moment.</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+/* IBM Design System - List Page */
+.jk-list-container {
+    width: 100%;
+    margin: 0;
+    padding: 0 1.5rem;
+}
+
+/* Page Header Actions */
+.jk-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+/* Search Bar */
+.jk-search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 200px;
+}
+
+.jk-search-icon {
+    position: absolute;
+    left: 0.75rem;
+    color: #9ca3af;
+    font-size: 0.875rem;
+    pointer-events: none;
+}
+
+.jk-search-input {
+    width: 100%;
+    padding: 0.625rem 0.75rem 0.625rem 2.5rem;
+    font-size: 0.875rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #374151;
+    transition: all 0.2s ease;
+}
+
+.jk-search-input::placeholder {
+    color: #9ca3af;
+}
+
+.jk-search-input:focus {
+    outline: none;
+    border-color: #7d5fd2;
+    box-shadow: 0 0 0 2px rgba(125, 95, 210, 0.2);
+}
+
+.jk-search-input:hover {
+    border-color: #9ca3af;
+}
+
+
+/* Card Styling */
+.jk-card {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Table Container */
+.jk-table-container {
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+/* Table Styling */
+.jk-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Table Headers */
+.jk-table th {
+    background: #f8f9fa;
+    color: #374151;
+    font-weight: 600;
+    text-align: left;
+    padding: 1rem 1.25rem;
+    border-bottom: 2px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    white-space: nowrap;
+}
+
+.jk-th-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.jk-sort-icon {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    transition: color 0.2s ease;
+}
+
+.jk-sortable:hover .jk-sort-icon {
+    color: #7d5fd2;
+}
+
+.jk-sortable.asc .jk-sort-icon,
+.jk-sortable.desc .jk-sort-icon {
+    color: #7d5fd2;
+}
+
+.jk-sortable.asc .jk-sort-icon::before {
+    content: "\f0de"; /* fa-sort-up */
+}
+
+.jk-sortable.desc .jk-sort-icon::before {
+    content: "\f0dd"; /* fa-sort-down */
+}
+
+/* Table Cells */
+.jk-table td {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: middle;
+    color: #374151;
+}
+
+.jk-table tbody tr:hover {
+    background: #f9fafb;
+}
+
+.jk-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Clickable Rows */
+.jk-clickable-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.jk-clickable-row:hover {
+    background: #f3f0ff !important;
+}
+
+/* Checkbox Styling */
+.jk-select-column {
+    width: 48px;
+    text-align: center;
+}
+
+.jk-checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.jk-checkbox {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #d1d5db;
+    border-radius: 4px;
+    background: #ffffff;
+    cursor: pointer;
+    appearance: none;
+    transition: all 0.2s ease;
+}
+
+.jk-checkbox:checked {
+    background: #7d5fd2;
+    border-color: #7d5fd2;
+}
+
+.jk-checkbox:checked::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #ffffff;
+    font-size: 0.625rem;
+}
+
+.jk-checkbox:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(125, 95, 210, 0.2);
+}
+
+.jk-checkbox-label {
+    display: none;
+}
+
+/* List Footer */
+.jk-list-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #f0f0f0;
+    background: #fafafa;
+}
+
+.jk-footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.jk-items-per-page {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.jk-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+/* Select Styling */
+.jk-select-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.jk-select {
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #374151;
+    cursor: pointer;
+    appearance: none;
+    min-width: 80px;
+    transition: all 0.2s ease;
+}
+
+.jk-select:focus {
+    outline: none;
+    border-color: #7d5fd2;
+    box-shadow: 0 0 0 2px rgba(125, 95, 210, 0.2);
+}
+
+.jk-select-arrow {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.75rem;
+    color: #6b7280;
+    pointer-events: none;
+}
+
+.jk-selected-count {
+    font-size: 0.875rem;
+    color: #7d5fd2;
+    font-weight: 500;
+}
+
+/* Empty State */
+.jk-empty-state {
+    padding: 3rem 1.5rem;
+    text-align: center;
+}
+
+.jk-empty-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.jk-empty-content i {
+    font-size: 3rem;
+    color: #c1c7cd;
+    opacity: 0.5;
+}
+
+.jk-empty-content h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0;
+}
+
+.jk-empty-content p {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+/* Button Styling - IBM Design System */
+.jk-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    line-height: 1;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+.jk-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.jk-btn:hover::before {
+    left: 100%;
+}
+
+.jk-btn-primary {
+    background: #7d5fd2;
+    color: #ffffff;
+    border-color: #7d5fd2;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+}
+
+.jk-btn-primary:hover {
+    background: #6a4ec3;
+    border-color: #6a4ec3;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(125, 95, 210, 0.25);
+}
+
+.jk-btn-primary:active {
+    background: #5a3db3;
+    border-color: #5a3db3;
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(125, 95, 210, 0.2);
+}
+
+.jk-btn-primary:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(125, 95, 210, 0.3);
+}
+
+.jk-btn-secondary {
+    background: #ffffff;
+    color: #6b7280;
+    border-color: #d1d5db;
+}
+
+.jk-btn-secondary:hover {
+    background: #f9fafb;
+    border-color: #9ca3af;
+    color: #374151;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.jk-btn-secondary:active {
+    background: #f3f4f6;
+    border-color: #6b7280;
+    transform: translateY(0);
+}
+
+.jk-btn-secondary:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.2);
+}
+
+.jk-btn-sm {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+}
+
+.jk-btn i {
+    font-size: 0.875rem;
+}
+
+/* Actions Dropdown */
+.jk-actions-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.jk-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    min-width: 160px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: all 0.2s ease;
+    margin-top: 0.5rem;
+}
+
+.jk-dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.jk-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: none;
+    background: none;
+    color: #374151;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.jk-dropdown-item:hover {
+    background: #f9fafb;
+    color: #7d5fd2;
+}
+
+.jk-dropdown-item i {
+    font-size: 0.875rem;
+    width: 16px;
+    text-align: center;
+}
+
+.jk-dropdown-divider {
+    height: 1px;
+    background: #e5e7eb;
+    margin: 0.5rem 0;
+}
+
+.jk-dropdown-danger {
+    color: #dc3545;
+}
+
+.jk-dropdown-danger:hover {
+    background: #fef2f2;
+    color: #dc3545;
+}
+
+/* Filter Modal */
+.jk-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.jk-modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.jk-modal {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow: hidden;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.jk-modal-overlay.show .jk-modal {
+    transform: scale(1);
+}
+
+.jk-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+.jk-modal-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0;
+}
+
+.jk-modal-close {
+    background: none;
+    border: none;
+    color: #6b7280;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.jk-modal-close:hover {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.jk-modal-body {
+    padding: 1.5rem;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.jk-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+/* Filter Form */
+.jk-filter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.jk-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.jk-form-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.jk-form-select,
+.jk-form-input {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    color: #374151;
+    background: #ffffff;
+    transition: all 0.2s ease;
+}
+
+.jk-form-select:focus,
+.jk-form-input:focus {
+    outline: none;
+    border-color: #7d5fd2;
+    box-shadow: 0 0 0 2px rgba(125, 95, 210, 0.2);
+}
+
+.jk-form-select:hover,
+.jk-form-input:hover {
+    border-color: #9ca3af;
+}
+
+.jk-date-range {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.jk-date-separator {
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.jk-form-input[type="date"] {
+    flex: 1;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .jk-list-container {
+        padding: 0 1rem;
+    }
+    
+    .jk-page-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    
+    .jk-header-content {
+        text-align: center;
+    }
+    
+    .jk-header-actions {
+        flex-direction: row;
+        gap: 0.5rem;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        order: 2;
+    }
+    
+    .jk-search-wrapper {
+        min-width: auto;
+        width: auto;
+        flex: 1;
+        max-width: 200px;
+    }
+    
+    .jk-search-input {
+        width: 100%;
+        padding: 0.625rem 0.75rem 0.625rem 2.25rem;
+        font-size: 0.875rem;
+    }
+    
+    .jk-view-toggles {
+        align-self: center;
+    }
+    
+    .jk-view-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 0.875rem;
+    }
+    
+    .jk-btn {
+        padding: 0.625rem 0.75rem;
+        font-size: 0.875rem;
+        justify-content: center;
+        width: auto;
+        min-width: auto;
+    }
+    
+    .jk-filter-text {
+        display: none;
+    }
+    
+    .jk-filter-btn {
+        padding: 0.625rem;
+        min-width: 36px;
+    }
+    
+    .jk-dropdown-menu {
+        right: auto;
+        left: 0;
+        min-width: 140px;
+    }
+    
+    .jk-modal {
+        width: 95%;
+        margin: 1rem;
+    }
+    
+    .jk-modal-header,
+    .jk-modal-body,
+    .jk-modal-footer {
+        padding: 1rem;
+    }
+    
+    .jk-date-range {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .jk-date-separator {
+        display: none;
+    }
+    
+    .jk-table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .jk-table {
+        min-width: 600px;
+        font-size: 0.875rem;
+    }
+    
+    .jk-table th,
+    .jk-table td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.8125rem;
+        white-space: nowrap;
+    }
+    
+    .jk-select-column {
+        width: 40px;
+    }
+    
+    .jk-checkbox {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .jk-list-footer {
+        padding: 0.875rem 1rem;
+    }
+    
+    .jk-footer-content {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: flex-start;
+    }
+    
+    .jk-items-per-page {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        width: 100%;
+    }
+    
+    .jk-select {
+        min-width: 100px;
+        padding: 0.625rem 2rem 0.625rem 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .jk-list-container {
+        padding: 0 0.75rem;
+    }
+    
+    .jk-page-header {
+        gap: 0.75rem;
+    }
+    
+    .jk-header-actions {
+        gap: 0.375rem;
+        justify-content: space-between;
+    }
+    
+    .jk-search-wrapper {
+        max-width: 150px;
+    }
+    
+    .jk-search-input {
+        padding: 0.5rem 0.75rem 0.5rem 2rem;
+        font-size: 0.8125rem;
+    }
+    
+    .jk-search-icon {
+        left: 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    .jk-view-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.8125rem;
+    }
+    
+    .jk-btn {
+        padding: 0.5rem 0.625rem;
+        font-size: 0.8125rem;
+        border-radius: 6px;
+    }
+    
+    .jk-filter-btn {
+        padding: 0.5rem;
+        min-width: 32px;
+    }
+    
+    .jk-table {
+        min-width: 500px;
+        font-size: 0.8125rem;
+    }
+    
+    .jk-table th,
+    .jk-table td {
+        padding: 0.625rem 0.375rem;
+        font-size: 0.75rem;
+    }
+    
+    .jk-select-column {
+        width: 36px;
+    }
+    
+    .jk-checkbox {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .jk-empty-state {
+        padding: 2rem 1rem;
+    }
+    
+    .jk-empty-content i {
+        font-size: 2.5rem;
+    }
+    
+    .jk-modal {
+        width: 98%;
+        margin: 0.5rem;
+    }
+    
+    .jk-modal-header,
+    .jk-modal-body,
+    .jk-modal-footer {
+        padding: 0.875rem;
+    }
+    
+    .jk-form-select,
+    .jk-form-input {
+        padding: 0.875rem;
+        font-size: 1rem;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    window.currentSort = {
+        key: null,
+        direction: 'asc'
+    };
+
+    // Add click event listeners to rows
+    document.querySelectorAll('.jk-clickable-row').forEach(row => {
+        row.addEventListener('click', function() {
+            const url = this.dataset.url;
+            if (url) {
+                window.location.href = url;
+            }
+        });
+    });
+
+    // View toggle functionality (visual only)
+  
+
+    // Actions dropdown functionality
+    window.toggleActionsDropdown = function() {
+        const dropdown = document.getElementById('actionsDropdown');
+        dropdown.classList.toggle('show');
+    };
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        const dropdown = document.getElementById('actionsDropdown');
+        const actionsBtn = document.querySelector('.jk-actions-btn');
+        
+        if (!actionsBtn.contains(event.target) && !dropdown.contains(event.target)) {
+            dropdown.classList.remove('show');
+        }
+    });
+
+    // Filter Modal functionality
+    window.openFilterModal = function() {
+        document.getElementById('filterModal').classList.add('show');
+    };
+
+    window.closeFilterModal = function() {
+        document.getElementById('filterModal').classList.remove('show');
+    };
+
+    window.applyFilters = function() {
+        const form = document.getElementById('filterForm');
+        const params = new URLSearchParams(window.location.search);
+        
+        // Add filter parameters
+        form.querySelectorAll('select, input[type="date"]').forEach(input => {
+            if (input.name) {
+                params.set(input.name, input.value);
+            }
+        });
+
+        // Add sort parameters
+        if (window.currentSort.key) {
+            params.set('sort_by', window.currentSort.key);
+            params.set('sort_order', window.currentSort.direction);
+        }
+
+        // Update URL without reloading
+        const newUrl = window.location.pathname + '?' + params.toString();
+        window.history.pushState({ path: newUrl }, '', newUrl);
+
+        // Close modal and re-fetch data
+        closeFilterModal();
+        window.location.reload(); // Reload to apply new filters
+    };
+
+    window.clearFilters = function() {
+        const params = new URLSearchParams(window.location.search);
+        params.delete('status');
+        params.delete('date_from');
+        params.delete('date_to');
+        params.delete('sort_by');
+        params.delete('sort_order');
+
+        const newUrl = window.location.pathname + '?' + params.toString();
+        window.history.pushState({ path: newUrl }, '', newUrl);
+        window.location.reload();
+    };
+
+    // Action handlers
+    window.handleImport = function() {
+        console.log('Import functionality - to be implemented');
+        // TODO: Implement import functionality
+        document.getElementById('actionsDropdown').classList.remove('show');
+    };
+
+    window.handleExport = function() {
+        console.log('Export functionality - to be implemented');
+        // TODO: Implement export functionality
+        document.getElementById('actionsDropdown').classList.remove('show');
+    };
+
+    window.handleDelete = function() {
+        const selectedItems = window.getSelectedItems();
+        if (selectedItems.length === 0) {
+            alert('Please select items to delete');
+            return;
+        }
+        
+        if (confirm(`Are you sure you want to delete ${selectedItems.length} selected item(s)?`)) {
+            console.log('Delete functionality - to be implemented for items:', selectedItems);
+            // TODO: Implement delete functionality
+        }
+        document.getElementById('actionsDropdown').classList.remove('show');
+    };
+
+    window.toggleSelectAll = function() {
+        const selectAll = document.getElementById('selectAll');
+        const checkboxes = document.querySelectorAll('.jk-row-select');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAll.checked;
+        });
+        window.updateSelectedCount();
+    };
+
+    window.updateSelectedCount = function() {
+        const selectedCount = document.querySelectorAll('.jk-row-select:checked').length;
+        document.querySelector('.jk-selected-count').textContent = `${selectedCount} selected`;
+        
+        // Update selectAll checkbox state
+        const selectAll = document.getElementById('selectAll');
+        const totalCheckboxes = document.querySelectorAll('.jk-row-select').length;
+        selectAll.checked = selectedCount === totalCheckboxes;
+        selectAll.indeterminate = selectedCount > 0 && selectedCount < totalCheckboxes;
+    };
+
+    window.getSelectedItems = function() {
+        const selected = [];
+        document.querySelectorAll('.jk-row-select:checked').forEach(checkbox => {
+            selected.push(checkbox.value);
+        });
+        return selected;
+    };
+
+    window.sortTable = function(key) {
+        const tableBody = document.getElementById('tableBody');
+        const rows = Array.from(tableBody.getElementsByTagName('tr'));
+        const th = document.querySelector(`th[data-key="${key}"]`);
+        
+        // Update sort direction
+        if (window.currentSort.key === key) {
+            window.currentSort.direction = window.currentSort.direction === 'asc' ? 'desc' : 'asc';
+        } else {
+            window.currentSort.key = key;
+            window.currentSort.direction = 'asc';
+        }
+
+        // Update sort icons
+        document.querySelectorAll('th.jk-sortable').forEach(header => {
+            header.classList.remove('asc', 'desc');
+        });
+        th.classList.add(window.currentSort.direction);
+
+        // Sort rows
+        rows.sort((a, b) => {
+            const columnIndex = Array.from(th.parentElement.children).indexOf(th);
+            const aValue = a.children[columnIndex].textContent;
+            const bValue = b.children[columnIndex].textContent;
+            
+            // Try to sort as numbers if possible
+            const aNum = parseFloat(aValue);
+            const bNum = parseFloat(bValue);
+            if (!isNaN(aNum) && !isNaN(bNum)) {
+                return window.currentSort.direction === 'asc' ? aNum - bNum : bNum - aNum;
+            }
+            
+            // Sort as strings
+            return window.currentSort.direction === 'asc' 
+                ? aValue.localeCompare(bValue) 
+                : bValue.localeCompare(aValue);
+        });
+
+        // Update table
+        rows.forEach(row => tableBody.appendChild(row));
+    };
+
+    window.changeItemsPerPage = function() {
+        const perPage = document.getElementById('itemsPerPage').value;
+        const newUrl = updateQueryStringParameter(window.location.search, 'per_page', perPage);
+        window.location.href = window.location.pathname + newUrl;
+    };
+
+    window.changePage = function(direction) {
+        const currentPage = parseInt('{{ current_page }}', 10);
+        const newPage = direction === 'next' ? currentPage + 1 : currentPage - 1;
+        const newUrl = updateQueryStringParameter(window.location.search, 'page', newPage);
+        window.location.href = window.location.pathname + newUrl;
+    };
+
+    function updateQueryStringParameter(uri, key, value) {
+        const re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+        const separator = uri.indexOf('?') !== -1 ? "&" : "?";
+        if (uri.match(re)) {
+            return uri.replace(re, '$1' + key + "=" + value + '$2');
+        }
+        return uri + separator + key + "=" + value;
+    }
+
+    // Handle selection callback if provided
+    {% if on_select %}
+    window.handleSelection = function() {
+        const selected = window.getSelectedItems();
+        try {
+            const handler = new Function('selected', '{{ on_select | safe }}(selected)');
+            handler(selected);
+        } catch (error) {
+            console.error('Error calling selection handler:', error);
+        }
+    };
+    {% endif %}
+});
+</script>
+{% endblock %}

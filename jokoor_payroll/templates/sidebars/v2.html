@@ -1,0 +1,413 @@
+{% block style %}
+<style>
+    /* Sidebar container */
+    .jk-sidebar-v2 {
+        width: var(--sidebar-width, 250px);
+        background: #ffffff;
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 1001;
+        box-shadow: 1px 0 3px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        transition: transform 0.3s ease;
+    }
+
+    /* Mobile styles */
+    @media (max-width: 768px) {
+        .jk-sidebar-v2 {
+            transform: translateX(-100%);
+            width: 280px;
+        }
+
+        .jk-sidebar-v2.show {
+            transform: translateX(0);
+        }
+
+        .jk-nav-link {
+            padding: 0.75rem 1rem !important;
+            min-height: 44px !important;
+        }
+    }
+
+    /* Tablet styles */
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .jk-sidebar-v2 {
+            transform: translateX(-100%);
+        }
+
+        .jk-sidebar-v2.show {
+            transform: translateX(0);
+        }
+    }
+
+    /* Sidebar header */
+    .jk-sidebar-header {
+        height: var(--header-height, 60px);
+        padding: 0 1rem;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #e5e7eb;
+        background: #ffffff;
+    }
+
+    .jk-sidebar-header a {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+    }
+
+    .jk-sidebar-header img {
+        max-width: 100%;
+        height: auto;
+        max-height: 30px;
+        object-fit: contain;
+    }
+
+    /* Navigation */
+    .jk-sidebar-nav {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem 0;
+    }
+
+    .jk-nav-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .jk-nav-section-title {
+        padding: 0.75rem 1rem;
+        color: #64748b;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .jk-nav-item {
+        position: relative;
+    }
+
+    .jk-nav-link {
+        display: flex;
+        align-items: center;
+        padding: 0.625rem 1rem;
+        color: #1f2937;
+        text-decoration: none;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+        position: relative;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .jk-nav-link:hover {
+        background: rgba(37, 99, 235, 0.05);
+        color: #2563eb;
+    }
+
+    .jk-nav-link.active {
+        background: rgba(37, 99, 235, 0.1);
+        color: #2563eb;
+        font-weight: 500;
+    }
+
+    .jk-nav-link i {
+        width: 1.5rem;
+        font-size: 1rem;
+        margin-right: 0.75rem;
+        color: inherit;
+    }
+
+    .jk-nav-text {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .jk-nav-arrow {
+        font-size: 0.75rem;
+        transition: transform 0.2s ease;
+        margin-left: 0.5rem;
+    }
+
+    .jk-nav-item.active > .jk-nav-link .jk-nav-arrow {
+        transform: rotate(180deg);
+    }
+
+    .jk-nav-badge {
+        background: #2563eb;
+        color: #fff;
+        font-size: 0.75rem;
+        padding: 0.125rem 0.375rem;
+        border-radius: 1rem;
+        margin-left: 0.5rem;
+    }
+
+    .jk-nav-submenu {
+        display: none;
+        padding-left: 1rem;
+        background: rgba(0, 0, 0, 0.02);
+    }
+
+    .jk-nav-item.active > .jk-nav-submenu {
+        display: block;
+    }
+
+    /* Mobile toggle button */
+    .jk-sidebar-toggle {
+        display: none;
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        z-index: 1002;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        width: 40px;
+        height: 40px;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        color: #1f2937;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1.25rem;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .jk-sidebar-toggle .fa-bars,
+    .jk-sidebar-toggle .fa-times {
+        position: absolute;
+        transition: all 0.3s ease;
+    }
+
+    .jk-sidebar-toggle .fa-times {
+        opacity: 0;
+        transform: rotate(-180deg);
+    }
+
+    .jk-sidebar-v2.show ~ .jk-sidebar-toggle {
+        left: auto;
+        right: 1rem;
+    }
+
+    .jk-sidebar-v2.show ~ .jk-sidebar-toggle .fa-bars {
+        opacity: 0;
+        transform: rotate(180deg);
+    }
+
+    .jk-sidebar-v2.show ~ .jk-sidebar-toggle .fa-times {
+        opacity: 1;
+        transform: rotate(0);
+    }
+
+    @media (max-width: 1024px) {
+        .jk-sidebar-toggle {
+            display: flex;
+        }
+    }
+
+    /* Overlay */
+    .jk-sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .jk-sidebar-overlay.show {
+        display: block;
+        opacity: 1;
+    }
+</style>
+{% endblock %}
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Overlay for mobile -->
+<div class="jk-sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Sidebar -->
+<aside class="jk-sidebar-v2">
+    <div class="jk-sidebar-header">
+        <a href="/restaurant">
+            <img src="https://ucarecdn.com/bb9ad745-564d-400a-a2da-d0971f5605a8/-/preview/743x243/" alt="Jokoor">
+        </a>
+    </div>
+    
+    <nav class="jk-sidebar-nav">
+        <div class="jk-nav-section">
+            <div class="jk-text-xs jk-font-semibold jk-text-muted jk-nav-section-title">MAIN</div>
+            <div class="jk-nav-item">
+                <a href="/dashboard" class="jk-nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span class="jk-nav-text">Dashboard</span>
+                </a>
+            </div>
+            <div class="jk-nav-item">
+                <a href="/pos" class="jk-nav-link">
+                    <i class="fas fa-cash-register"></i>
+                    <span class="jk-nav-text">Point of Sale</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="jk-nav-section">
+            <div class="jk-text-xs jk-font-semibold jk-text-muted jk-nav-section-title">SALES</div>
+            <div class="jk-nav-item">
+                <div class="jk-nav-link">
+                    <i class="fas fa-file-invoice"></i>
+                    <span class="jk-nav-text">Invoices</span>
+                    <span class="jk-nav-badge">24</span>
+                    <i class="fas fa-chevron-down jk-nav-arrow"></i>
+                </div>
+                <div class="jk-nav-submenu">
+                    <a href="/invoices" class="jk-nav-link">
+                        <span class="jk-nav-text">All Invoices</span>
+                    </a>
+                    <a href="/invoices/new" class="jk-nav-link">
+                        <span class="jk-nav-text">New Invoice</span>
+                    </a>
+                </div>
+            </div>
+            <div class="jk-nav-item">
+                <a href="/customers" class="jk-nav-link">
+                    <i class="fas fa-users"></i>
+                    <span class="jk-nav-text">Customers</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="jk-nav-section">
+            <div class="jk-text-xs jk-font-semibold jk-text-muted jk-nav-section-title">OPERATIONS</div>
+            <div class="jk-nav-item">
+                <a href="/kitchen" class="jk-nav-link">
+                    <i class="fas fa-utensils"></i>
+                    <span class="jk-nav-text">Kitchen Display</span>
+                </a>
+            </div>
+            <div class="jk-nav-item">
+                <div class="jk-nav-link">
+                    <i class="fas fa-book-open"></i>
+                    <span class="jk-nav-text">Menu</span>
+                    <i class="fas fa-chevron-down jk-nav-arrow"></i>
+                </div>
+                <div class="jk-nav-submenu">
+                    <a href="/menu/items" class="jk-nav-link">
+                        <span class="jk-nav-text">Menu Items</span>
+                    </a>
+                    <a href="/menu/categories" class="jk-nav-link">
+                        <span class="jk-nav-text">Categories</span>
+                    </a>
+                </div>
+            </div>
+            <div class="jk-nav-item">
+                <div class="jk-nav-link">
+                    <i class="fas fa-box"></i>
+                    <span class="jk-nav-text">Inventory</span>
+                    <i class="fas fa-chevron-down jk-nav-arrow"></i>
+                </div>
+                <div class="jk-nav-submenu">
+                    <a href="/inventory/items" class="jk-nav-link">
+                        <span class="jk-nav-text">Items</span>
+                    </a>
+                    <a href="/inventory/stock" class="jk-nav-link">
+                        <span class="jk-nav-text">Stock</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</aside>
+
+<!-- Mobile toggle button -->
+<button class="jk-sidebar-toggle" id="sidebarToggle" aria-label="Toggle Menu">
+    <i class="fas fa-bars"></i>
+    <i class="fas fa-times"></i>
+</button>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.querySelector('.jk-sidebar-v2');
+    const overlay = document.getElementById('sidebarOverlay');
+    const toggleBtn = document.getElementById('sidebarToggle');
+    
+    // Handle menu items with submenus
+    const menuItems = document.querySelectorAll('.jk-sidebar-v2 .jk-nav-link');
+    menuItems.forEach(item => {
+        const hasSubmenu = item.nextElementSibling && item.nextElementSibling.classList.contains('jk-nav-submenu');
+        
+        item.addEventListener('click', function(e) {
+            if (hasSubmenu) {
+                e.preventDefault();
+                e.stopPropagation();
+                const parent = this.parentElement;
+                
+                // Close other open submenus
+                const openItems = document.querySelectorAll('.jk-nav-item.active');
+                openItems.forEach(openItem => {
+                    if (openItem !== parent) {
+                        openItem.classList.remove('active');
+                    }
+                });
+                
+                parent.classList.toggle('active');
+            } else if (window.innerWidth <= 1024) {
+                // Close sidebar on regular link click in mobile/tablet
+                toggleSidebar();
+            }
+        });
+    });
+
+    // Toggle sidebar function
+    function toggleSidebar() {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+        document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
+    }
+
+    // Add click events
+    toggleBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleSidebar();
+    });
+
+    overlay.addEventListener('click', toggleSidebar);
+
+    // Close sidebar when clicking outside
+    document.addEventListener('click', (e) => {
+        if (window.innerWidth <= 1024 && 
+            sidebar.classList.contains('show') && 
+            !sidebar.contains(e.target) && 
+            !toggleBtn.contains(e.target)) {
+            toggleSidebar();
+        }
+    });
+
+    // Handle window resize
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        }, 250);
+    });
+});
+</script>

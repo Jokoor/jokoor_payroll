@@ -1,0 +1,244 @@
+<style>
+    :root {
+        --jk-sidebar-width: 280px;
+        --jk-primary-color: #5534c9;
+        --jk-text-color: #344054;
+        --jk-text-muted: #667085;
+        --jk-bg-hover: #f9fafb;
+        --jk-bg-active: #f5f3ff;
+        --jk-active-color: var(--jk-primary-color);
+        --jk-border-color: #eaecf0;
+    }
+
+    .jk-sidebar {
+        width: var(--jk-sidebar-width);
+        background: #ffffff;
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 1000;
+        border-right: 1px solid var(--jk-border-color);
+        display: flex;
+        flex-direction: column;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    .jk-sidebar-header {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--jk-border-color);
+        height: var(--header-height, 60px);
+        display: flex;
+        align-items: center;
+    }
+
+    .jk-sidebar-header img {
+        height: 28px;
+        width: auto;
+    }
+
+    .jk-sidebar-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.25rem 0.875rem;
+    }
+
+    .jk-section-title {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--jk-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        padding: 1.25rem 0.875rem 0.5rem;
+    }
+
+    .jk-nav-item {
+        margin: 0.125rem 0;
+    }
+
+    .jk-nav-link {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0.875rem;
+        color: var(--jk-text-color);
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 6px;
+        transition: all 0.15s ease;
+        margin: 0.125rem 0;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .jk-nav-link:hover {
+        background: var(--jk-bg-hover);
+        color: var(--jk-text-color);
+    }
+
+    .jk-nav-link.active {
+        color: var(--jk-active-color);
+        background: var(--jk-bg-active);
+        font-weight: 600;
+    }
+
+    .jk-nav-text {
+        flex: 1;
+        line-height: 1.4;
+    }
+
+    .jk-nav-arrow {
+        color: var(--jk-text-muted);
+        display: flex;
+        align-items: center;
+    }
+
+    .jk-nav-arrow i {
+        font-size: 0.75rem;
+        opacity: 0.75;
+    }
+
+    /* Back button styling */
+    .jk-back-button {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0.875rem;
+        color: var(--jk-text-color);
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 0.75rem;
+        border-radius: 6px;
+        transition: all 0.15s ease;
+    }
+
+    .jk-back-button:hover {
+        background: var(--jk-bg-hover);
+    }
+
+    .jk-back-button i {
+        margin-right: 0.625rem;
+        font-size: 0.875rem;
+        color: var(--jk-text-muted);
+    }
+
+    /* Scrollbar styling */
+    .jk-sidebar-content::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .jk-sidebar-content::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .jk-sidebar-content::-webkit-scrollbar-thumb {
+        background: #e5e7eb;
+        border-radius: 4px;
+    }
+
+    .jk-sidebar-content::-webkit-scrollbar-thumb:hover {
+        background: #d1d5db;
+    }
+
+    /* First section shouldn't have top padding */
+    .jk-sidebar-content .jk-section-title:first-child {
+        padding-top: 0;
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<aside class="jk-sidebar">
+    <div class="jk-sidebar-header">
+        <a href="/restaurant">
+            <img src="https://ucarecdn.com/bb9ad745-564d-400a-a2da-d0971f5605a8/-/preview/743x243/" alt="Logo">
+        </a>
+    </div>
+    
+    <div class="jk-sidebar-content">
+        <a href="/settings" class="jk-back-button">
+            <i class="fas fa-arrow-left"></i>
+            Settings
+        </a>
+
+        <div class="jk-section-title">Payroll</div>
+        <div class="jk-nav-item">
+            <a href="/payroll/salaries" class="jk-nav-link {% if frappe.request.path == '/payroll/salaries' %}active{% endif %}">
+                <span class="jk-nav-text">Salaries</span>
+            </a>
+        </div>
+        <div class="jk-nav-item">
+            <a href="/payroll/pay-items" class="jk-nav-link {% if frappe.request.path == '/payroll/pay-items' %}active{% endif %}">
+                <span class="jk-nav-text">Pay items</span>
+            </a>
+        </div>
+        <div class="jk-nav-item">
+            <a href="/payroll/schedules" class="jk-nav-link {% if frappe.request.path == '/payroll/schedules' %}active{% endif %}">
+                <span class="jk-nav-text">Pay schedules</span>
+            </a>
+        </div>
+        <div class="jk-nav-item">
+            <a href="/payroll/approval-flow" class="jk-nav-link {% if frappe.request.path == '/payroll/approval-flow' %}active{% endif %}">
+                <span class="jk-nav-text">Approval flow</span>
+            </a>
+        </div>
+
+        <div class="jk-section-title">Company</div>
+        <div class="jk-nav-item">
+            <a href="/company/general" class="jk-nav-link {% if frappe.request.path == '/company/general' %}active{% endif %}">
+                <span class="jk-nav-text">General</span>
+            </a>
+        </div>
+        <div class="jk-nav-item">
+            <a href="/company/hmrc" class="jk-nav-link {% if frappe.request.path == '/company/hmrc' %}active{% endif %}">
+                <span class="jk-nav-text">HMRC</span>
+            </a>
+        </div>
+        <div class="jk-nav-item">
+            <a href="/company/pensions" class="jk-nav-link {% if frappe.request.path == '/company/pensions' %}active{% endif %}">
+                <span class="jk-nav-text">Pensions</span>
+            </a>
+        </div>
+        <div class="jk-nav-item">
+            <a href="/company/allowances" class="jk-nav-link {% if frappe.request.path == '/company/allowances' %}active{% endif %}">
+                <span class="jk-nav-text">Allowances</span>
+            </a>
+        </div>
+        <div class="jk-nav-item">
+            <a href="/company/policies" class="jk-nav-link {% if frappe.request.path == '/company/policies' %}active{% endif %}">
+                <span class="jk-nav-text">Policies</span>
+            </a>
+        </div>
+        <div class="jk-nav-item">
+            <a href="/company/departments" class="jk-nav-link {% if frappe.request.path == '/company/departments' %}active{% endif %}">
+                <span class="jk-nav-text">Departments</span>
+            </a>
+        </div>
+        <div class="jk-nav-item">
+            <a href="/company/structure" class="jk-nav-link {% if frappe.request.path == '/company/structure' %}active{% endif %}">
+                <span class="jk-nav-text">Organisational structure</span>
+            </a>
+        </div>
+        <div class="jk-nav-item">
+            <a href="/company/billing" class="jk-nav-link {% if frappe.request.path == '/company/billing' %}active{% endif %}">
+                <span class="jk-nav-text">Billing</span>
+                <span class="jk-nav-arrow">
+                    <i class="fas fa-external-link-alt"></i>
+                </span>
+            </a>
+        </div>
+
+        <div class="jk-section-title">Integrations</div>
+        <div class="jk-nav-item">
+            <a href="/integrations/overview" class="jk-nav-link {% if frappe.request.path == '/integrations/overview' %}active{% endif %}">
+                <span class="jk-nav-text">Overview</span>
+            </a>
+        </div>
+
+        <div class="jk-section-title">Personal</div>
+        <div class="jk-nav-item">
+            <a href="/personal/account" class="jk-nav-link {% if frappe.request.path == '/personal/account' %}active{% endif %}">
+                <span class="jk-nav-text">Account</span>
+            </a>
+        </div>
+    </div>
+</aside>

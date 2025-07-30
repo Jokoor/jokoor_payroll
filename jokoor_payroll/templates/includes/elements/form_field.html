@@ -1,0 +1,533 @@
+{# 
+  Reusable Form Field Component
+  Usage: 
+  1. Set the field parameters
+  {% set field_type = 'text' %}
+  {% set field_name = 'first_name' %}
+  {% set field_label = 'First Name' %}
+  ...etc
+  
+  2. Include the template
+  {% include "jokoor/templates/includes/elements/form_field.html" %}
+  
+  Supported field_type values:
+  - text: Basic text input
+  - textarea: Multiline text input
+  - number: Numeric input
+  - email: Email input with validation
+  - password: Password input
+  - select: Dropdown select with options
+  - date: Date picker
+  - currency: Currency input with prefix
+  - checkbox: Boolean checkbox
+  - radio: Radio button option
+  - section_break: Section heading with optional description
+  - column_break: Column layout control
+  - table: Dynamic table with rows
+  
+  Common attributes:
+  - field_name: Name/ID of the field (required)
+  - field_label: Label text (required)
+  - field_placeholder: Placeholder text
+  - field_help: Help text displayed below the field
+  - field_required: Boolean - if the field is required (true/false)
+  - field_readonly: Boolean - if the field is readonly (true/false)
+  - field_disabled: Boolean - if the field is disabled (true/false)
+  - field_value: Default value for the field
+  - field_width: Width of the field in columns (1-12, default: 12)
+  - field_icon: FontAwesome icon class to display with field
+  
+  Type-specific attributes:
+  - section_break: 
+    - field_section_title: Title for the section
+    - field_section_description: Description text for the section
+  
+  - select:
+    - field_options: Array of objects with {value, label} 
+    
+  - currency:
+    - field_prefix: Currency symbol ($, €, etc)
+  
+  - table:
+    - field_columns: Array of objects with {name, label, type, required, readonly, disabled, min, max, step, placeholder}
+    - field_show_summary: Boolean - if the summary should be displayed (true/false)
+    - field_summary: Array of objects with {name, label}
+#}
+
+<style>
+.jk-form-field {
+    margin-bottom: 1rem;
+    flex: 0 0 auto;
+}
+
+.jk-form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -0.5rem;
+    width: calc(100% + 1rem);
+}
+
+.jk-form-row > * {
+    padding: 0.5rem;
+}
+
+/* Width utilities */
+.jk-w-12 { width: 100%; }
+.jk-w-11 { width: 91.666667%; }
+.jk-w-10 { width: 83.333333%; }
+.jk-w-9 { width: 75%; }
+.jk-w-8 { width: 66.666667%; }
+.jk-w-7 { width: 58.333333%; }
+.jk-w-6 { width: 50%; }
+.jk-w-5 { width: 41.666667%; }
+.jk-w-4 { width: 33.333333%; }
+.jk-w-3 { width: 25%; }
+.jk-w-2 { width: 16.666667%; }
+.jk-w-1 { width: 8.333333%; }
+
+.jk-form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.jk-required {
+    color: #dc2626;
+    margin-left: 0.25rem;
+}
+
+.jk-form-input,
+.jk-form-select,
+.jk-form-textarea {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: #111827;
+    background-color: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    transition: border-color 0.15s ease-in-out;
+}
+
+.jk-form-input:focus,
+.jk-form-select:focus,
+.jk-form-textarea:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.2);
+}
+
+.jk-form-section {
+    width: 100%;
+    margin-bottom: 2rem;
+}
+
+.jk-section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
+.jk-section-description {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+}
+
+.jk-form-help {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+}
+
+.jk-form-error {
+    color: #dc2626;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.jk-form-field.has-error .jk-form-input,
+.jk-form-field.has-error .jk-form-select,
+.jk-form-field.has-error .jk-form-textarea {
+    border-color: #dc2626;
+}
+
+/* Table styles */
+.jk-table-container {
+    width: 100%;
+    margin-top: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.jk-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+.jk-table th {
+    background-color: #f9fafb;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.jk-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.jk-table tr:last-child td {
+    border-bottom: none;
+}
+
+.jk-table-input {
+    width: 100%;
+    padding: 0.375rem 0.5rem;
+    font-size: 0.875rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.25rem;
+    background-color: white;
+}
+
+.jk-table-input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.2);
+}
+
+.jk-table-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.jk-table-btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+    border-radius: 0.25rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+}
+
+.jk-table-btn-add {
+    background-color: #10b981;
+    color: white;
+}
+
+.jk-table-btn-add:hover {
+    background-color: #059669;
+}
+
+.jk-table-btn-remove {
+    background-color: #ef4444;
+    color: white;
+}
+
+.jk-table-btn-remove:hover {
+    background-color: #dc2626;
+}
+
+.jk-table-footer {
+    padding: 1rem;
+    background-color: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+}
+
+.jk-table-summary {
+    display: flex;
+    justify-content: flex-end;
+    gap: 2rem;
+    font-size: 0.875rem;
+}
+
+.jk-table-summary-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.jk-table-summary-label {
+    font-weight: 500;
+    color: #374151;
+}
+
+.jk-table-summary-value {
+    font-weight: 600;
+    color: #111827;
+}
+</style>
+
+{# Default values for optional parameters #}
+{% set field_value = field_value or '' %}
+{% set field_placeholder = field_placeholder or '' %}
+{% set field_help = field_help or '' %}
+{% set field_required = field_required or false %}
+{% set field_readonly = field_readonly or false %}
+{% set field_disabled = field_disabled or false %}
+
+{% set field_width = field_width or '12' %}
+{% set field_section_title = field_section_title or '' %}
+{% set field_section_description = field_section_description or '' %}
+{% set field_columns = field_columns or [] %}
+{% set field_show_summary = field_show_summary or false %}
+{% set field_summary = field_summary or [] %}
+{% set options = field_options or [] %}
+{% set doctype = field_doctype or '' %}
+{% set pluck = field_pluck or '' %}
+
+{# Field Container #}
+<div class="jk-form-field jk-w-{{ field_width }}">
+    {% if field_type != 'hidden' %}
+    <label class="jk-form-label" for="{{ field_name }}">
+        {{ field_label }}
+        {% if field_required %}
+        <span class="jk-required">*</span>
+        {% endif %}
+    </label>
+    {% endif %}
+
+    {% if field_type == 'text' or field_type == 'email' or field_type == 'password' or field_type == 'number' or field_type == 'tel' %}
+    <input type="{{ field_type }}"
+           class="jk-form-input"
+           id="{{ field_name }}"
+           name="{{ field_name }}"
+           value="{{ field_value }}"
+           placeholder="{{ field_placeholder }}"
+           {% if field_required %}required{% endif %}
+           {% if field_readonly %}readonly{% endif %}
+           {% if field_disabled %}disabled{% endif %}
+           {% if jk_calc %}jk-calc="{{ jk_calc }}"{% endif %}
+           {% if jk_x %}jk-x="{{ jk_x }}"{% endif %}
+           >
+           {% elif field_type == 'link' %}
+           <select class="jk-form-select"
+                   id="{{ field_name }}"
+                   name="{{ field_name }}"
+                   {% if field_required %}required{% endif %}
+                   {% if field_disabled %}disabled{% endif %}>
+                {% if field_placeholder %}
+                <option value="">{{ field_placeholder }}</option>
+                {% endif %}
+               {% set data = frappe.db.get_list(doctype, pluck=pluck) %}
+               {% for option in data %}
+               <option value="{{ option }}"
+                       {% if option == field_value %}selected{% endif %}>
+                   {{ option }}
+               </option>
+               {% endfor %}
+           </select>
+
+    {% elif field_type == 'date' %}
+    <input type="date"
+           class="jk-form-input"
+           id="{{ field_name }}"
+           name="{{ field_name }}"
+           value="{{ field_value }}"
+           {% if field_min %}min="{{ field_min }}"{% endif %}
+           {% if field_max %}max="{{ field_max }}"{% endif %}
+           {% if field_required %}required{% endif %}
+           {% if field_readonly %}readonly{% endif %}
+           {% if field_disabled %}disabled{% endif %}>
+
+    {% elif field_type == 'select' %}
+    <select class="jk-form-select"
+            id="{{ field_name }}"
+            name="{{ field_name }}"
+            {% if field_required %}required{% endif %}
+            {% if field_disabled %}disabled{% endif %}>
+        {% if field_placeholder %}
+        <option value="">{{ field_placeholder }}</option>
+        {% endif %}
+        {% for option in options %}
+        <option value="{{ option.value }}"
+                {% if option.value == field_value %}selected{% endif %}>
+            {{ option.label }}
+        </option>
+        {% endfor %}
+    </select>
+
+    {% elif field_type == 'textarea' %}
+    <textarea class="jk-form-textarea"
+              id="{{ field_name }}"
+              name="{{ field_name }}"
+              placeholder="{{ field_placeholder }}"
+              {% if field_required %}rjokoor_payrollequired{% endif %}
+              {% if field_readonly %}readonly{% endif %}
+              {% if field_disabled %}disabled{% endif %}>{{ field_value }}</textarea>
+
+    {% elif field_type == 'table' %}
+    {% include "jokoor/templates/includes/elements/table_field.html" %}
+
+    {% endif %}
+
+    {% if field_help %}
+    <div class="jk-form-help">{{ field_help }}</div>
+    {% endif %}
+</div>
+
+<script>
+window.addTableRow = function(fieldName, columns) {
+    const tbody = document.getElementById(`${fieldName}_tbody`);
+    const newRow = document.createElement('tr');
+    const rowIndex = tbody.children.length;
+    
+    let rowHtml = '';
+    columns.forEach(column => {
+        const columnType = column.type || 'text';
+        const columnRequired = column.required ? 'required' : '';
+        const columnReadonly = column.readonly ? 'readonly' : '';
+        const columnDisabled = column.disabled ? 'disabled' : '';
+        const columnMin = column.min ? `min="${column.min}"` : '';
+        const columnMax = column.max ? `max="${column.max}"` : '';
+        const columnStep = column.step ? `step="${column.step}"` : '';
+        const columnPlaceholder = column.placeholder || '';
+        
+        rowHtml += `
+            <td>
+                <input type="${columnType}" 
+                       class="jk-table-input"
+                       name="${fieldName}[${rowIndex}][${column.name}]"
+                       ${columnRequired}
+                       ${columnReadonly}
+                       ${columnDisabled}
+                       ${columnMin}
+                       ${columnMax}
+                       ${columnStep}
+                       placeholder="${columnPlaceholder}"
+                       onchange="handleTableChange('${fieldName}')">
+            </td>
+        `;
+    });
+    
+    rowHtml += `
+        <td>
+            <div class="jk-table-actions">
+                <button type="button" 
+                        class="jk-table-btn jk-table-btn-remove"
+                        onclick="removeTableRow(this, '${fieldName}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </td>
+    `;
+    
+    newRow.innerHTML = rowHtml;
+    tbody.appendChild(newRow);
+    handleTableChange(fieldName);
+};
+
+window.removeTableRow = function(button, fieldName) {
+    const row = button.closest('tr');
+    row.remove();
+    handleTableChange(fieldName);
+};
+
+window.handleTableChange = function(fieldName) {
+    const table = document.getElementById(`${fieldName}_table`);
+    const rows = Array.from(table.querySelectorAll('tbody tr'));
+    const data = rows.map(row => {
+        const inputs = row.querySelectorAll('input');
+        const rowData = {};
+        inputs.forEach(input => {
+            const name = input.name.match(/\[(\w+)\]$/)[1];
+            rowData[name] = input.value;
+        });
+        return rowData;
+    });
+    
+    // Update hidden input with JSON data
+    const hiddenInput = document.getElementById(`${fieldName}_data`);
+    hiddenInput.value = JSON.stringify(data);
+    
+    // Update summary if exists
+    updateTableSummary(fieldName, data);
+};
+
+window.updateTableSummary = function(fieldName, data) {
+    const summaryElements = document.querySelectorAll(`[id^="${fieldName}_"][id$="_sum"]`);
+    if (!summaryElements.length) return;
+    
+    summaryElements.forEach(element => {
+        const columnName = element.id.replace(`${fieldName}_`, '').replace('_sum', '');
+        const sum = data.reduce((acc, row) => {
+            const value = parseFloat(row[columnName]) || 0;
+            return acc + value;
+        }, 0);
+        element.textContent = sum.toFixed(2);
+    });
+};
+
+//   add a function that will take in on one fild onchange and name the function jk_onchange and return the value of that field
+// and that you can add it as a property to the input field
+
+function jk_onchange(input) {
+    const value = input.value;
+    return value;
+}
+
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('[jk-x]').forEach(function (input) {
+        input.addEventListener('input', function () {
+          const targetSelector = input.getAttribute('jk-x');
+          const target = document.querySelector(`[jk-data="${targetSelector}"]`);
+          if (target) {
+            target.textContent = input.value;
+          }
+        });
+      });
+    });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          // For every calculated field
+          document.querySelectorAll('[jk-calc]').forEach(function(calcField) {
+            const formula = calcField.getAttribute('jk-calc');
+            // Find all field names used in the formula
+            const fieldNames = formula.match(/\b[a-zA-Z_]\w*\b/g);
+        
+            function recalc() {
+              let context = {};
+              fieldNames.forEach(function(name) {
+                const el = document.querySelector(`[name="${name}"]`);
+                let val = el ? parseFloat(el.value) : 0;
+                if (isNaN(val)) val = 0;
+                context[name] = val;
+              });
+              try {
+                // Create a function and evaluate the formula
+                const func = new Function(...fieldNames, `return ${formula};`);
+                const result = func(...fieldNames.map(name => context[name]));
+                calcField.value = isNaN(result) ? '' : result.toFixed(2);
+              } catch (e) {
+                calcField.value = '';
+              }
+            }
+        
+            // Attach listeners to all dependencies
+            fieldNames.forEach(function(name) {
+              const el = document.querySelector(`[name="${name}"]`);
+              if (el) {
+                el.addEventListener('input', recalc);
+                el.addEventListener('change', recalc);
+              }
+            });
+        
+            // Initial calculation
+            recalc();
+          });
+        });
+        </script>
+        

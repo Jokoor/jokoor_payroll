@@ -1,0 +1,495 @@
+{# 
+    Reusable Table Component
+    Usage: 
+    1. Set the table parameters
+    {% set table_id = 'employee-table' %}
+    {% set columns = [
+      {'key': 'name', 'label': 'Name', 'sortable': true, 'mobile_view': true},
+      {'key': 'department', 'label': 'Department', 'sortable': true, 'mobile_view': false},
+      ...
+    ] %}
+    {% set data = employees %}  # List of objects with keys matching column keys
+    {% set row_click_action = 'view' %}  # Action to trigger when a row is clicked
+    {% set current_page = 1 %}  # Current page number
+    {% set total_count = 100 %}  # Total number of records
+    {% set title = 'Employee List' %}  # Title of the table
+    {% set view_page = 'employee/:id' %}  # View page URL
+    {% set delete_action = true %}  # Show/hide delete option
+    {% set delete_url = '/delete' %}  # Delete endpoint URL
+    
+    2. Include the template
+    {% include "jokoor_payroll/templates/includes/elements/table.html" %}
+    
+    Parameters:
+    - table_id: Unique ID for the table (required)
+    - columns: Array of column objects {key, label, sortable, mobile_view} (required)
+    - data: Array of data objects with keys matching column keys (required)
+    - row_click_action: Action to trigger when a row is clicked (optional)
+    - has_record_selector: Whether to show records per page selector (default: false)
+    - default_page_size: Default number of items per page (default: 20)
+    - page_size_options: Array of page size options (default: [20, 50, 100, 500, 1000, 'All'])
+    - has_search: Whether to show search (default: false)
+    - search_placeholder: Placeholder text for search (default: "Search...")
+    - current_page: Current page number (default: 1)
+    - total_count: Total number of records (default: data|length)
+    - title: Title of the table (default: '')
+    - show_new_button: Whether to show the new button (default: false)
+    - new_button_label: Label for the new button (default: 'New')
+    - view_page: View page URL (optional)
+    - delete_action: Show/hide delete option (default: false)
+    - delete_url: Delete endpoint URL (optional)
+  #}
+  
+  {# Default values for optional parameters #}
+  {% if data is not defined %}{% set data = [] %}{% endif %}
+  {% if has_record_selector is not defined %}{% set has_record_selector = false %}{% endif %}
+  {% if default_page_size is not defined %}{% set default_page_size = 20 %}{% endif %}
+  {% set page_size_options = [20, 50, 100, 500, 1000, 'All'] %}
+  {% if has_search is not defined %}{% set has_search = false %}{% endif %}
+  {% if title is not defined %}{% set title = '' %}{% endif %}
+  {% if show_new_button is not defined %}{% set show_new_button = false %}{% endif %}
+  {% if new_button_label is not defined %}{% set new_button_label = 'New' %}{% endif %}
+  {% if view_page is not defined %}{% set view_page = '' %}{% endif %}
+  {% if delete_action is not defined %}{% set delete_action = false %}{% endif %}
+  {% if delete_url is not defined %}{% set delete_url = '' %}{% endif %}
+  
+  {# Table component #}
+  {% if title %}
+  <div class="table-header d-flex justify-content-between align-items-center p-4">
+      <div class="d-flex align-items-center gap-3">
+          <div class="d-flex align-items-center gap-3">
+              <div class="page-size-selector">
+                  <select class="form-select form-select-sm" id="{{ table_id }}-page-size">
+                      <option value="10" {% if page_size == 10 %}selected{% endif %}>10 per page</option>
+                      <option value="25" {% if page_size == 25 %}selected{% endif %}>25 per page</option>
+                      <option value="50" {% if page_size == 50 %}selected{% endif %}>50 per page</option>
+                      <option value="100" {% if page_size == 100 %}selected{% endif %}>100 per page</option>
+                  </select>
+              </div>
+              <div class="bulk-actions" style="display: none;">
+                  <select class="form-select form-select-sm" id="{{ table_id }}-bulk-action">
+                      <option value="">Select Action</option>
+                      <option value="export">Export Selected</option>
+                      {% if delete_action %}
+                      <option value="delete">Delete Selected</option>
+                      {% endif %}
+                  </select>
+              </div>
+              <div class="selection-info" style="display: none;">
+                  <span class="text-muted"><span class="selected-count">0</span> items selected</span>
+                  <button class="btn btn-link btn-sm p-0 ms-2" id="{{ table_id }}-clear-selection">Clear</button>
+              </div>
+          </div>
+      </div>
+      <div class="table-actions">
+          {% if show_new_button %}
+          <button class="btn btn-primary" id="newBtn">
+              <i class="fas fa-plus me-2"></i>{{ new_button_label or "New" }}
+          </button>
+          {% endif %}
+      </div>
+  </div>
+  {% endif %}
+  
+  <div class="table-responsive">
+      <table class="table mb-0" id="{{ table_id }}">
+          <thead>
+              <tr>
+                  {% if show_export %}
+                  <th class="select-column" width="40">
+                      <input type="checkbox" class="form-check-input" id="selectAll">
+                  </th>
+                  {% endif %}
+                  {% for col in columns %}
+                  <th {% if col.width %}width="{{ col.width }}"{% endif %}>
+                      {{ col.label }}
+                      {% if col.sortable %}
+                      <span class="sort-icon ms-1" data-field="{{ col.key }}">
+                          <i class="fas fa-sort"></i>
+                      </span>
+                      {% endif %}
+                  </th>
+                  {% endfor %}
+              </tr>
+          </thead>
+          <tbody>
+              {% for row in data %}
+              <tr class="clickable-row" data-id="{{ row.name }}">
+                  {% if show_export %}
+                  <td class="select-column" onclick="event.stopPropagation()">
+                      <input type="checkbox" class="form-check-input row-checkbox" value="{{ row.name }}">
+                  </td>
+                  {% endif %}
+                  {% for col in columns %}
+                  <td>
+                      {% if col.type == "status" %}
+                      <span class="status-badge {{ row[col.key]|lower }}">{{ row[col.key] }}</span>
+                      {% else %}
+                      {{ row[col.key] }}
+                      {% endif %}
+                  </td>
+                  {% endfor %}
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+  </div>
+  
+  {% if total_count > page_size %}
+  <div class="table-pagination d-flex justify-content-between align-items-center p-4">
+      <div class="pagination-info">
+          Showing {{ (current_page - 1) * page_size + 1 }} to {{ [current_page * page_size, total_count] | min }} of {{ total_count }} entries
+      </div>
+      <nav>
+          <ul class="pagination mb-0">
+              <li class="page-item {% if current_page == 1 %}disabled{% endif %}">
+                  <a class="page-link" href="?page={{ current_page - 1 }}" {% if current_page == 1 %}tabindex="-1"{% endif %}>Previous</a>
+              </li>
+              {% set total_pages = ((total_count / page_size) | round(method='ceil')) | int %}
+              {% for p in range(1, total_pages + 1) %}
+              <li class="page-item {% if p == current_page %}active{% endif %}">
+                  <a class="page-link" href="?page={{ p }}">{{ p }}</a>
+              </li>
+              {% endfor %}
+              <li class="page-item {% if current_page * page_size >= total_count %}disabled{% endif %}">
+                  <a class="page-link" href="?page={{ current_page + 1 }}" {% if current_page * page_size >= total_count %}tabindex="-1"{% endif %}>Next</a>
+              </li>
+          </ul>
+      </nav>
+  </div>
+  {% endif %}
+  
+  <style>
+  .table-responsive {
+      padding: 0 1rem;
+  }
+  
+  .table {
+      margin-bottom: 0;
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background-color: #ffffff;
+  }
+  
+  .table th {
+      border-top: none;
+      font-weight: 600;
+      color: #4b5563;
+      background-color: #f9fafb;
+      padding: 0.75rem;
+      white-space: nowrap;
+      border-bottom: 1px solid #f8fafc;
+  }
+  
+  .table td {
+      padding: 0.75rem;
+      vertical-align: middle;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 200px;
+  }
+  
+  .table tr {
+      transition: all 0.2s ease;
+      border-bottom: 1px solid #f8fafc;
+  }
+  
+  .table tr:hover {
+      background-color: #f3f4f6;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+  
+  .table-row {
+      background-color: #ffffff;
+  }
+  
+  .clickable-row {
+      cursor: pointer;
+  }
+  
+  .row-checkbox {
+      width: 18px;
+      height: 18px;
+      margin-right: 8px;
+  }
+  
+  th.select-column,
+  td.select-column {
+      width: 40px;
+      padding-left: 1.5rem !important;
+  }
+  
+  /* Mobile view styles */
+  @media (max-width: 768px) {
+      .table th,
+      .table td {
+          display: none;
+      }
+  
+      .table th.select-column,
+      .table td.select-column {
+          display: table-cell;
+          width: 40px;
+          padding-left: 1rem !important;
+      }
+  
+      {% for col in columns %}
+      {% if col.mobile_view %}
+      .table th:nth-child({{ loop.index + 1 }}),
+      .table td:nth-child({{ loop.index + 1 }}) {
+          display: table-cell;
+      }
+      {% endif %}
+      {% endfor %}
+  
+      .table tr {
+          display: table-row;
+      }
+  
+      .table-responsive {
+          padding: 0 0.5rem;
+      }
+  
+      .table td {
+          padding: 0.5rem;
+      }
+  }
+  
+  /* Status badge styles */
+  .status-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      white-space: nowrap;
+      display: inline-block;
+  }
+  
+  .status-badge.active {
+      background-color: #dcfce7;
+      color: #166534;
+  }
+  
+  .status-badge.inactive {
+      background-color: #fee2e2;
+      color: #991b1b;
+  }
+  
+  .status-badge.on-leave {
+      background-color: #fef3c7;
+      color: #92400e;
+  }
+  </style>
+  
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const table = document.getElementById('{{ table_id }}');
+      if (!table) return;
+  
+      const bulkActions = document.querySelector('.bulk-actions');
+      const selectionInfo = document.querySelector('.selection-info');
+      const selectedCountEl = document.querySelector('.selected-count');
+      const clearSelectionBtn = document.getElementById('{{ table_id }}-clear-selection');
+      
+      // Handle row click
+      const rows = table.querySelectorAll('.clickable-row');
+      rows.forEach(row => {
+          row.addEventListener('click', function(e) {
+              // Don't navigate if clicking checkbox
+              if (e.target.type === 'checkbox') return;
+              
+              const id = this.dataset.id;
+              {% if view_page %}
+              const url = '{{ view_page }}'.replace(':id', id);
+              window.location.href = url;
+              {% endif %}
+          });
+      });
+  
+      // Handle select all checkbox
+      const selectAll = document.getElementById('selectAll');
+      if (selectAll) {
+          selectAll.addEventListener('change', function() {
+              const checkboxes = table.querySelectorAll('.row-checkbox');
+              checkboxes.forEach(checkbox => {
+                  checkbox.checked = this.checked;
+              });
+              updateSelectionUI();
+          });
+      }
+  
+      // Handle individual row selection
+      const rowCheckboxes = table.querySelectorAll('.row-checkbox');
+      rowCheckboxes.forEach(checkbox => {
+          checkbox.addEventListener('change', function() {
+              const allChecked = Array.from(rowCheckboxes).every(cb => cb.checked);
+              if (selectAll) {
+                  selectAll.checked = allChecked;
+              }
+              updateSelectionUI();
+          });
+      });
+  
+      // Update selection UI
+      function updateSelectionUI() {
+          const selectedCount = table.querySelectorAll('.row-checkbox:checked').length;
+          
+          // Update selection info
+          if (selectedCountEl) {
+              selectedCountEl.textContent = selectedCount;
+          }
+          
+          // Show/hide bulk actions and selection info
+          if (bulkActions) {
+              bulkActions.style.display = selectedCount > 0 ? 'block' : 'none';
+          }
+          if (selectionInfo) {
+              selectionInfo.style.display = selectedCount > 0 ? 'block' : 'none';
+          }
+      }
+  
+      // Handle clear selection
+      if (clearSelectionBtn) {
+          clearSelectionBtn.addEventListener('click', function() {
+              const checkboxes = table.querySelectorAll('.row-checkbox');
+              checkboxes.forEach(checkbox => {
+                  checkbox.checked = false;
+              });
+              if (selectAll) {
+                  selectAll.checked = false;
+              }
+              updateSelectionUI();
+          });
+      }
+  
+      // Handle bulk actions
+      const bulkActionSelect = document.getElementById(`${table.id}-bulk-action`);
+      if (bulkActionSelect) {
+          bulkActionSelect.addEventListener('change', function() {
+              const action = this.value;
+              if (!action) return;
+  
+              const selectedIds = Array.from(table.querySelectorAll('.row-checkbox:checked'))
+                  .map(checkbox => checkbox.closest('tr').getAttribute('data-id'));
+              
+              if (selectedIds.length === 0) {
+                  alert('Please select at least one row');
+                  this.value = '';
+                  return;
+              }
+  
+              switch (action) {
+                  case 'export':
+                      exportSelected(selectedIds);
+                      break;
+                  case 'delete':
+                      if (confirm('Are you sure you want to delete the selected items?')) {
+                          deleteSelected(selectedIds);
+                      }
+                      break;
+              }
+  
+              // Reset select
+              this.value = '';
+          });
+      }
+  
+      // Export selected rows
+      function exportSelected(ids) {
+          const formData = new FormData();
+          formData.append('ids', JSON.stringify(ids));
+  
+          fetch(window.location.pathname + '/export', {
+              method: 'POST',
+              body: formData
+          })
+          .then(response => response.blob())
+          .then(blob => {
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = 'export.xlsx';
+              document.body.appendChild(a);
+              a.click();
+              window.URL.revokeObjectURL(url);
+              a.remove();
+          })
+          .catch(error => {
+              console.error('Export failed:', error);
+              alert('Export failed. Please try again.');
+          });
+      }
+  
+      // Delete selected rows
+      function deleteSelected(ids) {
+          {% if delete_action and delete_url %}
+          fetch('{{ delete_url }}', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ 
+                  ids: ids.map(id => id.split('=')[1] || id)  // Handle both formats: "name=ABC123" or "ABC123"
+              })
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  window.location.reload();
+              } else {
+                  alert('Delete failed: ' + (data.message || 'Unknown error'));
+              }
+          })
+          .catch(error => {
+              console.error('Delete failed:', error);
+              alert('Delete failed. Please try again.');
+          });
+          {% endif %}
+      }
+  
+      // Handle sorting
+      const sortIcons = table.querySelectorAll('.sort-icon');
+      sortIcons.forEach(icon => {
+          icon.addEventListener('click', function() {
+              const field = this.dataset.field;
+              const currentSort = new URLSearchParams(window.location.search).get('sort') || '';
+              const [currentField, currentOrder] = currentSort.split(':');
+              
+              let newSort;
+              if (currentField === field) {
+                  newSort = currentOrder === 'asc' ? `${field}:desc` : `${field}:asc`;
+              } else {
+                  newSort = `${field}:asc`;
+              }
+  
+              const url = new URL(window.location.href);
+              url.searchParams.set('sort', newSort);
+              window.location.href = url.toString();
+          });
+      });
+  
+      // Handle page size change
+      const pageSizeSelect = document.getElementById(`${table.id}-page-size`);
+      if (pageSizeSelect) {
+          pageSizeSelect.addEventListener('change', function() {
+              const url = new URL(window.location.href);
+              url.searchParams.set('page_size', this.value);
+              url.searchParams.set('page', '1');
+              window.location.href = url.toString();
+          });
+      }
+  
+      // Handle new button
+      const newBtn = document.getElementById('newBtn');
+      if (newBtn) {
+          newBtn.addEventListener('click', function() {
+              window.location.href = window.location.pathname + '/new';
+          });
+      }
+  });
+
+
+
+  </script>

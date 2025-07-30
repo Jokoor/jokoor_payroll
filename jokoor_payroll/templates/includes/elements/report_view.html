@@ -1,0 +1,9 @@
+{# Standardized report view that accepts a single 'report' object with all necessary config #}
+
+{# Include report filters component if filters are provided #}
+{% if report.filters %}
+    {% include "jokoor_payroll/templates/includes/elements/report_filters.html" %}
+{% endif %}
+
+{# Include the report_table component using the report config object directly #}
+{% include "jokoor_payroll/templates/includes/elements/report_table.html" %}

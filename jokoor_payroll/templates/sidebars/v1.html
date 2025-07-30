@@ -1,60 +1,78 @@
 <style>
-    .sidebar {
-        width: 250px;
-        background: #2b3245;
+    :root {
+        --jk-sidebar-width: 250px;
+        --jk-header-height: var(--header-height, 60px);
+        --jk-primary-color: #5534c9;
+        --jk-text-color: #344054;
+        --jk-text-muted: #667085;
+        --jk-bg-hover: #f9fafb;
+        --jk-bg-active: #f5f3ff;
+        --jk-active-color: var(--jk-primary-color);
+        --jk-border-color: #eaecf0;
+    }
+
+    .jk-sidebar-v1 {
+        width: var(--jk-sidebar-width);
+        background: #ffffff;
         height: 100vh;
         position: fixed;
         left: 0;
         top: 0;
         z-index: 1000;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
     }
 
-    .sidebar-header {
-        padding: 1.25rem;
-        background: #2b3245;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .sidebar-header img {
-        height: 30px;
-        width: auto;
-        filter: brightness(0) invert(1);
-    }
-
-    .sidebar-nav {
-        padding: 0.5rem 0;
-        overflow-y: auto;
-        height: calc(100vh - 70px);
-    }
-
-    .nav-item {
-        position: relative;
-    }
-
-    .nav-link {
+    .jk-sidebar-v1 .jk-sidebar-header {
+        height: var(--jk-header-height);
+        background: #f8f9fa;
+        border-bottom: 1px solid #e9ecef;
         display: flex;
         align-items: center;
-        padding: 0.75rem 1.25rem;
-        color: rgba(255, 255, 255, 0.7);
+        padding: 0 1.25rem;
+    }
+
+    .jk-sidebar-v1 .jk-sidebar-header img {
+        height: calc(var(--jk-header-height) * 0.5);
+        width: auto;
+        object-fit: contain;
+    }
+
+    .jk-sidebar-v1 .jk-sidebar-nav {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem 0;
+    }
+
+    .jk-sidebar-v1 .jk-nav-item {
+        position: relative;
+        margin: 0.125rem 0.75rem;
+    }
+
+    .jk-sidebar-v1 .jk-nav-link {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        color: var(--jk-text-color);
         text-decoration: none;
         font-size: 0.875rem;
-        font-weight: 400;
+        font-weight: 500;
         transition: all 0.2s ease;
-        border-left: 3px solid transparent;
+        border-radius: 8px;
     }
 
-    .nav-link:hover {
-        color: #ffffff;
-        background: rgba(255, 255, 255, 0.05);
+    .jk-sidebar-v1 .jk-nav-link:hover {
+        color: var(--jk-primary-color);
+        background: var(--jk-bg-hover);
     }
 
-    .nav-link.active {
-        color: #ffffff;
-        background: rgba(255, 255, 255, 0.1);
-        border-left: 3px solid #4a90e2;
+    .jk-sidebar-v1 .jk-nav-link.active {
+        color: var(--jk-primary-color);
+        background: var(--jk-bg-active);
     }
 
-    .nav-link i {
+    .jk-sidebar-v1 .jk-nav-link i {
         width: 20px;
         margin-right: 12px;
         font-size: 1rem;
@@ -62,182 +80,183 @@
         text-align: center;
     }
 
-    .nav-text {
+    .jk-sidebar-v1 .jk-nav-text {
         flex: 1;
     }
 
-    .nav-arrow {
+    .jk-sidebar-v1 .jk-nav-arrow {
         font-size: 0.75rem;
         color: inherit;
         opacity: 0.7;
         transition: transform 0.2s ease;
     }
 
-    .nav-item.active > .nav-link .nav-arrow {
+    .jk-sidebar-v1 .jk-nav-item.active > .jk-nav-link .jk-nav-arrow {
         transform: rotate(180deg);
     }
 
-    .nav-submenu {
+    .jk-sidebar-v1 .jk-nav-submenu {
         display: none;
-        background: #242837;
+        margin-top: 0.25rem;
     }
 
-    .nav-item.active > .nav-submenu {
+    .jk-sidebar-v1 .jk-nav-item.active > .jk-nav-submenu {
         display: block;
     }
 
-    .nav-submenu .nav-link {
-        padding: 0.625rem 1rem 0.625rem 3.25rem;
-        color: rgba(255, 255, 255, 0.6);
+    .jk-sidebar-v1 .jk-nav-submenu .jk-nav-link {
+        padding: 0.625rem 1rem 0.625rem 2.75rem;
+        color: var(--jk-text-muted);
         font-size: 0.8125rem;
+        font-weight: 400;
     }
 
-    .nav-submenu .nav-link:hover {
-        color: #ffffff;
-        background: rgba(255, 255, 255, 0.05);
+    .jk-sidebar-v1 .jk-nav-submenu .jk-nav-link:hover {
+        color: var(--jk-primary-color);
+        background: var(--jk-bg-hover);
     }
 
-    .nav-submenu .nav-link.active {
-        color: #ffffff;
-        background: rgba(255, 255, 255, 0.1);
+    .jk-sidebar-v1 .jk-nav-submenu .jk-nav-link.active {
+        color: var(--jk-primary-color);
+        background: var(--jk-bg-active);
     }
 
     /* Scrollbar */
-    .sidebar-nav::-webkit-scrollbar {
+    .jk-sidebar-v1 .jk-sidebar-nav::-webkit-scrollbar {
         width: 6px;
     }
 
-    .sidebar-nav::-webkit-scrollbar-track {
+    .jk-sidebar-v1 .jk-sidebar-nav::-webkit-scrollbar-track {
         background: transparent;
     }
 
-    .sidebar-nav::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.2);
+    .jk-sidebar-v1 .jk-sidebar-nav::-webkit-scrollbar-thumb {
+        background: rgba(108, 117, 125, 0.2);
         border-radius: 3px;
     }
 
-    .sidebar-nav::-webkit-scrollbar-thumb:hover {
-        background: rgba(255, 255, 255, 0.3);
+    .jk-sidebar-v1 .jk-sidebar-nav::-webkit-scrollbar-thumb:hover {
+        background: rgba(108, 117, 125, 0.3);
     }
 </style>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<aside class="sidebar">
-    <div class="sidebar-header">
+<aside class="jk-sidebar-v1">
+    <div class="jk-sidebar-header">
         <a href="/restaurant">
             <img src="https://ucarecdn.com/bb9ad745-564d-400a-a2da-d0971f5605a8/-/preview/743x243/" alt="Logo">
         </a>
     </div>
     
-    <div class="sidebar-nav">
-        <div class="nav-item">
-            <a href="/restaurant" class="nav-link {% if frappe.request.path == '/restaurant' %}active{% endif %}">
+    <div class="jk-sidebar-nav">
+        <div class="jk-nav-item">
+            <a href="/restaurant" class="jk-nav-link {% if frappe.request.path == '/restaurant' %}active{% endif %}">
                 <i class="fas fa-chart-line"></i>
-                <span class="nav-text">Dashboard</span>
+                <span class="jk-nav-text">Dashboard</span>
             </a>
         </div>
         
-        <div class="nav-item">
-            <a href="/restaurant/pos" class="nav-link {% if frappe.request.path == '/restaurant/pos' %}active{% endif %}">
+        <div class="jk-nav-item">
+            <a href="/restaurant/pos" class="jk-nav-link {% if frappe.request.path == '/restaurant/pos' %}active{% endif %}">
                 <i class="fas fa-cash-register"></i>
-                <span class="nav-text">Point of Sale</span>
+                <span class="jk-nav-text">Point of Sale</span>
             </a>
         </div>
 
-        <div class="nav-item {% if frappe.request.path.startswith('/restaurant/sales') %}active{% endif %}">
-            <a href="#" class="nav-link">
+        <div class="jk-nav-item {% if frappe.request.path.startswith('/restaurant/sales') %}active{% endif %}">
+            <a href="#" class="jk-nav-link">
                 <i class="fas fa-file-invoice-dollar"></i>
-                <span class="nav-text">Invoices</span>
-                <i class="nav-arrow fas fa-chevron-down"></i>
+                <span class="jk-nav-text">Invoices</span>
+                <i class="jk-nav-arrow fas fa-chevron-down"></i>
             </a>
-            <div class="nav-submenu">
-                <div class="nav-item">
-                    <a href="/restaurant/sales/invoices" class="nav-link {% if frappe.request.path == '/restaurant/sales/invoices' %}active{% endif %}">
-                        <span class="nav-text">All Invoices</span>
+            <div class="jk-nav-submenu">
+                <div class="jk-nav-item">
+                    <a href="/restaurant/sales/invoices" class="jk-nav-link {% if frappe.request.path == '/restaurant/sales/invoices' %}active{% endif %}">
+                        <span class="jk-nav-text">All Invoices</span>
                     </a>
                 </div>
-                <div class="nav-item">
-                    <a href="/restaurant/sales/orders" class="nav-link {% if frappe.request.path == '/restaurant/sales/orders' %}active{% endif %}">
-                        <span class="nav-text">Orders</span>
+                <div class="jk-nav-item">
+                    <a href="/restaurant/sales/orders" class="jk-nav-link {% if frappe.request.path == '/restaurant/sales/orders' %}active{% endif %}">
+                        <span class="jk-nav-text">Orders</span>
                     </a>
                 </div>
-                <div class="nav-item">
-                    <a href="/restaurant/sales/estimates" class="nav-link {% if frappe.request.path == '/restaurant/sales/estimates' %}active{% endif %}">
-                        <span class="nav-text">Estimates</span>
+                <div class="jk-nav-item">
+                    <a href="/restaurant/sales/estimates" class="jk-nav-link {% if frappe.request.path == '/restaurant/sales/estimates' %}active{% endif %}">
+                        <span class="jk-nav-text">Estimates</span>
                     </a>
                 </div>
             </div>
         </div>
 
-        <div class="nav-item">
-            <a href="/restaurant/sales/customers" class="nav-link {% if frappe.request.path == '/restaurant/sales/customers' %}active{% endif %}">
+        <div class="jk-nav-item">
+            <a href="/restaurant/sales/customers" class="jk-nav-link {% if frappe.request.path == '/restaurant/sales/customers' %}active{% endif %}">
                 <i class="fas fa-users"></i>
-                <span class="nav-text">Customers</span>
+                <span class="jk-nav-text">Customers</span>
             </a>
         </div>
 
-        <div class="nav-item">
-            <a href="/restaurant/kitchen" class="nav-link {% if frappe.request.path == '/restaurant/kitchen' %}active{% endif %}">
+        <div class="jk-nav-item">
+            <a href="/restaurant/kitchen" class="jk-nav-link {% if frappe.request.path == '/restaurant/kitchen' %}active{% endif %}">
                 <i class="fas fa-utensils"></i>
-                <span class="nav-text">Kitchen Display</span>
+                <span class="jk-nav-text">Kitchen Display</span>
             </a>
         </div>
         
-        <div class="nav-item {% if frappe.request.path.startswith('/restaurant/menu') %}active{% endif %}">
-            <a href="#" class="nav-link">
+        <div class="jk-nav-item {% if frappe.request.path.startswith('/restaurant/menu') %}active{% endif %}">
+            <a href="#" class="jk-nav-link">
                 <i class="fas fa-book-open"></i>
-                <span class="nav-text">Menu</span>
-                <i class="nav-arrow fas fa-chevron-down"></i>
+                <span class="jk-nav-text">Menu</span>
+                <i class="jk-nav-arrow fas fa-chevron-down"></i>
             </a>
-            <div class="nav-submenu">
-                <div class="nav-item">
-                    <a href="/restaurant/menu/items" class="nav-link {% if frappe.request.path == '/restaurant/menu/items' %}active{% endif %}">
-                        <span class="nav-text">Menu Items</span>
+            <div class="jk-nav-submenu">
+                <div class="jk-nav-item">
+                    <a href="/restaurant/menu/items" class="jk-nav-link {% if frappe.request.path == '/restaurant/menu/items' %}active{% endif %}">
+                        <span class="jk-nav-text">Menu Items</span>
                     </a>
                 </div>
-                <div class="nav-item">
-                    <a href="/restaurant/menu/categories" class="nav-link {% if frappe.request.path == '/restaurant/menu/categories' %}active{% endif %}">
-                        <span class="nav-text">Categories</span>
+                <div class="jk-nav-item">
+                    <a href="/restaurant/menu/categories" class="jk-nav-link {% if frappe.request.path == '/restaurant/menu/categories' %}active{% endif %}">
+                        <span class="jk-nav-text">Categories</span>
                     </a>
                 </div>
-                <div class="nav-item">
-                    <a href="/restaurant/menu/modifiers" class="nav-link {% if frappe.request.path == '/restaurant/menu/modifiers' %}active{% endif %}">
-                        <span class="nav-text">Modifiers</span>
+                <div class="jk-nav-item">
+                    <a href="/restaurant/menu/modifiers" class="jk-nav-link {% if frappe.request.path == '/restaurant/menu/modifiers' %}active{% endif %}">
+                        <span class="jk-nav-text">Modifiers</span>
                     </a>
                 </div>
             </div>
         </div>
 
-        <div class="nav-item {% if frappe.request.path.startswith('/restaurant/inventory') %}active{% endif %}">
-            <a href="#" class="nav-link">
+        <div class="jk-nav-item {% if frappe.request.path.startswith('/restaurant/inventory') %}active{% endif %}">
+            <a href="#" class="jk-nav-link">
                 <i class="fas fa-box"></i>
-                <span class="nav-text">Inventory</span>
-                <i class="nav-arrow fas fa-chevron-down"></i>
+                <span class="jk-nav-text">Inventory</span>
+                <i class="jk-nav-arrow fas fa-chevron-down"></i>
             </a>
-            <div class="nav-submenu">
-                <div class="nav-item">
-                    <a href="/restaurant/inventory/items" class="nav-link {% if frappe.request.path == '/restaurant/inventory/items' %}active{% endif %}">
-                        <span class="nav-text">Items</span>
+            <div class="jk-nav-submenu">
+                <div class="jk-nav-item">
+                    <a href="/restaurant/inventory/items" class="jk-nav-link {% if frappe.request.path == '/restaurant/inventory/items' %}active{% endif %}">
+                        <span class="jk-nav-text">Items</span>
                     </a>
                 </div>
-                <div class="nav-item">
-                    <a href="/restaurant/inventory/stock" class="nav-link {% if frappe.request.path == '/restaurant/inventory/stock' %}active{% endif %}">
-                        <span class="nav-text">Stock</span>
+                <div class="jk-nav-item">
+                    <a href="/restaurant/inventory/stock" class="jk-nav-link {% if frappe.request.path == '/restaurant/inventory/stock' %}active{% endif %}">
+                        <span class="jk-nav-text">Stock</span>
                     </a>
                 </div>
-                <div class="nav-item">
-                    <a href="/restaurant/inventory/suppliers" class="nav-link {% if frappe.request.path == '/restaurant/inventory/suppliers' %}active{% endif %}">
-                        <span class="nav-text">Suppliers</span>
+                <div class="jk-nav-item">
+                    <a href="/restaurant/inventory/suppliers" class="jk-nav-link {% if frappe.request.path == '/restaurant/inventory/suppliers' %}active{% endif %}">
+                        <span class="jk-nav-text">Suppliers</span>
                     </a>
                 </div>
             </div>
         </div>
         
-        <div class="nav-item">
-            <a href="/restaurant/tables" class="nav-link {% if frappe.request.path == '/restaurant/tables' %}active{% endif %}">
+        <div class="jk-nav-item">
+            <a href="/restaurant/tables" class="jk-nav-link {% if frappe.request.path == '/restaurant/tables' %}active{% endif %}">
                 <i class="fas fa-chair"></i>
-                <span class="nav-text">Tables</span>
+                <span class="jk-nav-text">Tables</span>
             </a>
         </div>
     </div>
@@ -245,35 +264,14 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const menuItems = document.querySelectorAll('.nav-item > .nav-link');
+    const menuItems = document.querySelectorAll('.jk-sidebar-v1 .jk-nav-item > .jk-nav-link');
     
     menuItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-            const parent = this.parentElement;
-            if (parent.querySelector('.nav-submenu')) {
+        if (item.nextElementSibling && item.nextElementSibling.classList.contains('jk-nav-submenu')) {
+            item.addEventListener('click', function(e) {
                 e.preventDefault();
-                e.stopPropagation();
-                
-                const wasActive = parent.classList.contains('active');
-                
-                // Close all menus
-                document.querySelectorAll('.nav-item.active').forEach(menu => {
-                    menu.classList.remove('active');
-                });
-                
-                // Toggle current menu
-                if (!wasActive) {
-                    parent.classList.add('active');
-                }
-            }
-        });
-    });
-
-    // Close menus when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.nav-item')) {
-            document.querySelectorAll('.nav-item.active').forEach(menu => {
-                menu.classList.remove('active');
+                const parent = this.parentElement;
+                parent.classList.toggle('active');
             });
         }
     });

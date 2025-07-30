@@ -1,0 +1,111 @@
+{# 
+  Reusable Modal Component
+  Usage: 
+  1. Set the modal parameters
+  {% set modal_id = 'yourModalId' %}
+  {% set modal_title = 'Modal Title' %}
+  {% set modal_size = 'lg' %}  # Optional: sm, lg, xl
+  {% set modal_content = your_content %}
+  {% set form_id = 'formId' %}  # Optional
+  {% set form_action = '/api/endpoint' %}  # Optional
+  {% set submit_button_text = 'Save' %}  # Optional
+  ...
+  
+  2. Include the template
+  {% include "jokoor_payroll/templates/includes/elements/modal.html" %}
+  
+  Parameters:
+  - modal_id: Unique ID for the modal (required)
+  - modal_title: Title for the modal header
+  - modal_content: HTML content for the modal body
+  - modal_size: Size of modal (sm, lg, xl)
+  - static_backdrop: If true, modal cannot be closed by clicking outside
+  - form_id: ID for the form if the modal contains a form
+  - form_action: Action URL for the form
+  - submit_button_text: Text for the submit button
+  - submit_button_icon: FontAwesome icon class for submit button
+  - cancel_button_text: Text for the cancel button
+#}
+
+{# Default values for optional parameters #}
+{% if modal_size is not defined %}{% set modal_size = '' %}{% endif %}
+{% if static_backdrop is not defined %}{% set static_backdrop = false %}{% endif %}
+{% if has_form is not defined %}{% set has_form = false %}{% if form_id is defined %}{% set has_form = true %}{% endif %}{% endif %}
+{% if submit_button_text is not defined %}{% set submit_button_text = 'Save' %}{% endif %}
+{% if cancel_button_text is not defined %}{% set cancel_button_text = 'Close' %}{% endif %}
+
+<div class="modal fade" id="{{ modal_id }}" tabindex="-1" aria-labelledby="{{ modal_id }}Label" aria-hidden="true" 
+     {% if static_backdrop %}data-bs-backdrop="static" data-bs-keyboard="false"{% endif %}>
+    <div class="modal-dialog {% if modal_size %}modal-{{ modal_size }}{% endif %} modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            {% if has_form %}<form id="{{ form_id }}" action="{{ form_action }}" method="POST">{% endif %}
+            
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title" id="{{ modal_id }}Label">{{ modal_title }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body p-4">
+                {{ modal_content }}
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ cancel_button_text }}</button>
+                
+                {% if has_form %}
+                <button type="submit" class="btn btn-primary">
+                    {% if submit_button_icon %}<i class="fas {{ submit_button_icon }} me-1"></i>{% endif %}
+                    {{ submit_button_text }}
+                </button>
+                {% endif %}
+            </div>
+            
+            {% if has_form %}</form>{% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Modal Custom Styles */
+    .modal-content {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    
+    .modal-header {
+        padding: 1rem 1.5rem;
+        background-color: #ffffff;
+    }
+    
+    .modal-title {
+        font-weight: 600;
+        font-size: 18px;
+        color: #111827;
+    }
+    
+    .modal-footer {
+        padding: 1rem 1.5rem;
+        background-color: #f9fafb;
+    }
+    
+    .btn-primary {
+        background-color: #4f46e5;
+        border-color: #4f46e5;
+    }
+    
+    .btn-primary:hover, .btn-primary:focus {
+        background-color: #4338ca;
+        border-color: #4338ca;
+    }
+    
+    .btn-outline-secondary {
+        color: #6b7280;
+        border-color: #d1d5db;
+    }
+    
+    .btn-outline-secondary:hover {
+        background-color: #f3f4f6;
+        color: #374151;
+        border-color: #d1d5db;
+    }
+</style>

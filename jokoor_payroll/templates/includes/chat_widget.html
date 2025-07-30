@@ -1,0 +1,289 @@
+<!-- Support Chat Widget -->
+<div class="jk-chat-widget">
+    <button class="jk-chat-button" id="chatButton">
+        <i class="fas fa-comments"></i>
+    </button>
+    <div class="jk-chat-window" id="chatWindow">
+        <div class="jk-chat-header">
+            <div class="jk-chat-title">
+                <i class="fas fa-headset"></i>
+                <span>Support Chat</span>
+            </div>
+            <button class="jk-chat-close" id="closeChat">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="jk-chat-body" id="chatBody">
+            <div class="jk-chat-message jk-chat-message-system">
+                <div class="jk-chat-message-content">
+                    <p>Hello! How can we help you today?</p>
+                </div>
+            </div>
+        </div>
+        <div class="jk-chat-footer">
+            <div class="jk-chat-input-wrapper">
+                <input type="text" class="jk-chat-input" id="chatInput" placeholder="Type your message...">
+                <button class="jk-chat-send" id="sendMessage">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Chat Widget Styles */
+    .jk-chat-widget {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 1000;
+    }
+
+    .jk-chat-button {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: #5534c9;
+        color: white;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(85, 52, 201, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .jk-chat-button:hover {
+        background: #4425a3;
+        transform: scale(1.05);
+    }
+
+    .jk-chat-button i {
+        font-size: 1.5rem;
+    }
+
+    .jk-chat-window {
+        position: fixed;
+        bottom: 5rem;
+        right: 2rem;
+        width: 350px;
+        height: 500px;
+        background: white;
+        border-radius: 0.375rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .jk-chat-window.show {
+        display: flex;
+    }
+
+    .jk-chat-header {
+        padding: 1rem;
+        background: #5534c9;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .jk-chat-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+    }
+
+    .jk-chat-title i {
+        font-size: 1.25rem;
+    }
+
+    .jk-chat-close {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        padding: 0.25rem;
+        transition: opacity 0.2s ease;
+    }
+
+    .jk-chat-close:hover {
+        opacity: 0.8;
+    }
+
+    .jk-chat-body {
+        flex: 1;
+        padding: 1rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        background: #f8fafc;
+    }
+
+    .jk-chat-message {
+        max-width: 80%;
+        padding: 0.75rem 1rem;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+    }
+
+    .jk-chat-message-system {
+        align-self: flex-start;
+        background: white;
+        color: #1f2937;
+        border: 1px solid #e5e7eb;
+    }
+
+    .jk-chat-message-user {
+        align-self: flex-end;
+        background: #5534c9;
+        color: white;
+    }
+
+    .jk-chat-footer {
+        padding: 1rem;
+        border-top: 1px solid #e5e7eb;
+        background: white;
+    }
+
+    .jk-chat-input-wrapper {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .jk-chat-input {
+        flex: 1;
+        padding: 0.5rem 1rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        color: #1f2937;
+        transition: all 0.2s ease;
+    }
+
+    .jk-chat-input:focus {
+        outline: none;
+        border-color: #5534c9;
+        box-shadow: 0 0 0 2px rgba(85, 52, 201, 0.1);
+    }
+
+    .jk-chat-send {
+        width: 40px;
+        height: 40px;
+        border-radius: 0.375rem;
+        background: #5534c9;
+        color: white;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+
+    .jk-chat-send:hover {
+        background: #4425a3;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+        .jk-chat-widget {
+            bottom: 1rem;
+            right: 1rem;
+        }
+
+        .jk-chat-window {
+            bottom: 4rem;
+            right: 1rem;
+            width: calc(100% - 2rem);
+            height: 400px;
+        }
+
+        .jk-chat-button {
+            width: 50px;
+            height: 50px;
+        }
+    }
+</style>
+
+<script>
+    // Chat Widget Functionality
+    const chatButton = document.getElementById('chatButton');
+    const chatWindow = document.getElementById('chatWindow');
+    const closeChat = document.getElementById('closeChat');
+    const chatInput = document.getElementById('chatInput');
+    const sendMessage = document.getElementById('sendMessage');
+    const chatBody = document.getElementById('chatBody');
+
+    // Toggle chat window
+    chatButton.addEventListener('click', () => {
+        chatWindow.classList.add('show');
+        chatButton.style.display = 'none';
+    });
+
+    closeChat.addEventListener('click', () => {
+        chatWindow.classList.remove('show');
+        chatButton.style.display = 'flex';
+    });
+
+    // Send message
+    function sendUserMessage() {
+        const message = chatInput.value.trim();
+        if (message) {
+            // Add user message to chat
+            const userMessage = document.createElement('div');
+            userMessage.className = 'jk-chat-message jk-chat-message-user';
+            userMessage.innerHTML = `
+                <div class="jk-chat-message-content">
+                    <p>${message}</p>
+                </div>
+            `;
+            chatBody.appendChild(userMessage);
+
+            // Clear input
+            chatInput.value = '';
+
+            // Scroll to bottom
+            chatBody.scrollTop = chatBody.scrollHeight;
+
+            // Simulate response (replace with actual API call)
+            setTimeout(() => {
+                const systemMessage = document.createElement('div');
+                systemMessage.className = 'jk-chat-message jk-chat-message-system';
+                systemMessage.innerHTML = `
+                    <div class="jk-chat-message-content">
+                        <p>Thank you for your message. Our support team will get back to you shortly.</p>
+                    </div>
+                `;
+                chatBody.appendChild(systemMessage);
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }, 1000);
+        }
+    }
+
+    // Send message on button click
+    sendMessage.addEventListener('click', sendUserMessage);
+
+    // Send message on Enter key
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendUserMessage();
+        }
+    });
+
+    // Close chat when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!chatWindow.contains(e.target) && !chatButton.contains(e.target)) {
+            chatWindow.classList.remove('show');
+            chatButton.style.display = 'flex';
+        }
+    });
+</script> 

@@ -1,0 +1,2029 @@
+{% extends "jokoor_payroll/templates/pages/base.html" %}
+
+{% block content %}
+<!-- Link to global styles -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/dashboard/styles/global.css">
+<style>
+    /* Page-specific styling for pay run */
+    body.custom-dashboard .payroll-status {
+        display: inline-block !important;
+        padding: 4px 10px !important;
+        border-radius: 6px !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        margin-left: 10px !important;
+    }
+    
+    body.custom-dashboard .status-draft {
+        background-color: #f3f4f6 !important;
+        color: #6b7280 !important;
+    }
+    
+    body.custom-dashboard .status-processing {
+        background-color: #fffaeb !important;
+        color: #f59e0b !important;
+    }
+    
+    body.custom-dashboard .status-completed {
+        background-color: #ecfdf3 !important;
+        color: #10b981 !important;
+    }
+    
+    body.custom-dashboard .employee-card {
+        cursor: pointer !important;
+        transition: all 0.2s !important;
+    }
+    
+    body.custom-dashboard .employee-card:hover {
+        transform: translateY(-3px) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+    }
+    
+    body.custom-dashboard .summary-value {
+        font-size: 24px !important;
+        font-weight: 600 !important;
+        color: #344054 !important;
+    }
+    
+    body.custom-dashboard .summary-label {
+        font-size: 13px !important;
+        color: #6b7280 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+    }
+    
+    body.custom-dashboard .pay-day-box {
+        text-align: center !important;
+        padding: 20px !important;
+        border-left: 1px solid #e5e7eb !important;
+    }
+    
+    body.custom-dashboard .pay-day-number {
+        font-size: 45px !important;
+        font-weight: 700 !important;
+        line-height: 1 !important;
+        color: #344054 !important;
+    }
+    
+    body.custom-dashboard .pay-day-month {
+        font-size: 14px !important;
+        text-transform: uppercase !important;
+        color: #6b7280 !important;
+        letter-spacing: 1px !important;
+    }
+    
+    body.custom-dashboard .employees-count {
+        font-size: 14px !important;
+        color: #6b7280 !important;
+        margin-top: 5px !important;
+    }
+    
+    body.custom-dashboard .task-alert {
+        background-color: #fff9e6 !important;
+        border-left: 4px solid #f59e0b !important;
+        padding: 16px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    body.custom-dashboard .nav-tabs .nav-link {
+        font-weight: 500 !important;
+        padding: 12px 16px !important;
+        color: #6b7280 !important;
+    }
+    
+    body.custom-dashboard .nav-tabs .nav-link.active {
+        font-weight: 600 !important;
+        color: #7d5fd2 !important;
+        border-bottom: 2px solid #7d5fd2 !important;
+    }
+    
+    body.custom-dashboard .edit-days {
+        color: #7d5fd2 !important;
+        cursor: pointer !important;
+        font-size: 14px !important;
+    }
+    
+    body.custom-dashboard .component-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0 !important;
+        border-bottom: 1px solid #f0f0f5 !important;
+    }
+    
+    body.custom-dashboard .component-label {
+        font-weight: 500 !important;
+        color: #4b5563 !important;
+    }
+    
+    body.custom-dashboard .component-value {
+        font-weight: 600 !important;
+        color: #111827 !important;
+        text-align: right !important;
+    }
+    
+    body.custom-dashboard .component-total {
+        font-weight: 700 !important;
+        font-size: 18px !important;
+        color: #111827 !important;
+    }
+    
+    body.custom-dashboard .pay-run-employee-row {
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    
+    body.custom-dashboard .pay-run-employee-row:hover {
+        background-color: #f3f0ff;
+    }
+    
+    body.custom-dashboard .employee-row {
+        cursor: pointer !important;
+    }
+    
+    body.custom-dashboard .employee-row:hover {
+        background-color: #f3f0ff !important;
+    }
+    
+    body.custom-dashboard .employee-row.selected {
+        background-color: #e9e1fb !important;
+    }
+    
+    body.custom-dashboard .employee-action-btn {
+        border-radius: 4px !important;
+        color: #7d5fd2 !important;
+        border: 1px solid #d4c5fa !important;
+        background-color: #f3f0ff !important;
+        padding: 5px 8px !important;
+        font-size: 12px !important;
+    }
+    
+    body.custom-dashboard .employee-action-btn:hover {
+        background-color: #e9e1fb !important;
+    }
+    
+    /* Side panel styles */
+    .salary-panel {
+        position: fixed;
+        top: 0;
+        right: -450px;
+        width: 450px;
+        height: 100%;
+        background-color: #fff;
+        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+        z-index: 1050;
+        transition: right 0.3s ease;
+        overflow-y: auto;
+        border-left: 1px solid #e5e7eb;
+    }
+    
+    .salary-panel.open {
+        right: 0;
+    }
+    
+    .panel-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.3);
+        z-index: 1040;
+        display: none;
+    }
+    
+    .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        border-bottom: 1px solid #e5e7eb;
+        background-color: #f9fafb;
+    }
+    
+    .panel-close {
+        background: none;
+        border: none;
+        font-size: 18px;
+        color: #6b7280;
+        cursor: pointer;
+        padding: 5px;
+    }
+    
+    .panel-close:hover {
+        color: #111827;
+    }
+    
+    .panel-body {
+        padding: 20px;
+    }
+    
+    .employee-header {
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    
+    .employee-name {
+        font-size: 24px;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 5px;
+    }
+    
+    .employee-id {
+        font-size: 14px;
+        color: #6b7280;
+    }
+    
+    .net-pay {
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .net-pay-label {
+        font-size: 14px;
+        color: #6b7280;
+    }
+    
+    .net-pay-amount {
+        font-size: 28px;
+        font-weight: 700;
+        color: #111827;
+    }
+    
+    .pay-info {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        padding: 15px;
+        background-color: #f9fafb;
+        border-radius: 8px;
+    }
+    
+    .pay-info-item {
+        text-align: center;
+    }
+    
+    .pay-info-label {
+        font-size: 13px;
+        color: #6b7280;
+        margin-bottom: 5px;
+    }
+    
+    .pay-info-value {
+        font-size: 18px;
+        font-weight: 600;
+        color: #111827;
+    }
+    
+    .component-section {
+        margin-bottom: 30px;
+    }
+    
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    .section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #111827;
+    }
+    
+    .earnings-title {
+        color: #10b981;
+    }
+    
+    .deductions-title {
+        color: #ef4444;
+    }
+    
+    .component-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    
+    .component-name {
+        font-size: 14px;
+        color: #4b5563;
+    }
+    
+    .component-amount {
+        font-size: 14px;
+        font-weight: 600;
+        color: #111827;
+    }
+    
+    .deduction-amount {
+        color: #ef4444;
+    }
+    
+    .editable-amount {
+        position: relative;
+        padding-right: 30px;
+    }
+    
+    .edit-icon {
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+        cursor: pointer;
+        font-size: 12px;
+        visibility: hidden;
+    }
+    
+    .component-row:hover .edit-icon {
+        visibility: visible;
+    }
+    
+    .panel-actions {
+        padding: 20px;
+        display: flex;
+        justify-content: flex-end;
+        border-top: 1px solid #e5e7eb;
+        background-color: #f9fafb;
+    }
+    
+    /* Make the employee rows clickable */
+    .clickable-row {
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    
+    .clickable-row:hover {
+        background-color: #f3f0ff !important;
+    }
+    
+    @media (max-width: 768px) {
+        .salary-panel {
+            width: 100%;
+            right: -100%;
+        }
+    }
+    
+    /* Component dropdown styling */
+    .component-dropdown {
+        position: absolute;
+        background-color: white;
+        min-width: 200px;
+        max-height: 250px;
+        overflow-y: auto;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        display: none;
+    }
+    
+    .component-dropdown-item {
+        padding: 10px 15px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        color: #4b5563;
+        font-size: 14px;
+    }
+    
+    .component-dropdown-item:hover {
+        background-color: #f3f0ff !important;
+        color: #7d5fd2 !important;
+    }
+    
+    .component-dropdown-container {
+        position: relative;
+        display: inline-block;
+    }
+    
+    .component-amount-container {
+        margin-top: 10px;
+        display: none;
+    }
+    
+    .component-amount-container .input-group {
+        width: 100%;
+    }
+    
+    /* Update button colors */
+    .btn-primary {
+        background-color: #7d5fd2 !important;
+        border-color: #7d5fd2 !important;
+    }
+    
+    .btn-primary:hover {
+        background-color: #6a4ec1 !important;
+        border-color: #6a4ec1 !important;
+    }
+    
+    .btn-outline-primary {
+        color: #7d5fd2 !important;
+        border-color: #7d5fd2 !important;
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: #f3f0ff !important;
+        color: #6a4ec1 !important;
+        border-color: #6a4ec1 !important;
+    }
+
+    /* Add this to your style section */
+    #importExcelModal .modal-dialog {
+        max-width: 900px; /* Increased from 800px */
+        width: 95%;
+        margin: 30px auto;
+    }
+    
+    #importExcelModal .modal-content {
+        max-height: 80vh;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    #importExcelModal .modal-body {
+        max-height: calc(80vh - 130px); /* Subtract header and footer height */
+        overflow-y: auto;
+        padding: 25px;
+    }
+    
+    /* Improved import progress area */
+    #importProgressArea {
+        padding: 25px;
+        background-color: #f9fafb;
+        border-radius: 8px;
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+    
+    #importProgressBar {
+        height: 12px;
+        border-radius: 6px;
+        transition: width 0.5s ease;
+    }
+    
+    #importStatusText {
+        margin-top: 18px;
+        font-weight: 500;
+        font-size: 16px;
+        text-align: center;
+    }
+    
+    #importDetailText {
+        max-height: 200px;
+        overflow-y: auto;
+        margin-top: 15px;
+        padding: 10px;
+        border-radius: 6px;
+        background-color: #ffffff;
+        border: 1px solid #e5e7eb;
+    }
+    
+    /* Improve file input styling */
+    #importFileInput {
+        padding: 15px;
+        background-color: #f9fafb;
+        border-radius: 6px;
+    }
+    
+    /* Better feedback on hover */
+    #importExcelModal .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+    }
+</style>
+
+
+<div class="custom-dashboard">
+    <!-- Sidebar -->
+    
+    <!-- Main Content -->
+    <div class="">
+        <!-- Header -->
+        <header class="mb-4">
+            <div class="d-flex justify-content-between align-items-center w-100">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-sm btn-light me-3" onclick="history.back()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                    <h2 class="fw-bold mb-0"> {{payrun.name}} 
+                        <span class="payroll-status status-draft">
+                            {% if payrun_status == "Draft" %}
+                                <span class="badge bg-secondary">Draft</span>
+                            {% elif payrun_status == "Processing" %}
+                                <span class="badge bg-warning">Processing</span>
+                            {% else %}
+                                <span class="badge bg-success">Completed</span>
+                            {% endif %}
+                        </span></h2>
+                </div>
+                
+                <!-- Moved from bottom: Approve Payroll button -->
+                {% if payrun_status == "Draft" %}
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="approvePayrollBtn">
+                        <i class="fas fa-check-circle me-1"></i> Approve Payroll
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </header>
+        
+        <!-- Task Alert -->
+        <div class="task-alert">
+            <p class="mb-1"></p>
+            <p class="mb-0 fw-medium"></p>
+        </div>
+        
+        <!-- Pay Period Details -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card card-style">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-3">Period: {{payrun_month_and_year}}
+                                    <span class="ms-2 edit-days">
+                                        <i class="fas fa-pencil-alt"></i>
+                                        <span>{{payrun_days}} Base Days</span>
+                                    </span>
+                                </h6>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <div class="summary-value">GMD {{frappe.utils.fmt_money(gross_pay)}}</div>
+                                            <div class="summary-label">Payroll Cost</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <div class="summary-value">GMD {{frappe.utils.fmt_money(net_pay)}}</div>
+                                            <div class="summary-label">Employees' Net Pay</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="pay-day-box">
+                                <div class="pay-day-number">{{payrun_day_only}}</div>
+                                <div class="pay-day-month">{{payrun_month_and_year}}</div>
+                                <div class="employees-count">{{payrun.employees|length}} Employees</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tabs Navigation -->
+        <ul class="nav nav-tabs mt-4 mb-3" id="payrollTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="employee-tab" data-bs-toggle="tab" data-bs-target="#employee-summary" type="button" role="tab" aria-controls="employee-summary" aria-selected="true">Employee Summary</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="taxes-tab" data-bs-toggle="tab" data-bs-target="#taxes-deductions" type="button" role="tab" aria-controls="taxes-deductions" aria-selected="false">Taxes & Deductions</button>
+            </li>
+        </ul>
+        
+        <!-- Tab Content -->
+        <div class="tab-content" id="payrollTabContent">
+            <!-- Employee Summary Tab -->
+            <div class="tab-pane fade show active" id="employee-summary" role="tabpanel" aria-labelledby="employee-tab">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="employeeFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-filter me-1"></i> All Employees
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="employeeFilterDropdown">
+                            <li><a class="dropdown-item" href="#">All Employees</a></li>
+                            <li><a class="dropdown-item" href="#">By Department</a></li>
+                            <li><a class="dropdown-item" href="#">By Location</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">With Issues</a></li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Replaced search box with these action buttons -->
+                    <div class="action-buttons">
+                        {% if payrun_status == "Draft" %}
+                        <button class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#importExcelModal">
+                            <i class="fas fa-file-import me-1"></i> Import
+                        </button>
+                        {% endif %}
+                        <button class="btn btn-outline-primary" id="downloadReportBtn">
+                            <i class="fas fa-download me-1"></i> Download Report
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card card-style">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="dashboard-table" id="employeeTable">
+                                <thead>
+                                    <tr>
+                                        <th>Employee Name</th>
+                                        <th>Paid Days</th>
+                                        <th>Gross Pay</th>
+                                        <th>Deductions</th>
+                                        <th>Payee</th>
+                                        <th>SSHFC</th>
+                                        <th>Net Pay</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for employee in employees %}
+                                    <tr class="pay-run-employee-row">
+                                        <td>
+                                            <a href="/dashboard/payslip/view?id={{ employee.employee }}" style="text-decoration: none; color: inherit;">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="fw-medium">{{employee.employee_name}}</div>
+                                                    <div class="text-muted ms-2">({{employee.employee}})</div>
+                                                </div>
+                                            </a>
+                                        </td>
+                                        <td><a href="/dashboard/payslip/view?id={{ employee.name }}" style="text-decoration: none; color: inherit;">{{employee.paid_days}}</a></td>
+                                        <td><a href="/dashboard/payslip/view?id={{ employee.name }}" style="text-decoration: none; color: inherit;">D {{frappe.utils.fmt_money(employee.gross_pay)}}</a></td>
+                                        <td><a href="/dashboard/payslip/view?id={{ employee.name }}" style="text-decoration: none; color: inherit;">D {{frappe.utils.fmt_money(employee.total_deduction)}}</a></td>
+                                        <td><a href="/dashboard/payslip/view?id={{ employee.name }}" style="text-decoration: none; color: inherit;">D {{frappe.utils.fmt_money(employee.payee_amount)}}</a></td>
+                                        <td><a href="/dashboard/payslip/view?id={{ employee.name }}" style="text-decoration: none; color: inherit;">D {{frappe.utils.fmt_money(employee.sshfc_amount)}}</a></td>
+                                        <td><a href="/dashboard/payslip/view?id={{ employee.name }}" style="text-decoration: none; color: inherit;">D {{frappe.utils.fmt_money(employee.net_pay)}}</a></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Taxes & Deductions Tab -->
+            <div class="tab-pane fade" id="taxes-deductions" role="tabpanel" aria-labelledby="taxes-tab">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card card-style">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Taxes</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="component-item">
+                                    <div class="component-label">Payee</div>
+                                    <div class="component-value">GMD {{frappe.utils.fmt_money(taxes.payee_amount)}}</div>
+                                </div>
+                                <div class="component-item">
+                                    <div class="component-label">SSHFC</div>
+                                    <div class="component-value">GMD {{frappe.utils.fmt_money(taxes.sshfc_amount)}}</div>
+                                </div>
+                                <div class="component-item">
+                                    <div class="component-label fw-bold">Total Taxes</div>
+                                    <div class="component-value fw-bold">GMD {{frappe.utils.fmt_money(taxes.payee_amount + taxes.sshfc_amount)}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- <div class="col-md-4">
+                        <div class="card card-style">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Pre-Tax Deductions</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="component-item">
+                                    <div class="component-label">EPF Contribution</div>
+                                    <div class="component-value">5,04,000.00</div>
+                                </div>
+                                <div class="component-item">
+                                    <div class="component-label fw-bold">Total Pre-Tax</div>
+                                    <div class="component-value fw-bold">5,04,000.00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card card-style">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Post-Tax Deductions</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="component-item">
+                                    <div class="component-label">Health Insurance</div>
+                                    <div class="component-value">₹14,000.00</div>
+                                </div>
+                                <div class="component-item">
+                                    <div class="component-label">Salary Advance</div>
+                                    <div class="component-value">₹35,000.00</div>
+                                </div>
+                                <div class="component-item">
+                                    <div class="component-label fw-bold">Total Post-Tax</div>
+                                    <div class="component-value fw-bold">₹49,000.00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        
+                    </div>
+    
+  
+    
+
+    
+    <!-- Excel Import Modal -->
+    <div class="modal fade" id="importExcelModal" tabindex="-1" aria-labelledby="importExcelModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importExcelModalLabel">Import Components from Excel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-4">
+                        <p class="mb-1">Upload an Excel file containing employee salary components for this pay run.</p>
+                        <p class="text-muted small">Make sure to use the template format for proper import. <a href="#" id="downloadTemplateLink">Download template</a></p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="importFileInput" class="form-label">Select Excel File</label>
+                        <input class="form-control" type="file" id="importFileInput" accept=".xlsx, .xls, .csv">
+                        <div class="form-text">Accepted formats: .xlsx, .xls, .csv</div>
+                    </div>
+                    
+                    <div class="import-options mb-3">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="replaceExistingCheck" checked>
+                            <label class="form-check-label" for="replaceExistingCheck">
+                                Replace existing components when identical
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="skipErrorRowsCheck">
+                            <label class="form-check-label" for="skipErrorRowsCheck">
+                                Skip rows with errors
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div id="importPreviewArea" class="d-none">
+                        <h6 class="mb-3">Import Preview</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr class="table-light">
+                                        <th>Employee ID</th>
+                                        <th>Component</th>
+                                        <th>Type</th>
+                                        <th>Value</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="previewTableBody">
+                                    <!-- Preview data will be inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div>
+                                <span class="badge bg-success me-1">Valid: <span id="validCount">0</span></span>
+                                <span class="badge bg-danger">Errors: <span id="errorCount">0</span></span>
+                            </div>
+                            <button class="btn btn-sm btn-outline-secondary" id="toggleAllRowsBtn">Show All Rows</button>
+                        </div>
+                    </div>
+                    
+                    <div id="importProgressArea" class="d-none">
+                        <h6 class="mb-3">Import Progress</h6>
+                        <div class="progress mb-3">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" id="importProgressBar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <div class="text-center" id="importStatusText">Processing...</div>
+                        <div class="mt-3 text-muted small" id="importDetailText"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="previewImportBtn">
+                        <i class="fas fa-eye me-1"></i> Preview Import
+                    </button>
+                    <button type="button" class="btn btn-success d-none" id="confirmImportBtn">
+                        <i class="fas fa-file-import me-1"></i> Confirm Import
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Overlay for side panel -->
+<div class="panel-overlay" id="panelOverlay"></div>
+
+<!-- Employee Salary Slip Side Panel -->
+<div class="salary-panel" id="salaryPanel">
+    <div class="panel-header">
+        <h5 class="mb-0">Employee Payslip</h5>
+        <button class="panel-close" id="closePanel">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="panel-body" id="panelContent">
+        <!-- Content will be loaded dynamically -->
+        <div class="text-center py-5">
+            <i class="fas fa-spinner fa-spin fa-2x text-primary"></i>
+            <p class="mt-3">Loading payslip details...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden templates for component dropdowns -->
+<div id="earningDropdownTemplate" style="display: none;">
+    {% for component in earning_components %}
+    <div class="component-dropdown-item" data-component="{{ component.name }}">{{ component.name }}</div>
+    {% endfor %}
+</div>
+
+<div id="deductionDropdownTemplate" style="display: none;">
+    {% for component in deduction_components %}
+    <div class="component-dropdown-item" data-component="{{ component.name }}">{{ component.name }}</div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+    // Add custom class to body to enable our custom styles
+    document.body.classList.add('custom-dashboard');
+    
+    $(document).ready(function() {
+        // Set the active menu item in the sidebar
+        const payrollMenuItem = document.querySelector('.sidebar-item[href*="payroll"]');
+        if (payrollMenuItem) {
+            payrollMenuItem.classList.add('active');
+        }
+        
+        // Initialize employee components data (dummy data)
+        const employeeComponents = {
+            '103-355': {
+                name: 'Sandeep Lamichaane',
+                earnings: [
+                    { name: 'Basic', value: 79167.00 },
+                    { name: 'Basic Arrear', value: 37500.00 },
+                    { name: 'House Rent Allowance', value: 39584.00 },
+                    { name: 'House Rent Allowance Arrear', value: 18750.00 },
+                    { name: 'Fixed Allowance', value: 36632.00 },
+                    { name: 'Fixed Allowance Arrear', value: 18750.00 }
+                ],
+                deductions: [
+                    { name: 'EPF Contribution', value: 1800.00 },
+                    { name: 'Income Tax', value: 35035.00 },
+                    { name: 'TN Professional Tax', value: 0.00 }
+                ]
+            },
+            'PER-111': {
+                name: 'Kenneth Parker',
+                earnings: [
+                    { name: 'Basic', value: 50000.00 },
+                    { name: 'House Rent Allowance', value: 25000.00 },
+                    { name: 'Fixed Allowance', value: 43050.00 }
+                ],
+                deductions: [
+                    { name: 'EPF Contribution', value: 500.00 },
+                    { name: 'Income Tax', value: 18450.00 }
+                ]
+            },
+            'PER-6756': {
+                name: 'Sagar Elias Jacky',
+                earnings: [
+                    { name: 'Basic', value: 350000.00 },
+                    { name: 'House Rent Allowance', value: 175000.00 },
+                    { name: 'Fixed Allowance', value: 558333.00 }
+                ],
+                deductions: [
+                    { name: 'Income Tax', value: 368518.00 }
+                ]
+            },
+            'PER-5634': {
+                name: 'Rachel Greene',
+                earnings: [
+                    { name: 'Basic', value: 30000.00 },
+                    { name: 'House Rent Allowance', value: 15000.00 },
+                    { name: 'Fixed Allowance', value: 21667.00 }
+                ],
+                deductions: [
+                    { name: 'EPF Contribution', value: 500.00 },
+                    { name: 'Income Tax', value: 5495.00 }
+                ]
+            }
+        };
+        
+        // Available components for selection
+        const availableComponents = {
+            earning: [
+                { id: 'basic', name: 'Basic' },
+                { id: 'hra', name: 'House Rent Allowance' },
+                { id: 'fa', name: 'Fixed Allowance' },
+                { id: 'ba', name: 'Basic Arrear' },
+                { id: 'hraa', name: 'House Rent Allowance Arrear' },
+                { id: 'faa', name: 'Fixed Allowance Arrear' },
+                { id: 'bonus', name: 'Bonus' },
+                { id: 'performance_bonus', name: 'Performance Bonus' },
+                { id: 'special_allowance', name: 'Special Allowance' }
+            ],
+            deduction: [
+                { id: 'epf', name: 'EPF Contribution' },
+                { id: 'income_tax', name: 'Income Tax' },
+                { id: 'prof_tax', name: 'Professional Tax' },
+                { id: 'health_insurance', name: 'Health Insurance' },
+                { id: 'salary_advance', name: 'Salary Advance' },
+                { id: 'loan_deduction', name: 'Loan Deduction' }
+            ]
+        };
+        
+        // Close panel handlers
+        $('#closePanel, #panelOverlay').on('click', function() {
+            closeSalaryPanel();
+        });
+        
+        // Close panel with escape key
+        $(document).keydown(function(e) {
+            if (e.key === "Escape" && $('#salaryPanel').hasClass('open')) {
+                closeSalaryPanel();
+            }
+        });
+        
+        function closeSalaryPanel() {
+            $('#panelOverlay').fadeOut(300);
+            $('#salaryPanel').removeClass('open');
+        }
+        
+        function showErrorMessage() {
+            $('#panelContent').html(`
+                <div class="text-center py-5">
+                    <div class="mb-3"><i class="fas fa-exclamation-triangle fa-3x text-danger"></i></div>
+                    <h5>Unable to fetch payslip data</h5>
+                    <p class="text-muted">There was an error retrieving the payslip information.</p>
+                </div>
+            `);
+        }
+        
+        function formatMoney(amount) {
+            return parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        }
+        
+        // Function to render salary details
+        function renderSalaryDetails(salarySlip) {
+            // Calculate actual payable days
+            const payableDays = salarySlip.payment_days || 0;
+            const lopDays = salarySlip.leave_without_pay || 0;
+            const actualDays = payableDays - lopDays;
+            const payrunStatus = '{{ payrun_status }}'; // Get the payrun status from context
+            const isEditable = payrunStatus === 'Draft'; // Only allow editing in draft mode
+            
+            let html = `
+                <div class="employee-header">
+                    <div class="employee-name">${salarySlip.employee_name}</div>
+                    <div class="employee-id">Emp. ID: ${salarySlip.employee}</div>
+                    
+                    <div class="net-pay">
+                        <div class="net-pay-label">Net Pay</div>
+                        <div class="net-pay-amount">GMD ${formatMoney(salarySlip.net_pay)}</div>
+                    </div>
+                </div>
+                
+                <div class="pay-info">
+                    <div class="pay-info-item">
+                        <div class="pay-info-label">Payable Days</div>
+                        <div class="pay-info-value">${payableDays}</div>
+                    </div>
+                    <div class="pay-info-item">
+                        <div class="pay-info-label">LOP Days</div>
+                        <div class="pay-info-value">${lopDays}</div>
+                    </div>
+                    <div class="pay-info-item">
+                        <div class="pay-info-label">Actual Payable Days</div>
+                        <div class="pay-info-value">${actualDays}</div>
+                    </div>
+                </div>
+                
+                <!-- Earnings Section -->
+                <div class="component-section">
+                    <div class="section-header">
+                        <div class="section-title earnings-title">(+) EARNINGS</div>
+                        <div class="section-title">AMOUNT</div>
+                    </div>`;
+            
+            // Add earnings
+            if (salarySlip.earnings && salarySlip.earnings.length > 0) {
+                salarySlip.earnings.forEach(function(earning) {
+                    html += `
+                    <div class="component-row">
+                        <div class="component-name">${earning.salary_component}</div>
+                        <div class="component-amount">
+                            ${isEditable ? 
+                                `<span class="editable-amount" data-component="${earning.salary_component}" data-type="earning" data-amount="${earning.amount}">
+                                    GMD ${formatMoney(earning.amount)}
+                                    <i class="fas fa-pencil-alt edit-icon"></i>
+                                 </span>` 
+                                : `GMD ${formatMoney(earning.amount)}`
+                            }
+                        </div>
+                    </div>`;
+                });
+            }
+            
+            // Add Earning button (only in draft mode)
+            if (isEditable) {
+                html += `
+                    <div class="mt-3 component-dropdown-container">
+                        <button class="btn btn-sm btn-outline-success add-component-btn" data-type="earning" data-employee="${salarySlip.employee}" data-slip="${salarySlip.name}">
+                            <i class="fas fa-plus"></i> Add Earning
+                        </button>
+                        <div class="component-dropdown" id="earningDropdown">
+                            <!-- Component options will be loaded here -->
+                            <div class="p-2 text-center">
+                                <i class="fas fa-spinner fa-spin"></i> Loading components...
+                            </div>
+                        </div>
+                        <div class="component-amount-container" id="earningAmountContainer">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text">GMD</span>
+                                <input type="number" class="form-control" id="earningAmount" min="0" step="0.01" placeholder="Enter amount">
+                                <button class="btn btn-sm btn-primary" id="saveEarningBtn">Save</button>
+                            </div>
+                            <input type="hidden" id="selectedEarningComponent">
+                        </div>
+                    </div>`;
+            }
+            
+            html += `
+                </div>
+                
+                <!-- Deductions Section -->
+                <div class="component-section">
+                    <div class="section-header">
+                        <div class="section-title deductions-title">(-) DEDUCTIONS</div>
+                        <div class="section-title">AMOUNT</div>
+                    </div>`;
+            
+            // Add deductions
+            if (salarySlip.deductions && salarySlip.deductions.length > 0) {
+                salarySlip.deductions.forEach(function(deduction) {
+                    html += `
+                    <div class="component-row">
+                        <div class="component-name">${deduction.salary_component}</div>
+                        <div class="component-amount deduction-amount">
+                            ${isEditable ? 
+                                `<span class="editable-amount" data-component="${deduction.salary_component}" data-type="deduction" data-amount="${deduction.amount}">
+                                    GMD ${formatMoney(deduction.amount)}
+                                    <i class="fas fa-pencil-alt edit-icon"></i>
+                                 </span>` 
+                                : `GMD ${formatMoney(deduction.amount)}`
+                            }
+                    </div>
+                    </div>`;
+                });
+            }
+            
+            // Add Deduction button (only in draft mode)
+            if (isEditable) {
+                html += `
+                    <div class="mt-3 component-dropdown-container">
+                        <button class="btn btn-sm btn-outline-danger add-component-btn" data-type="deduction" data-employee="${salarySlip.employee}" data-slip="${salarySlip.name}">
+                            <i class="fas fa-plus"></i> Add Deduction
+                        </button>
+                        <div class="component-dropdown" id="deductionDropdown">
+                            <!-- Component options will be loaded here -->
+                            <div class="p-2 text-center">
+                                <i class="fas fa-spinner fa-spin"></i> Loading components...
+                            </div>
+                        </div>
+                        <div class="component-amount-container" id="deductionAmountContainer">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text">GMD</span>
+                                <input type="number" class="form-control" id="deductionAmount" min="0" step="0.01" placeholder="Enter amount">
+                                <button class="btn btn-sm btn-primary" id="saveDeductionBtn">Save</button>
+                            </div>
+                            <input type="hidden" id="selectedDeductionComponent">
+                        </div>
+                    </div>`;
+            }
+            
+            html += `
+                </div>
+                
+                <div class="panel-actions">
+                    ${isEditable ? 
+                        `<button class="btn btn-primary me-2 save-changes-btn" data-slip="${salarySlip.name}">
+                            <i class="fas fa-save me-2"></i> Save Changes
+                         </button>` 
+                        : ''
+                    }
+                    <a href="/dashboard/payslip/view?id=${salarySlip.name}" class="btn btn-outline-primary">
+                        <i class="fas fa-file-alt me-2"></i> View Full Payslip
+                    </a>
+                </div>`;
+            
+            $('#panelContent').html(html);
+            
+            // Add event handlers for component editing (only if in draft mode)
+            if (isEditable) {
+                // Handle editable amount click
+                $('.editable-amount').on('click', function() {
+                    const component = $(this).data('component');
+                    const type = $(this).data('type');
+                    const currentAmount = $(this).data('amount');
+                    
+                    // Replace with input field
+                    $(this).html(`
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text">GMD</span>
+                            <input type="number" class="form-control component-amount-input" 
+                                   value="${currentAmount}" min="0" step="0.01"
+                                   data-component="${component}" data-type="${type}" data-original="${currentAmount}">
+                        </div>
+                    `);
+                    
+                    // Focus on the input
+                    $(this).find('input').focus().select();
+                    
+                    // Handle clicking outside to cancel
+                    $(document).on('click', function handleOutsideClick(e) {
+                        if (!$(e.target).closest('.editable-amount, .component-amount-input').length) {
+                            resetEditableAmounts();
+                            $(document).off('click', handleOutsideClick);
+                        }
+                    });
+                    
+                    // Handle Enter key to save
+                    $(this).find('input').on('keydown', function(e) {
+                        if (e.key === 'Enter') {
+                            const newVal = $(this).val();
+                            const component = $(this).data('component');
+                            const type = $(this).data('type');
+                            
+                            updateComponentAmount(salarySlip.name, component, type, newVal);
+                            
+                            $(this).closest('.editable-amount').html(`
+                                GMD ${formatMoney(newVal)}
+                                <i class="fas fa-pencil-alt edit-icon"></i>
+                            `).data('amount', newVal);
+                            
+                            $(document).off('click');
+                        } else if (e.key === 'Escape') {
+                            resetEditableAmounts();
+                            $(document).off('click');
+                        }
+                    });
+                });
+                
+                // Handle add component button
+                $('.add-component-btn').on('click', function(e) {
+                    e.stopPropagation();
+                    const type = $(this).data('type');
+                    const employeeId = $(this).data('employee');
+                    const slipId = $(this).data('slip');
+                    
+                    // Hide all dropdowns first
+                    $('.component-dropdown').hide();
+                    
+                    // Show the specific dropdown
+                    const dropdown = type === 'earning' ? $('#earningDropdown') : $('#deductionDropdown');
+                    
+                    // Position the dropdown
+                    dropdown.css({
+                        'top': $(this).outerHeight() + 5 + 'px',
+                        'left': '0'
+                    }).show();
+                    
+                    // Load components if not already loaded
+                    if (dropdown.find('.component-dropdown-item').length === 0) {
+                        loadComponentOptions(type, slipId);
+                    }
+                    
+                    // Close dropdown when clicking outside
+                    $(document).on('click', function closeDropdown(e) {
+                        if (!$(e.target).closest('.component-dropdown, .add-component-btn').length) {
+                            dropdown.hide();
+                            $(document).off('click', closeDropdown);
+                        }
+                    });
+                });
+                
+                // Cancel amount entry
+                $('.cancel-amount-btn').on('click', function() {
+                    const type = $(this).data('type');
+                    const container = type === 'earning' ? $('#earningAmountContainer') : $('#deductionAmountContainer');
+                    container.hide();
+                });
+                
+                // Save earning button
+                $('#saveEarningBtn').on('click', function() {
+                    const component = $('#selectedEarningComponent').val();
+                    const amount = $('#earningAmount').val();
+                    const slipId = $('.add-component-btn[data-type="earning"]').data('slip');
+                    
+                    if (!component || !amount) {
+                        frappe.show_alert({
+                            message: 'Please select a component and enter an amount',
+                            indicator: 'red'
+                        });
+                        return;
+                    }
+                    
+                    saveNewComponent(slipId, component, 'earning', amount);
+                });
+                
+                // Save deduction button
+                $('#saveDeductionBtn').on('click', function() {
+                    const component = $('#selectedDeductionComponent').val();
+                    const amount = $('#deductionAmount').val();
+                    const slipId = $('.add-component-btn[data-type="deduction"]').data('slip');
+                    
+                    if (!component || !amount) {
+                        frappe.show_alert({
+                            message: 'Please select a component and enter an amount',
+                            indicator: 'red'
+                        });
+                return;
+            }
+            
+                    saveNewComponent(slipId, component, 'deduction', amount);
+                });
+                
+                // Handle save changes button
+                $('.save-changes-btn').on('click', function() {
+                    const slipId = $(this).data('slip');
+                    saveAllChanges(slipId);
+                });
+            }
+        }
+        
+        function resetEditableAmounts() {
+            $('.editable-amount').each(function() {
+                const amount = $(this).data('amount');
+                $(this).html(`
+                    GMD ${formatMoney(amount)}
+                    <i class="fas fa-pencil-alt edit-icon"></i>
+                `);
+            });
+        }
+        
+        // Function to update a component amount in the backend
+        function updateComponentAmount(slipId, component, type, amount) {
+            // Store the change in a temporary array until saved
+            if (!window.pendingChanges) {
+                window.pendingChanges = [];
+            }
+            
+            // Check if this component is already in the pending changes
+            const existingIndex = window.pendingChanges.findIndex(
+                change => change.slip === slipId && change.component === component
+            );
+            
+            if (existingIndex >= 0) {
+                window.pendingChanges[existingIndex].amount = amount;
+            } else {
+                window.pendingChanges.push({
+                    slip: slipId,
+                    component: component,
+                    type: type,
+                    amount: amount
+                });
+            }
+            
+            console.log('Pending changes:', window.pendingChanges);
+        }
+        
+        // Function to save all changes to the backend
+        function saveAllChanges(slipId) {
+            // Show a loading indicator
+            const saveBtn = $('.save-changes-btn');
+            const originalText = saveBtn.html();
+            saveBtn.html('<i class="fas fa-spinner fa-spin me-2"></i> Saving...');
+            saveBtn.prop('disabled', true);
+            
+            // Filter changes for this slip ID
+            const changes = window.pendingChanges ? 
+                window.pendingChanges.filter(change => change.slip === slipId) : [];
+            
+            if (changes.length === 0) {
+                // No changes to save
+                saveBtn.html(originalText);
+                saveBtn.prop('disabled', false);
+                frappe.show_alert({
+                    message: 'No changes to save',
+                    indicator: 'yellow'
+                });
+                return;
+            }
+            
+            // Call the server to save changes
+            frappe.call({
+                method: "jokoor_payroll.www.dashboard.payrun.view.index.update_salary_slip_component",
+                args: {
+                    slip_id: slipId,
+                    changes: changes
+                },
+                callback: function(response) {
+                    if (response.message && response.message.success) {
+                        // Clear pending changes for this slip
+                        if (window.pendingChanges) {
+                            window.pendingChanges = window.pendingChanges.filter(
+                                change => change.slip !== slipId
+                            );
+                        }
+                        
+                        // Reload the salary slip data
+                        frappe.call({
+                            method: "frappe.client.get",
+                            args: {
+                                doctype: "Salary Slip",
+                                name: slipId
+                            },
+                            callback: function(slipResponse) {
+                                if (slipResponse.message) {
+                                    renderSalaryDetails(slipResponse.message);
+                                    
+                                    frappe.show_alert({
+                                        message: 'Changes saved successfully',
+                                        indicator: 'green'
+                                    });
+                                }
+                            }
+            });
+        } else {
+                        frappe.show_alert({
+                            message: 'Error saving changes: ' + (response.message?.error || 'Unknown error'),
+                            indicator: 'red'
+                        });
+                        saveBtn.html(originalText);
+                        saveBtn.prop('disabled', false);
+                    }
+                },
+                error: function() {
+                    frappe.show_alert({
+                        message: 'Error saving changes',
+                        indicator: 'red'
+                    });
+                    saveBtn.html(originalText);
+                    saveBtn.prop('disabled', false);
+                }
+            });
+        }
+        
+        // Function to show modal for adding a new component
+        function showAddComponentModal(employeeId, slipId, type) {
+            // If modal doesn't exist, create it
+            if (!$('#addComponentModal').length) {
+                $('body').append(`
+                    <div class="modal fade" id="addComponentModal" tabindex="-1" aria-labelledby="addComponentModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addComponentModalLabel">Add ${type === 'earning' ? 'Earning' : 'Deduction'}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                                <div class="modal-body">
+                                    <form id="addComponentForm">
+                                        <div class="mb-3">
+                                            <label for="componentName" class="form-label">Component</label>
+                                            <select class="form-select" id="componentName" required>
+                                                <option value="" selected disabled>Select component</option>
+                                                <!-- Options will be populated dynamically -->
+                                            </select>
+                    </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="componentAmount" class="form-label">Amount (GMD)</label>
+                                            <input type="number" class="form-control" id="componentAmount" min="0" step="0.01" placeholder="Enter amount" required>
+                                        </div>
+                                        
+                                        <input type="hidden" id="modalEmployeeId">
+                                        <input type="hidden" id="modalSlipId">
+                                        <input type="hidden" id="modalComponentType">
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-primary" id="saveNewComponent">
+                                        <i class="fas fa-plus me-1"></i> Add Component
+                                    </button>
+                                </div>
+                            </div>
+                </div>
+            </div>
+        `);
+        
+                // Add event handler for saving new component
+                $('#saveNewComponent').on('click', function() {
+                    const form = document.getElementById('addComponentForm');
+                    
+                    if (!form.checkValidity()) {
+                        form.reportValidity();
+                        return;
+                    }
+                    
+                    const componentName = $('#componentName').val();
+                    const componentAmount = $('#componentAmount').val();
+                    const slipId = $('#modalSlipId').val();
+                    const componentType = $('#modalComponentType').val();
+                    
+                    // Show loading state
+                    const saveBtn = $('#saveNewComponent');
+                    const originalText = saveBtn.html();
+                    saveBtn.html('<i class="fas fa-spinner fa-spin me-1"></i> Adding...');
+                    saveBtn.prop('disabled', true);
+                    
+                    // Call the API to add new component
+                    frappe.call({
+                        method: "jokoor_payroll.www.dashboard.payrun.view.index.add_salary_slip_component",
+                        args: {
+                            slip_id: slipId,
+                            component: componentName,
+                            type: componentType,
+                            amount: componentAmount
+                        },
+                        callback: function(response) {
+                            if (response.message && response.message.success) {
+                                // Close modal
+                                $('#addComponentModal').modal('hide');
+                                
+                                // Reload the salary slip data
+                                frappe.call({
+                                    method: "frappe.client.get",
+                                    args: {
+                                        doctype: "Salary Slip",
+                                        name: slipId
+                                    },
+                                    callback: function(slipResponse) {
+                                        if (slipResponse.message) {
+                                            renderSalaryDetails(slipResponse.message);
+                                            
+                                            frappe.show_alert({
+                                                message: 'Component added successfully',
+                                                indicator: 'green'
+                                            });
+                                        }
+                                    }
+                                });
+                            } else {
+                                frappe.show_alert({
+                                    message: 'Error adding component: ' + (response.message?.error || 'Unknown error'),
+                                    indicator: 'red'
+                                });
+                                saveBtn.html(originalText);
+                                saveBtn.prop('disabled', false);
+                            }
+                        },
+                        error: function() {
+                            frappe.show_alert({
+                                message: 'Error adding component',
+                                indicator: 'red'
+                            });
+                            saveBtn.html(originalText);
+                            saveBtn.prop('disabled', false);
+                        }
+                    });
+                });
+            }
+            
+            // Populate component options based on type
+            $('#componentName').empty().append('<option value="" selected disabled>Select component</option>');
+            
+            // Fetch available components for the selected type
+            frappe.call({
+                method: "jokoor_payroll.www.dashboard.payrun.view.index.get_available_components",
+                args: {
+                    type: type
+                },
+                callback: function(response) {
+                    if (response.message && response.message.length) {
+                        response.message.forEach(function(component) {
+                            $('#componentName').append(`<option value="${component.name}">${component.name}</option>`);
+                        });
+                    }
+                }
+            });
+            
+            // Set hidden fields
+            $('#modalEmployeeId').val(employeeId);
+            $('#modalSlipId').val(slipId);
+            $('#modalComponentType').val(type);
+            
+            // Clear form fields
+            $('#componentAmount').val('');
+            
+            // Update modal title
+            $('#addComponentModalLabel').text(`Add ${type === 'earning' ? 'Earning' : 'Deduction'}`);
+            
+            // Show the modal
+            var modal = new bootstrap.Modal(document.getElementById('addComponentModal'));
+            modal.show();
+        }
+        
+        // Add event handler for Download Report button
+        $('#downloadReportBtn').on('click', function() {
+            downloadEmployeeTableAsExcel();
+        });
+        
+        // Function to download employee table as Excel
+        function downloadEmployeeTableAsExcel() {
+            // Show loading state
+            const btn = $('#downloadReportBtn');
+            const originalText = btn.html();
+            btn.html('<i class="fas fa-spinner fa-spin me-1"></i> Downloading...');
+            btn.prop('disabled', true);
+            
+        // Create workbook and worksheet
+        const wb = XLSX.utils.book_new();
+        
+            // Get table headers
+            const headers = [];
+            $('#employeeTable thead th').each(function() {
+                headers.push($(this).text().trim());
+            });
+            
+            // Get table data with improved cell content extraction
+            const data = [headers];
+            $('#employeeTable tbody tr').each(function() {
+                const rowData = [];
+                $(this).find('td').each(function(cellIndex) {
+                    let cellText = '';
+                    
+                    // Special handling for employee name column (first column)
+                    if (cellIndex === 0) {
+                        const name = $(this).find('.fw-medium').text().trim();
+                        const id = $(this).find('.text-muted').text().trim();
+                        cellText = name + ' ' + id;
+                    } else {
+                        // For other columns, get the direct text content
+                        cellText = $(this).text().trim();
+                    }
+                    
+                    // Remove any currency symbols (D, GMD, etc.)
+                    cellText = cellText.replace(/D\s+/g, '').replace(/GMD\s+/g, '');
+                    
+                    rowData.push(cellText);
+                });
+                
+                // Only add row if it has content (not empty)
+                if (rowData.some(cell => cell !== '')) {
+                    data.push(rowData);
+                }
+            });
+            
+            // Create worksheet and add to workbook
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            XLSX.utils.book_append_sheet(wb, ws, "Employee Payroll");
+            
+            // Set column widths - make them wider to ensure all content fits
+            const colWidths = headers.map(h => ({ wch: Math.max(h.length, 15) }));
+            ws['!cols'] = colWidths;
+            
+            // Add styling to the header row
+            const headerCellStyle = {
+                font: { bold: true },
+                fill: { fgColor: { rgb: "E9E1FB" } } // Light purple background for headers (instead of pink)
+            };
+            
+            // Apply header styles and set text formats
+            for (let i = 0; i < headers.length; i++) {
+                const cellRef = XLSX.utils.encode_cell({ r: 0, c: i });
+                if (!ws[cellRef].s) ws[cellRef].s = {};
+                Object.assign(ws[cellRef].s, headerCellStyle);
+                
+                // Set number format for numeric columns (amounts)
+                if (i >= 2) { // Starting from Gross Pay column
+                    for (let row = 1; row < data.length; row++) {
+                        const valueCellRef = XLSX.utils.encode_cell({ r: row, c: i });
+                        if (ws[valueCellRef]) {
+                            // Parse and format as number with 2 decimal places
+                            const val = ws[valueCellRef].v;
+                            if (!isNaN(parseFloat(val))) {
+                                ws[valueCellRef].t = 'n';
+                                ws[valueCellRef].z = '#,##0.00';
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Generate filename with current date
+            const date = new Date();
+            const dateStr = date.toISOString().split('T')[0];
+            const payrunName = '{{ payrun.name }}'.replace(/[^a-zA-Z0-9]/g, '_');
+            const filename = `${payrunName}_Payroll_Report_${dateStr}.xlsx`;
+            
+            // Save file
+            XLSX.writeFile(wb, filename);
+            
+            // Reset button state
+        setTimeout(function() {
+                btn.html(originalText);
+                btn.prop('disabled', false);
+                
+                frappe.show_alert({
+                    message: 'Report downloaded successfully',
+                    indicator: 'green'
+                });
+        }, 1000);
+    }
+    
+        // Update the existing previewImportBtn click handler
+    $('#previewImportBtn').on('click', function() {
+            const fileInput = $('#importFileInput')[0];
+        if (!fileInput.files || fileInput.files.length === 0) {
+                frappe.show_alert({
+                    message: 'Please select a file to import',
+                    indicator: 'red'
+                });
+            return;
+        }
+        
+        const file = fileInput.files[0];
+            const reader = new FileReader();
+        
+            // Show a loading state
+        $('#previewImportBtn').html('<i class="fas fa-spinner fa-spin me-1"></i> Processing...');
+        $('#previewImportBtn').prop('disabled', true);
+        
+        reader.onload = function(e) {
+                const fileContent = e.target.result;
+                
+                // Parse the CSV file
+                const workbook = XLSX.read(fileContent, { type: 'binary' });
+                const firstSheet = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheet];
+                
+                // Convert to JSON
+                const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                
+                // Preview the data
+                renderImportPreview(jsonData);
+                
+                // Show confirm button and preview area
+                $('#confirmImportBtn').removeClass('d-none');
+                $('#importPreviewArea').removeClass('d-none');
+                
+                // Reset button state
+            $('#previewImportBtn').html('<i class="fas fa-eye me-1"></i> Preview Import');
+            $('#previewImportBtn').prop('disabled', false);
+        };
+        
+            reader.readAsBinaryString(file);
+        });
+
+        // Function to render import preview
+        function renderImportPreview(data) {
+            const tableBody = $('#previewTableBody');
+            tableBody.empty();
+            
+            // Validate if data has expected format
+            if (!data.length || !data[0].hasOwnProperty('Employee ID')) {
+                tableBody.append(`
+                    <tr>
+                        <td colspan="5" class="text-center text-danger">
+                            Invalid file format. Please download and use the template.
+                        </td>
+                    </tr>
+                `);
+                return;
+            }
+            
+        let validCount = 0;
+        let errorCount = 0;
+        
+            // Render each row for preview
+        data.forEach(function(row, index) {
+                const employeeId = row['Employee ID'];
+                
+            // Skip empty rows
+                if (!employeeId) return;
+                
+            let isValid = true;
+                let status = 'Valid';
+            
+                // Check if employee exists (this is just a client-side check for preview)
+                // In a real implementation, you would verify if the employee exists in this payrun
+                if (!employeeId.match(/^[A-Za-z0-9\-_]+$/)) {
+                isValid = false;
+                    status = 'Invalid employee ID format';
+                    errorCount++;
+                } else {
+                    validCount++;
+                }
+                
+                // Get component columns
+                const componentColumns = Object.keys(row).filter(key => key !== 'Employee ID');
+                
+                // For each component, add a row
+                componentColumns.forEach(function(component) {
+                    const value = row[component];
+                    
+                    // Skip if value is empty or zero
+                    if (!value) return;
+                    
+                    tableBody.append(`
+                <tr class="${isValid ? '' : 'table-danger'}">
+                    <td>${employeeId}</td>
+                            <td>${component}</td>
+                            <td>Auto-detected</td>
+                            <td>${typeof value === 'number' ? value.toFixed(2) : value}</td>
+                            <td>${status}</td>
+                </tr>
+                    `);
+                });
+        });
+        
+        // Update counters
+        $('#validCount').text(validCount);
+        $('#errorCount').text(errorCount);
+        
+            // If no rows were added
+            if (tableBody.children().length === 0) {
+                tableBody.append(`
+                    <tr>
+                        <td colspan="5" class="text-center">
+                            No data to import. Please check your file.
+                        </td>
+                </tr>
+            `);
+        }
+    }
+    
+        // Update the confirmImportBtn click handler
+    $('#confirmImportBtn').on('click', function() {
+            const fileInput = $('#importFileInput')[0];
+            if (!fileInput.files || fileInput.files.length === 0) {
+                frappe.show_alert({
+                    message: 'Please select a file to import',
+                    indicator: 'red'
+                });
+                return;
+        }
+        
+            // Get options
+            const replaceExisting = $('#replaceExistingCheck').is(':checked');
+            
+            // Show progress area and hide preview
+        $('#importPreviewArea').addClass('d-none');
+        $('#importProgressArea').removeClass('d-none');
+            
+            // Update progress bar and message
+            $('#importProgressBar').css('width', '50%');
+            $('#importStatusText').html('<i class="fas fa-spinner fa-spin me-2"></i> Processing import...');
+            
+            // Disable buttons
+            $('#previewImportBtn, #confirmImportBtn').prop('disabled', true);
+            
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const fileContent = e.target.result;
+                
+                // Call server to import components
+                frappe.call({
+                    method: "jokoor_payroll.www.dashboard.payrun.view.index.import_one_time_components",
+                    args: {
+                        file_content: fileContent,
+                        payrun_id: '{{ payrun.name }}',
+                        replace_existing: replaceExisting ? 1 : 0
+                    },
+                    callback: function(response) {
+                        if (response.message && response.message.success) {
+                            // Show success
+                            $('#importProgressBar').css('width', '100%').addClass('bg-success');
+                            $('#importStatusText').html(`
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                ${response.message.message}
+                            `);
+                            
+                            // Show details
+                            if (response.message.details && response.message.details.length) {
+                                let detailsHtml = '<div class="mt-4 p-3 bg-light rounded">';
+                                detailsHtml += '<h6 class="mb-3">Successfully Imported:</h6>';
+                                detailsHtml += '<ul class="list-group">';
+                                
+                                response.message.details.forEach(detail => {
+                                    detailsHtml += `<li class="list-group-item small">${detail}</li>`;
+                                });
+                                
+                                detailsHtml += '</ul></div>';
+                                $('#importProgressArea').append(detailsHtml);
+                            }
+                            
+                            // Add reload button
+                            $('#importProgressArea').append(`
+                                <div class="d-flex justify-content-center mt-4">
+                                    <button id="reloadPageBtn" class="btn btn-primary">
+                                        <i class="fas fa-sync-alt me-2"></i> Reload Page to See Changes
+                                    </button>
+                                </div>
+                            `);
+                            
+                            // Add reload handler
+                            $('#reloadPageBtn').on('click', function() {
+                                window.location.reload();
+                            });
+                            
+                        } else {
+                            // Show error
+                            $('#importProgressBar').css('width', '100%').removeClass('bg-primary').addClass('bg-danger');
+                            $('#importStatusText').html(`
+                                <i class="fas fa-times-circle text-danger me-2"></i>
+                                ${response.message?.message || 'Import failed'}
+                            `);
+                            
+                            // Enable buttons to try again
+                            $('#previewImportBtn, #confirmImportBtn').prop('disabled', false);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Import error:", error);
+                        // Show error
+                        $('#importProgressBar').css('width', '100%').removeClass('bg-primary').addClass('bg-danger');
+                        $('#importStatusText').html(`
+                            <i class="fas fa-times-circle text-danger me-2"></i>
+                            Error: ${error || 'Import failed'}
+                        `);
+                        
+                        // Enable buttons to try again
+                        $('#previewImportBtn, #confirmImportBtn').prop('disabled', false);
+                    }
+                });
+            };
+            
+            // Read file as text
+            reader.readAsText(file);
+        });
+
+        // Add event handler for template download
+        $('#downloadTemplateLink, #downloadTemplateBtn').on('click', function(e) {
+            e.preventDefault();
+            window.location.href = '/api/method/jokoor_payroll.www.dashboard.payrun.view.index.download_template';
+        });
+
+        // Add this to your script section
+        $(document).ready(function() {
+            // Add click handler for Approve Payroll button
+            $('#approvePayrollBtn').on('click', function() {
+                handleApprovePayroll();
+            });
+            
+            function handleApprovePayroll() {
+                // Show confirmation dialog
+                frappe.confirm(
+                    'Are you sure you want to approve this payroll? This will submit all salary slips and cannot be undone.',
+                    function() {
+                        // On confirm
+                        submitPayrun();
+                    },
+                    function() {
+                        // On cancel
+                        // Do nothing
+                    }
+                );
+            }
+            
+            function submitPayrun() {
+                // Show loading state
+                const approveBtn = $('#approvePayrollBtn');
+                const originalText = approveBtn.html();
+                approveBtn.html('<i class="fas fa-spinner fa-spin me-2"></i> Processing...');
+                approveBtn.prop('disabled', true);
+                
+                // Call API to submit payrun
+                frappe.call({
+                    method: "jokoor_payroll.www.dashboard.payrun.view.index.submit_payrun",
+                    args: {
+                        payrun_id: '{{ payrun.name }}'
+                    },
+                    callback: function(response) {
+                        if (response.message && response.message.success) {
+            // Show success message
+                            frappe.show_alert({
+                                message: response.message.message,
+                                indicator: 'green'
+                            });
+                            
+                            // Show detailed results in a modal
+                            showSubmissionResults(response.message.results);
+                            
+                            // Reload page after a short delay
+            setTimeout(function() {
+                                window.location.reload();
+                            }, 3000);
+                        } else {
+                            // Show error
+                            frappe.show_alert({
+                                message: response.message?.message || 'Error approving payroll',
+                                indicator: 'red'
+                            });
+                            
+                            // Reset button
+                            approveBtn.html(originalText);
+                            approveBtn.prop('disabled', false);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Show error
+                        frappe.show_alert({
+                            message: 'Error approving payroll: ' + error,
+                            indicator: 'red'
+                        });
+                        
+                        // Reset button
+                        approveBtn.html(originalText);
+                        approveBtn.prop('disabled', false);
+                    }
+                });
+            }
+            
+            function showSubmissionResults(results) {
+                let html = `
+                    <div class="modal fade" id="submissionResultsModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Payroll Submission Results</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                                <div class="modal-body">
+                                    <div class="alert alert-success">
+                                        <strong>Summary:</strong> ${results.success} of ${results.total} salary slips submitted successfully.
+                                    </div>`;
+        
+                // Show errors if any
+                if (results.errors > 0 && results.error_details && results.error_details.length > 0) {
+                    html += `
+                        <div class="alert alert-danger">
+                            <strong>Failed Submissions:</strong> ${results.errors} salary slips could not be submitted.
+                        </div>
+                        <div class="table-responsive mt-3">
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Employee</th>
+                                        <th>Error</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
+            
+                    results.error_details.forEach(function(error) {
+                        html += `
+                            <tr>
+                                <td>${error.employee}</td>
+                                <td class="text-danger">${error.error}</td>
+                            </tr>`;
+                    });
+            
+                    html += `
+                                </tbody>
+                            </table>
+                        </div>`;
+                }
+            
+                html += `
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+            
+                // Add modal to body and show it
+                $('body').append(html);
+                var submissionModal = new bootstrap.Modal(document.getElementById('submissionResultsModal'));
+                submissionModal.show();
+            
+                // Remove modal from DOM when hidden
+                $('#submissionResultsModal').on('hidden.bs.modal', function() {
+                    $(this).remove();
+                });
+            }
+        });
+    });
+    
+    function navigateToPayslip(id) {
+        window.location.href = '/dashboard/payslip/view?id=' + encodeURIComponent(id);
+    }
+</script>
+{% endblock %} 

@@ -1,0 +1,317 @@
+{% set form_id = form_id | default('report-filters-' ~ frappe.utils.now_datetime().strftime('%Y%m%d%H%M%S%f')) %}
+{% set show_apply_button = show_apply_button | default(false) %}
+{% set apply_filters_text = apply_filters_text | default('Apply Filters') %}
+{% set reset_filters_text = reset_filters_text | default('Reset') %}
+{% set show_reset_button = show_reset_button | default(false) %}
+{% set filters = report.filters %}
+{% set auto_submit = report.auto_submit | default(true) %}
+
+<div class="carbon-filters-container">
+    <div class="carbon-filters-card">
+        <div class="carbon-filters-header">
+            <h3 class="carbon-filters-title">
+                <i class="fas fa-filter"></i>
+                Report Filters
+            </h3>
+            {% if show_reset_button %}
+            <button type="button" class="carbon-btn carbon-btn-ghost carbon-btn-sm" onclick="resetFilters()">
+                <i class="fas fa-undo"></i>
+                {{ reset_filters_text }}
+            </button>
+            {% endif %}
+        </div>
+        
+        <form id="{{ form_id }}" class="carbon-filters-form" method="GET" novalidate>
+            <div class="carbon-filters-grid">
+                {% for filter in filters %}
+                <div class="carbon-filter-item">
+                    <label for="{{ filter.name }}" class="carbon-label">
+                        {{ filter.label }}
+                        {% if filter.required %}<span class="carbon-required">*</span>{% endif %}
+                    </label>
+                    
+                    {% if filter.type == 'select' %}
+                        <div class="carbon-select-wrapper">
+                            <select 
+                                id="{{ filter.name }}" 
+                                name="{{ filter.name }}" 
+                                class="carbon-select report-filter-input"
+                                {% if filter.required %}required{% endif %}
+                                {% if filter.onchange %}onchange="{{ filter.onchange }}"{% endif %}
+                            >
+                                {% if not filter.required %}
+                                    <option value="">{{ filter.placeholder | default('All') }}</option>
+                                {% endif %}
+                                
+                                {% for option in filter.options %}
+                                    <option 
+                                        value="{{ option.value }}" 
+                                        {% if option.value == filter.value %}selected{% endif %}
+                                    >
+                                        {{ option.label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <i class="fas fa-chevron-down carbon-select-arrow"></i>
+                        </div>
+                    {% elif filter.type == 'date' %}
+                        <div class="carbon-input-wrapper">
+                            <input 
+                                type="date" 
+                                id="{{ filter.name }}" 
+                                name="{{ filter.name }}" 
+                                class="carbon-input report-filter-input"
+                                value="{{ filter.value }}"
+                                {% if filter.required %}required{% endif %}
+                                {% if filter.min %}min="{{ filter.min }}"{% endif %}
+                                {% if filter.max %}max="{{ filter.max }}"{% endif %}
+                                {% if filter.onchange %}onchange="{{ filter.onchange }}"{% endif %}
+                            >
+                            <i class="fas fa-calendar carbon-input-icon"></i>
+                        </div>
+                    {% elif filter.type == 'month' %}
+                        <div class="carbon-input-wrapper">
+                            <input 
+                                type="month" 
+                                id="{{ filter.name }}" 
+                                name="{{ filter.name }}" 
+                                class="carbon-input report-filter-input"
+                                value="{{ filter.value }}"
+                                {% if filter.required %}required{% endif %}
+                                {% if filter.min %}min="{{ filter.min }}"{% endif %}
+                                {% if filter.max %}max="{{ filter.max }}"{% endif %}
+                                {% if filter.onchange %}onchange="{{ filter.onchange }}"{% endif %}
+                            >
+                            <i class="fas fa-calendar-alt carbon-input-icon"></i>
+                        </div>
+                    {% endif %}
+                    
+                    {% if filter.description %}
+                        <div class="carbon-helper-text">{{ filter.description }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            
+            {% if show_apply_button %}
+            <div class="carbon-filters-actions">
+                <button type="submit" class="carbon-btn carbon-btn-primary">
+                    <i class="fas fa-check"></i>
+                    {{ apply_filters_text }}
+                </button>
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<style>
+/* Clean Minimal Theme - Compact Filters Component */
+.carbon-filters-container {
+    margin-bottom: 1rem;
+}
+
+.carbon-filters-card {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.carbon-filters-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.carbon-filters-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #495057;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.carbon-filters-title i {
+    color: #6c757d;
+    font-size: 0.75rem;
+}
+
+.carbon-filters-form {
+    padding: 1rem;
+}
+
+.carbon-filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.carbon-filter-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.carbon-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.375rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.carbon-required {
+    color: #dc3545;
+    margin-left: 0.25rem;
+}
+
+.carbon-select-wrapper,
+.carbon-input-wrapper {
+    position: relative;
+}
+
+.carbon-select,
+.carbon-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    padding-right: 2rem;
+    font-size: 0.8125rem;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    background: #ffffff;
+    color: #495057;
+    transition: all 0.2s ease;
+    appearance: none;
+}
+
+.carbon-select:focus,
+.carbon-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+}
+
+.carbon-select:hover,
+.carbon-input:hover {
+    border-color: #007bff;
+}
+
+.carbon-select-arrow,
+.carbon-input-icon {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    font-size: 0.6875rem;
+    pointer-events: none;
+}
+
+.carbon-helper-text {
+    font-size: 0.6875rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+    line-height: 1.4;
+}
+
+.carbon-filters-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+/* Clean Button Styles */
+.carbon-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    line-height: 1;
+}
+
+.carbon-btn-primary {
+    background: #007bff;
+    color: #ffffff;
+}
+
+.carbon-btn-primary:hover {
+    background: #0056b3;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.carbon-btn-ghost {
+    background: transparent;
+    color: #6c757d;
+    border: 1px solid #6c757d;
+}
+
+.carbon-btn-ghost:hover {
+    background: #f8f9fa;
+    border-color: #495057;
+}
+
+.carbon-btn-sm {
+    padding: 0.375rem 0.625rem;
+    font-size: 0.6875rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .carbon-filters-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .carbon-filters-header {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: flex-start;
+    }
+    
+    .carbon-filters-actions {
+        justify-content: stretch;
+    }
+    
+    .carbon-btn {
+        flex: 1;
+        justify-content: center;
+    }
+}
+</style>
+
+{% if auto_submit %}
+<script>
+// Auto-submit the form when any filter changes (except if specifically disabled)
+document.addEventListener('DOMContentLoaded', function() {
+    const filterForm = document.getElementById('{{ form_id }}');
+    const filterInputs = filterForm.querySelectorAll('.report-filter-input:not([data-no-auto-submit="true"])');
+    
+    filterInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            filterForm.submit();
+        });
+    });
+});
+
+function resetFilters() {
+    window.location.href = window.location.pathname;
+}
+</script>
+{% endif %}

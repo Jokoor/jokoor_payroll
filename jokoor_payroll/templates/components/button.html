@@ -1,0 +1,17 @@
+
+
+{% macro button(text="Button", type="primary", size="standard", icon="", badge="", loading=false, disabled=false,
+classes="", btn_type="submit") %}
+<button
+    type="{{ btn_type }}"
+    class="jk-btn jk-btn-{{ type }} jk-btn-{{ size }} {{ classes }} {% if icon %}has-icon{% endif %} {% if badge %}has-badge{% endif %} {% if loading %}is-loading{% endif %} {% if disabled %}is-disabled{% endif %}"
+    {% if disabled %}disabled{% endif %}>
+    {% if icon %}
+    <i class="fa fa-{{ icon }}"></i>
+    {% endif %}
+    {{ text }}
+    {% if badge %}
+    <span class="badge">{{ badge }}</span>
+    {% endif %}
+</button>
+{% endmacro %}

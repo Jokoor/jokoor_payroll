@@ -1,0 +1,49 @@
+{% macro filter(
+    id="filter",
+    conditions=[]
+) %}
+<div class="segment-term-wrap is-query">
+    <div class="segment-term-inputs">
+        {% for condition in conditions %}
+            {% if condition.type == "select" %}
+                {% from "templates/components/select.html" import select %}
+                {{ select(
+                    id=condition.id,
+                    options=condition.options,
+                    placeholder=condition.placeholder,
+                    search=condition.searchable
+                ) }}
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        {% for condition in conditions %}
+            $("#{{ condition.id }}").on('change', function() {
+                const value = $(this).val();
+                const url = new URL(window.location.href);
+                if (value) {
+                    url.searchParams.set('{{ condition.id }}', value);
+                } else {
+                    url.searchParams.delete('{{ condition.id }}');
+                }
+                window.location.href = url.toString();
+            });
+        {% endfor %}
+    });
+</script>
+
+<style>
+    .segment-term-wrap {
+        margin-bottom: 15px;
+    }
+    
+    .segment-term-inputs {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+</style>
+{% endmacro %} 

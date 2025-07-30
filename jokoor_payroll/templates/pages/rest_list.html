@@ -1,0 +1,383 @@
+{% extends "templates/pages/resto.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="/assets/jokoor/css/jds.css">
+
+<!-- List Card -->
+<div class="jds-card">
+    <!-- Card Header with Title and Actions -->
+    <div class="jds-card-header">
+        <div class="jds-header-left">
+            <h2>{{ title or "List View" }}</h2>
+        </div>
+        <div class="jds-header-right">
+            <!-- Normal Actions -->
+            <div class="jds-normal-actions">
+                <button class="jds-btn jds-btn-primary" onclick="handleAddNew()">
+                    <i class="fas fa-plus"></i>
+                    Add New
+                </button>
+            </div>
+            
+            <!-- Selection Actions (hidden by default) -->
+            <div class="jds-selection-actions" style="display: none;">
+                <span class="jds-selected-count">0 selected</span>
+                <div class="jds-dropdown">
+                    <button class="jds-btn jds-btn-secondary jds-dropdown-toggle">
+                        Actions
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="jds-dropdown-menu">
+                        <button class="jds-dropdown-item" onclick="handleBulkDelete()">
+                            <i class="fas fa-trash-alt"></i>
+                            Delete Selected
+                        </button>
+                        <button class="jds-dropdown-item" onclick="handleBulkExport()">
+                            <i class="fas fa-file-export"></i>
+                            Export Selected
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Records Per Page (always visible) -->
+            <div class="jds-dropdown">
+                <button class="jds-btn jds-btn-secondary jds-dropdown-toggle">
+                    Show: <span id="recordsPerPage">20</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="jds-dropdown-menu">
+                    <button class="jds-dropdown-item" onclick="changeRecordsPerPage(10)">10 records</button>
+                    <button class="jds-dropdown-item" onclick="changeRecordsPerPage(20)">20 records</button>
+                    <button class="jds-dropdown-item" onclick="changeRecordsPerPage(50)">50 records</button>
+                    <button class="jds-dropdown-item" onclick="changeRecordsPerPage(100)">100 records</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Container -->
+    <div class="jds-card-body">
+        <div class="jds-table-container">
+            <table class="jds-table">
+                <thead>
+                    <tr>
+                        <th class="jds-checkbox-column">
+                            <label class="jds-checkbox">
+                                <input type="checkbox" id="selectAll">
+                                <span class="jds-checkbox-mark"></span>
+                            </label>
+                        </th>
+                        {% for column in columns %}
+                        <th>{{ column.label }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                    <tr>
+                        <td class="jds-checkbox-column">
+                            <label class="jds-checkbox">
+                                <input type="checkbox" class="row-checkbox" data-id="{{ row.id }}">
+                                <span class="jds-checkbox-mark"></span>
+                            </label>
+                        </td>
+                        {% for column in columns %}
+                        <td>{{ row[column.field] }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Additional List-specific styles */
+    .jds-header-left {
+        display: flex;
+        align-items: center;
+        gap: var(--jds-spacing-4);
+    }
+
+    .jds-header-right {
+        display: flex;
+        align-items: center;
+        gap: var(--jds-spacing-3);
+    }
+
+    .jds-normal-actions,
+    .jds-selection-actions {
+        display: flex;
+        align-items: center;
+        gap: var(--jds-spacing-3);
+    }
+
+    .jds-selected-count {
+        color: var(--jds-gray-500);
+        font-size: 0.875rem;
+        margin-right: var(--jds-spacing-2);
+    }
+
+    .jds-checkbox-column {
+        width: 48px;
+        text-align: center;
+    }
+
+    /* Checkbox styles */
+    .jds-checkbox {
+        display: inline-flex;
+        align-items: center;
+        position: relative;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .jds-checkbox input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+    }
+
+    .jds-checkbox-mark {
+        height: 18px;
+        width: 18px;
+        background-color: white;
+        border: 2px solid var(--jds-gray-300);
+        border-radius: 4px;
+        transition: all 0.2s ease;
+    }
+
+    .jds-checkbox input:checked ~ .jds-checkbox-mark {
+        background-color: var(--jds-purple);
+        border-color: var(--jds-purple);
+    }
+
+    .jds-checkbox-mark:after {
+        content: "";
+        position: absolute;
+        display: none;
+        left: 6px;
+        top: 2px;
+        width: 4px;
+        height: 8px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+
+    .jds-checkbox input:checked ~ .jds-checkbox-mark:after {
+        display: block;
+    }
+
+    /* Updated Dropdown styles */
+    .jds-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .jds-dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: var(--jds-spacing-2);
+        background: white;
+        border: 1px solid var(--jds-gray-200);
+        border-radius: var(--jds-radius-md);
+        box-shadow: var(--jds-shadow-lg);
+        min-width: 160px;
+        z-index: 1000;
+        display: none;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .jds-dropdown.active .jds-dropdown-menu {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .jds-dropdown-toggle {
+        cursor: pointer;
+    }
+
+    .jds-dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: var(--jds-spacing-2);
+        padding: var(--jds-spacing-2) var(--jds-spacing-3);
+        color: var(--jds-gray-700);
+        font-size: 0.875rem;
+        width: 100%;
+        text-align: left;
+        border: none;
+        background: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .jds-dropdown-item:hover {
+        background: var(--jds-gray-50);
+        color: var(--jds-gray-900);
+    }
+
+    .jds-dropdown-item i {
+        font-size: 1rem;
+        width: 20px;
+    }
+
+    /* Add New button styles */
+    .jds-btn i {
+        margin-right: var(--jds-spacing-2);
+    }
+</style>
+
+<script>
+    // Global variables for DOM elements
+    let normalActions;
+    let selectionActions;
+    let selectAll;
+    let rowCheckboxes;
+    let selectedCount;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeElements();
+        initializeDropdowns();
+        initializeCheckboxes();
+    });
+
+    function initializeElements() {
+        normalActions = document.querySelector('.jds-normal-actions');
+        selectionActions = document.querySelector('.jds-selection-actions');
+        selectAll = document.getElementById('selectAll');
+        rowCheckboxes = document.querySelectorAll('.row-checkbox');
+        selectedCount = document.querySelector('.jds-selected-count');
+    }
+
+    function initializeDropdowns() {
+        // Close any open dropdowns first
+        closeAllDropdowns();
+
+        // Setup dropdown toggles
+        document.querySelectorAll('.jds-dropdown-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const dropdown = this.closest('.jds-dropdown');
+                const isActive = dropdown.classList.contains('active');
+                
+                // Close all other dropdowns
+                closeAllDropdowns();
+                
+                // Toggle current dropdown
+                if (!isActive) {
+                    dropdown.classList.add('active');
+                }
+            });
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.jds-dropdown')) {
+                closeAllDropdowns();
+            }
+        });
+
+        // Prevent dropdown menu clicks from closing the dropdown
+        document.querySelectorAll('.jds-dropdown-menu').forEach(menu => {
+            menu.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+    }
+
+    function closeAllDropdowns() {
+        document.querySelectorAll('.jds-dropdown').forEach(dropdown => {
+            dropdown.classList.remove('active');
+        });
+    }
+
+    function initializeCheckboxes() {
+        // Select All checkbox
+        selectAll.addEventListener('change', () => {
+            rowCheckboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+            updateSelectedCount();
+        });
+
+        // Individual checkboxes
+        rowCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const checkedBoxes = Array.from(rowCheckboxes).filter(cb => cb.checked);
+                const allChecked = checkedBoxes.length === rowCheckboxes.length;
+                const someChecked = checkedBoxes.length > 0;
+
+                selectAll.checked = allChecked;
+                selectAll.indeterminate = someChecked && !allChecked;
+                
+                updateSelectedCount();
+            });
+        });
+
+        // Initial check for any pre-selected checkboxes
+        updateSelectedCount();
+    }
+
+    function updateSelectedCount() {
+        const checkedBoxes = Array.from(rowCheckboxes).filter(cb => cb.checked);
+        const count = checkedBoxes.length;
+
+        if (count > 0) {
+            normalActions.style.display = 'none';
+            selectionActions.style.display = 'flex';
+            selectedCount.textContent = `${count} selected`;
+        } else {
+            normalActions.style.display = 'flex';
+            selectionActions.style.display = 'none';
+        }
+    }
+
+    // Records per page
+    function changeRecordsPerPage(count) {
+        document.getElementById('recordsPerPage').textContent = count;
+        closeAllDropdowns();
+        // Here you would typically reload the data with the new count
+    }
+
+    // Add New functionality
+    function handleAddNew() {
+        // This should be overridden in the implementing page
+        console.log('Add New clicked - override this in your page');
+    }
+
+    // Bulk actions
+    function handleBulkDelete() {
+        const selectedIds = Array.from(rowCheckboxes)
+            .filter(cb => cb.checked)
+            .map(cb => cb.dataset.id);
+
+        if (selectedIds.length > 0) {
+            if (confirm(`Are you sure you want to delete ${selectedIds.length} items?`)) {
+                console.log('Deleting:', selectedIds);
+                // Here you would typically make an API call to delete the items
+            }
+        }
+    }
+
+    function handleBulkExport() {
+        const selectedIds = Array.from(rowCheckboxes)
+            .filter(cb => cb.checked)
+            .map(cb => cb.dataset.id);
+
+        if (selectedIds.length > 0) {
+            console.log('Exporting:', selectedIds);
+            // Here you would typically trigger the export functionality
+        }
+    }
+</script>
+{% endblock %} 

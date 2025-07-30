@@ -1,0 +1,479 @@
+{% extends "templates/pages/base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="/assets/jokoor/css/jds.css">
+
+<!-- Page Header -->
+<div class="jds-card">
+    <div class="jds-card-header">
+        <div class="jds-header-left">
+            <h2>Salary Structures</h2>
+            <p class="jds-text-sm text-gray-500">Manage your organization's salary structures and components</p>
+        </div>
+        <div class="jds-header-right">
+            <a href="/payroll/settings/salary-structure/new" class="jds-btn jds-btn-primary">
+                <i class="fas fa-plus"></i>
+                Add Structure
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Structures List -->
+<div class="jds-card">
+    <div class="jds-table-container">
+        <table class="jds-table">
+            <thead>
+                <tr>
+                    <th>Structure Name</th>
+                    <th>Base Salary</th>
+                    <th>Components</th>
+                    <th>Employees</th>
+                    <th>Status</th>
+                    <th>Last Updated</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for structure in structures %}
+                <tr>
+                    <td>{{ structure.name }}</td>
+                    <td>D{{ structure.base_salary }}</td>
+                    <td>{{ structure.components_count }} components</td>
+                    <td>{{ structure.employees_count }} assigned</td>
+                    <td>
+                        <span class="jds-badge jds-badge-{{ structure.status_class }}">
+                            {{ structure.status }}
+                        </span>
+                    </td>
+                    <td>{{ structure.last_updated }}</td>
+                    <td class="text-right">
+                        <a href="/payroll/settings/salary-structure/{{ structure.name }}" class="jds-btn jds-btn-icon">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <button class="jds-btn jds-btn-icon" onclick="deleteStructure('{{ structure.name }}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Updated Modal -->
+<div class="jds-modal" id="structureModal">
+    <div class="jds-modal-overlay"></div>
+    <div class="jds-modal-container">
+        <div class="jds-modal-header">
+            <h3 id="modalTitle">New Salary Structure</h3>
+            <button class="jds-modal-close" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="jds-modal-body">
+            <form id="structureForm" onsubmit="handleSubmit(event)">
+                <input type="hidden" id="structureId" name="structureId">
+                
+                <div class="jds-form-group">
+                    <label class="jds-form-label">Structure Name</label>
+                    <input type="text" class="jds-form-control" id="structureName" name="name" required>
+                </div>
+
+                <div class="jds-form-group">
+                    <label class="jds-form-label">Base Salary</label>
+                    <div class="jds-input-group">
+                        <span class="jds-input-group-text">D</span>
+                        <input type="number" class="jds-form-control" id="baseSalary" name="baseSalary" required>
+                    </div>
+                </div>
+
+                <div class="jds-form-group">
+                    <label class="jds-form-label">Components</label>
+                    <div id="componentsContainer" class="jds-components-list">
+                        <!-- Components will be added here dynamically -->
+                    </div>
+                    <button type="button" class="jds-btn jds-btn-secondary jds-btn-sm mt-2" onclick="addComponent()">
+                        <i class="fas fa-plus"></i>
+                        Add Component
+                    </button>
+                </div>
+
+                <div class="jds-form-group">
+                    <label class="jds-form-label">Status</label>
+                    <select class="jds-form-control" id="status" name="status" required>
+                        <option value="active">Active</option>
+                        <option value="draft">Draft</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="jds-modal-footer">
+            <button class="jds-btn jds-btn-secondary" onclick="closeModal()">Cancel</button>
+            <button class="jds-btn jds-btn-primary" onclick="submitForm()">Save Structure</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Additional styles for salary structure page */
+    .jds-card {
+        margin-bottom: var(--jds-spacing-6);
+    }
+
+    .jds-header-left p {
+        margin-top: var(--jds-spacing-1);
+    }
+
+    .jds-btn-icon {
+        padding: var(--jds-spacing-2);
+        color: var(--jds-gray-600);
+        background: none;
+        border: none;
+    }
+
+    .jds-btn-icon:hover {
+        color: var(--jds-gray-900);
+    }
+
+    /* Modal styles */
+    .jds-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1000;
+        display: none;
+    }
+
+    .jds-modal.active {
+        display: block;
+    }
+
+    .jds-modal-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    .jds-modal-container {
+        position: relative;
+        width: 95%;
+        max-width: 800px;
+        margin: 2rem auto;
+        background: white;
+        border-radius: var(--jds-radius-lg);
+        box-shadow: var(--jds-shadow-lg);
+    }
+
+    .jds-modal-header {
+        padding: var(--jds-spacing-4) var(--jds-spacing-6);
+        border-bottom: 1px solid var(--jds-gray-200);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .jds-modal-header h3 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+    .jds-modal-close {
+        background: none;
+        border: none;
+        color: var(--jds-gray-500);
+        cursor: pointer;
+        padding: var(--jds-spacing-2);
+    }
+
+    .jds-modal-close:hover {
+        color: var(--jds-gray-700);
+    }
+
+    .jds-modal-body {
+        padding: var(--jds-spacing-6);
+        max-height: calc(100vh - 200px);
+        overflow-y: auto;
+    }
+
+    .jds-modal-footer {
+        padding: var(--jds-spacing-4) var(--jds-spacing-6);
+        border-top: 1px solid var(--jds-gray-200);
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: var(--jds-spacing-3);
+    }
+
+    /* Form styles */
+    .jds-form-group {
+        margin-bottom: var(--jds-spacing-4);
+    }
+
+    .jds-form-label {
+        display: block;
+        margin-bottom: var(--jds-spacing-2);
+        font-weight: 500;
+        color: var(--jds-gray-700);
+    }
+
+    .jds-form-control {
+        width: 100%;
+        padding: var(--jds-spacing-2) var(--jds-spacing-3);
+        border: 1px solid var(--jds-gray-300);
+        border-radius: var(--jds-radius-md);
+        font-size: 0.875rem;
+    }
+
+    .jds-form-control:focus {
+        outline: none;
+        border-color: var(--jds-purple);
+        box-shadow: 0 0 0 2px rgba(85, 52, 201, 0.1);
+    }
+
+    .jds-input-group {
+        display: flex;
+        align-items: center;
+    }
+
+    .jds-input-group-text {
+        padding: var(--jds-spacing-2) var(--jds-spacing-3);
+        background: var(--jds-gray-100);
+        border: 1px solid var(--jds-gray-300);
+        border-right: none;
+        border-radius: var(--jds-radius-md) 0 0 var(--jds-radius-md);
+        color: var(--jds-gray-600);
+    }
+
+    .jds-input-group .jds-form-control {
+        border-radius: 0 var(--jds-radius-md) var(--jds-radius-md) 0;
+    }
+
+    /* Updated Component styles */
+    .jds-components-list {
+        border: 1px solid var(--jds-gray-200);
+        border-radius: var(--jds-radius-md);
+        padding: var(--jds-spacing-3);
+        background: var(--jds-gray-50);
+    }
+
+    .jds-component {
+        display: grid;
+        grid-template-columns: 2fr 1fr 2fr auto;
+        gap: var(--jds-spacing-3);
+        padding: var(--jds-spacing-3);
+        background: white;
+        border: 1px solid var(--jds-gray-200);
+        border-radius: var(--jds-radius-md);
+        margin-bottom: var(--jds-spacing-3);
+        align-items: start;
+    }
+
+    .jds-component:last-child {
+        margin-bottom: 0;
+    }
+
+    .jds-component-type {
+        margin-top: 0;
+    }
+
+    .jds-component-value {
+        position: relative;
+    }
+
+    .jds-component-value .jds-form-control {
+        width: 100%;
+    }
+
+    .jds-component-value .jds-input-group {
+        width: 100%;
+    }
+
+    .jds-component-formula {
+        font-family: monospace;
+        font-size: 0.875rem;
+    }
+
+    .jds-component-formula::placeholder {
+        color: var(--jds-gray-400);
+    }
+
+    .jds-component-remove {
+        color: var(--jds-error);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: var(--jds-spacing-2);
+        border-radius: var(--jds-radius-md);
+        transition: all 0.2s ease;
+        align-self: center;
+    }
+
+    .jds-component-remove:hover {
+        background: var(--jds-error-light);
+    }
+
+    .mt-2 {
+        margin-top: var(--jds-spacing-2);
+    }
+</style>
+
+<script>
+    let currentComponents = [];
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize any necessary functionality
+    });
+
+    function openNewStructureModal() {
+        document.getElementById('modalTitle').textContent = 'New Salary Structure';
+        document.getElementById('structureId').value = '';
+        document.getElementById('structureForm').reset();
+        currentComponents = [];
+        updateComponentsUI();
+        openModal();
+    }
+
+    function editStructure(structureId) {
+        document.getElementById('modalTitle').textContent = 'Edit Salary Structure';
+        document.getElementById('structureId').value = structureId;
+        
+        // Fetch structure data
+        frappe.call({
+            method: 'jokoor.api.payroll.get_salary_structure',
+            args: { structure_id: structureId },
+            callback: function(response) {
+                if (response.message) {
+                    const structure = response.message;
+                    document.getElementById('structureName').value = structure.name;
+                    document.getElementById('baseSalary').value = structure.base_salary;
+                    document.getElementById('status').value = structure.status;
+                    currentComponents = structure.components;
+                    updateComponentsUI();
+                    openModal();
+                }
+            }
+        });
+    }
+
+    function deleteStructure(structureId) {
+        if (confirm('Are you sure you want to delete this salary structure?')) {
+            frappe.call({
+                method: 'jokoor.api.payroll.delete_salary_structure',
+                args: { structure_id: structureId },
+                callback: function(response) {
+                    if (response.message.success) {
+                        location.reload();
+                    }
+                }
+            });
+        }
+    }
+
+    function addComponent() {
+        currentComponents.push({
+            name: '',
+            type: 'amount',
+            value: ''
+        });
+        updateComponentsUI();
+    }
+
+    function removeComponent(index) {
+        currentComponents.splice(index, 1);
+        updateComponentsUI();
+    }
+
+    function updateComponentsUI() {
+        const container = document.getElementById('componentsContainer');
+        container.innerHTML = currentComponents.map((component, index) => `
+            <div class="jds-component">
+                <input type="text" 
+                       class="jds-form-control" 
+                       placeholder="Component Name"
+                       value="${component.name}"
+                       onchange="updateComponent(${index}, 'name', this.value)">
+                
+                <select class="jds-form-control jds-component-type"
+                        onchange="updateComponent(${index}, 'type', this.value)">
+                    <option value="amount" ${component.type === 'amount' ? 'selected' : ''}>Amount</option>
+                    <option value="formula" ${component.type === 'formula' ? 'selected' : ''}>Formula</option>
+                </select>
+
+                <div class="jds-component-value">
+                    ${component.type === 'amount' ? 
+                        `<div class="jds-input-group">
+                            <span class="jds-input-group-text">D</span>
+                            <input type="number" 
+                                   class="jds-form-control" 
+                                   placeholder="Enter amount"
+                                   value="${component.value}"
+                                   onchange="updateComponent(${index}, 'value', this.value)">
+                        </div>` :
+                        `<input type="text" 
+                                class="jds-form-control jds-component-formula" 
+                                placeholder="e.g., base_salary * 0.1"
+                                value="${component.value}"
+                                onchange="updateComponent(${index}, 'value', this.value)">`
+                    }
+                </div>
+
+                <button type="button" class="jds-component-remove" onclick="removeComponent(${index})">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `).join('');
+    }
+
+    function updateComponent(index, field, value) {
+        currentComponents[index][field] = value;
+        if (field === 'type') {
+            // Reset value when switching types
+            currentComponents[index].value = '';
+            updateComponentsUI();
+        }
+    }
+
+    function submitForm() {
+        const form = document.getElementById('structureForm');
+        if (form.checkValidity()) {
+            const formData = {
+                id: document.getElementById('structureId').value,
+                name: document.getElementById('structureName').value,
+                base_salary: document.getElementById('baseSalary').value,
+                status: document.getElementById('status').value,
+                components: currentComponents
+            };
+
+            frappe.call({
+                method: 'jokoor.api.payroll.save_salary_structure',
+                args: { structure: formData },
+                callback: function(response) {
+                    if (response.message.success) {
+                        closeModal();
+                        location.reload();
+                    }
+                }
+            });
+        } else {
+            form.reportValidity();
+        }
+    }
+
+    function openModal() {
+        document.getElementById('structureModal').classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('structureModal').classList.remove('active');
+    }
+</script>
+{% endblock %} 

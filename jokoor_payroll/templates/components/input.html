@@ -1,0 +1,38 @@
+{% macro input(id="input-text", label="Input Label", type="text", value="", placeholder="", required=false, error="",
+info="", size="medium", classes="jk-form-input-sm", disabled=false) %}
+    <label class="jk-form-label" for="{{ id }}">{{ label }} {% if required %}<span class="jk-text-danger">*</span>{% endif %}</label>
+    <input type="{{ type }}" id="{{ id }}" name="{{ id }}" value="{{ value }}" 
+        {% if placeholder %}placeholder="{{ placeholder }}" {% endif %} 
+        {% if required %}required{% endif %}
+        {% if disabled %}disabled{% endif %}
+        class="{{ classes }}">
+    {% if error %}
+    <span class="jk-form-error">{{ error }}</span>
+    {% endif %}
+    {% if info %}
+    <span class="jk-form-info">{{ info }}</span>
+    {% endif %}
+
+
+<script>
+    (function () {
+        const input = document.getElementById("{{ id }}");
+        const wrap = input.closest(".input-text-wrap");
+
+        function toggleHasValueClass() {
+            if (input.value) {
+                wrap.classList.add("has-value");
+            } else {
+                wrap.classList.remove("has-value");
+            }
+        }
+
+        input.addEventListener("input", toggleHasValueClass);
+        input.addEventListener("focus", toggleHasValueClass);
+        input.addEventListener("blur", toggleHasValueClass);
+
+        // initialize on page load
+        toggleHasValueClass();
+    })();
+</script>
+{% endmacro %}

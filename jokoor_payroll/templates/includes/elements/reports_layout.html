@@ -1,0 +1,183 @@
+<!-- Reports Layout Template -->
+<div class="dashboard-container">
+    <!-- Reports Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="/dashboard" class="sidebar-logo">Jokoor</a>
+        </div>
+        <div class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Reports</div>
+                
+                <!-- Payroll Reports -->
+                <a href="/dashboard/reports/payroll/summary" class="nav-item {% if report_page == 'payroll_summary' %}active{% endif %}">
+                    <i class="fas fa-file-invoice-dollar"></i> Payroll Summary
+                </a>
+                <a href="/dashboard/reports/payroll/pay-summary" class="nav-item {% if report_page == 'pay_summary' %}active{% endif %}">
+                    <i class="fas fa-money-bill-wave"></i> Pay Summary
+                </a>
+                <a href="/dashboard/reports/payroll/statement" class="nav-item {% if report_page == 'salary_statement' %}active{% endif %}">
+                    <i class="fas fa-file-alt"></i> Salary Statement
+                </a>
+                
+                <!-- Employee Reports -->
+                <a href="/dashboard/reports/employees/salary" class="nav-item {% if report_page == 'employee_salary' %}active{% endif %}">
+                    <i class="fas fa-user-tie"></i> Employee Salary
+                </a>
+                <a href="/dashboard/reports/employees/deductions" class="nav-item {% if report_page == 'employee_deductions' %}active{% endif %}">
+                    <i class="fas fa-hand-holding-usd"></i> Employee Deductions
+                </a>
+                <a href="/dashboard/reports/employees/tax" class="nav-item {% if report_page == 'tax_summary' %}active{% endif %}">
+                    <i class="fas fa-receipt"></i> Tax Summary
+                </a>
+                <a href="/dashboard/reports/employees/tax-payment" class="nav-item {% if report_page == 'tax_payment' %}active{% endif %}">
+                    <i class="fas fa-file-invoice"></i> Tax Payment Summary
+                </a>
+                <a href="/dashboard/reports/payroll/journal" class="nav-item {% if report_page == 'payroll_journal' %}active{% endif %}">
+                    <i class="fas fa-book"></i> Payroll Journal Summary
+                </a>
+                <a href="/dashboard/reports/activity-logs" class="nav-item {% if report_page == 'activity_logs' %}active{% endif %}">
+                    <i class="fas fa-history"></i> Activity Logs
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        {{ content|safe }}
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary-color: #5931C7;
+        --primary-light: #7B5DD2;
+        --accent-color: #673de6;
+        --sidebar-width: 220px;
+        --header-height: 60px;
+        --sidebar-bg: #f5f7ff;
+        --sidebar-hover: rgba(103, 61, 230, 0.1);
+        --sidebar-active: rgba(103, 61, 230, 0.15);
+        --border-color: #e8e9ec;
+        --dark-text: #222222;
+        --body-text: #555555;
+        --light-text: #8A8A8F;
+    }
+    
+    /* Dashboard layout */
+    .dashboard-container {
+        display: flex;
+        flex: 1;
+    }
+    
+    /* Sidebar styles */
+    .sidebar {
+        width: var(--sidebar-width);
+        background-color: var(--sidebar-bg);
+        color: var(--dark-text);
+        position: fixed;
+        height: 100vh;
+        z-index: 1000;
+        transition: all 0.3s ease;
+        overflow-y: auto;
+        border-right: 1px solid var(--border-color);
+        padding-top: 0;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .sidebar-header {
+        padding: 20px;
+        border-bottom: 1px solid var(--border-color);
+        text-align: center;
+    }
+    
+    .sidebar-logo {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--accent-color);
+        text-decoration: none;
+    }
+    
+    .sidebar-nav {
+        display: flex;
+        flex-direction: column;
+        padding: 15px 0;
+        flex-grow: 1;
+    }
+    
+    .nav-section {
+        margin-bottom: 20px;
+    }
+    
+    .nav-section-title {
+        padding: 10px 25px;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: var(--light-text);
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    
+    .nav-item {
+        padding: 10px 25px;
+        display: flex;
+        align-items: center;
+        color: var(--dark-text);
+        text-decoration: none;
+        transition: all 0.2s ease;
+        margin-bottom: 5px;
+        font-size: 0.9rem;
+    }
+    
+    .nav-item:hover {
+        background-color: var(--sidebar-hover);
+        color: var(--accent-color);
+    }
+    
+    .nav-item.active {
+        background-color: var(--sidebar-active);
+        color: var(--accent-color);
+        font-weight: 600;
+    }
+    
+    .nav-item i {
+        margin-right: 15px;
+        width: 20px;
+        text-align: center;
+        color: #707990;
+    }
+    
+    .nav-item.active i {
+        color: var(--accent-color);
+    }
+    
+    /* Main content styles */
+    .main-content {
+        flex: 1;
+        margin-left: var(--sidebar-width);
+        padding: 30px;
+        transition: all 0.3s ease;
+    }
+    
+    /* Table styles */
+    .table th {
+        font-weight: 600;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .table td {
+        vertical-align: middle;
+    }
+    
+    .dropdown-toggle::after {
+        vertical-align: middle;
+    }
+    
+    .dropdown-item.active, 
+    .dropdown-item:active {
+        background-color: var(--accent-color);
+    }
+</style>

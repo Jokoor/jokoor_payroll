@@ -1,0 +1,400 @@
+{# 
+  Reusable Data Table With Filters Component
+  Usage: 
+  1. Set the table parameters
+  {% set table_id = 'uniqueTableId' %}
+  {% set filters = [
+    {
+      "filter_id": "statusFilter",
+      "filter_label": "Status",
+      "filter_type": "select",
+      "filter_options": [
+        {"value": "", "label": "All Statuses"},
+        {"value": "active", "label": "Active"},
+        {"value": "inactive", "label": "Inactive"}
+      ]
+    },
+    {
+      "filter_id": "periodFilter",
+      "filter_label": "Period",
+      "filter_type": "select",
+      "filter_options": [
+        {"value": "", "label": "All Periods"},
+        {"value": "current", "label": "Current Period"},
+        {"value": "previous", "label": "Previous Period"}
+      ]
+    }
+  ] %}
+  {% set search_placeholder = "Search items..." %}
+  {% set columns = [
+    {"key": "name", "label": "Name"},
+    {"key": "status", "label": "Status"},
+    {"key": "date", "label": "Date"}
+  ] %}
+  {% set data = your_data_array %}
+  
+  2. Include the template
+  {% include "jokoor_payroll/templates/includes/elements/data_table_with_filters.html" %}
+  
+  Parameters:
+  - table_id: Unique ID for the table
+  - filters: Array of filter objects (optional)
+  - search_placeholder: Placeholder text for search input (optional)
+  - columns: Array of column objects with 'key' and 'label'
+  - data: Array of data objects to display in the table
+  - empty_message: Message to show when table is empty (optional)
+  - row_click_type: 'modal' or 'page' (optional, default: 'page')
+  - modal_id: ID of modal to open on row click (required if row_click_type is 'modal')
+  - custom_page_url: Custom URL pattern for page navigation (optional)
+  - hide_columns: Array of column keys to hide from display (optional)
+#}
+
+{# Default values for optional parameters #}
+{% if filters is not defined %}{% set filters = [] %}{% endif %}
+{% if search_placeholder is not defined %}{% set search_placeholder = "Search..." %}{% endif %}
+{% if empty_message is not defined %}{% set empty_message = "No data found" %}{% endif %}
+{% if row_click_type is not defined %}{% set row_click_type = 'page' %}{% endif %}
+{% if hide_columns is not defined %}{% set hide_columns = [] %}{% endif %}
+
+<div class="data-table-component mb-4" id="{{ table_id }}-component">
+    <!-- Filters Section -->
+    {% if filters|length > 0 or search_placeholder %}
+    <div class="filter-section mb-3">
+        <div class="filter-container">
+            <div class="row g-3 align-items-end">
+                {% if filters|length > 0 %}
+                    {% for filter in filters %}
+                    <div class="col-md-{{ 12 // (filters|length + 1) }}">
+                        <label for="{{ filter.filter_id }}" class="form-label fw-medium text-secondary small mb-1">{{ filter.filter_label }}</label>
+                        {% if filter.filter_type == 'select' %}
+                        <select class="form-select form-select-sm data-table-filter" id="{{ filter.filter_id }}" data-filter-id="{{ filter.filter_id }}">
+                            {% for option in filter.filter_options %}
+                            <option value="{{ option.value }}">{{ option.label }}</option>
+                            {% endfor %}
+                        </select>
+                        {% elif filter.filter_type == 'date' %}
+                        <input type="date" class="form-control form-control-sm data-table-filter" id="{{ filter.filter_id }}" data-filter-id="{{ filter.filter_id }}">
+                        {% else %}
+                        <input type="text" class="form-control form-control-sm data-table-filter" id="{{ filter.filter_id }}" data-filter-id="{{ filter.filter_id }}" placeholder="{{ filter.filter_placeholder|default('') }}">
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+                <div class="col-md-{{ 12 // (filters|length + 1) }}">
+                    <label for="{{ table_id }}-search" class="form-label fw-medium text-secondary small mb-1">Search</label>
+                    <div class="input-group input-group-sm">
+                        <input type="text" class="form-control form-control-sm" id="{{ table_id }}-search" placeholder="{{ search_placeholder }}">
+                        <span class="input-group-text bg-white">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                        <button type="button" class="btn btn-link btn-sm text-muted p-0 ms-2 d-flex align-items-center" id="{{ table_id }}-reset-filters" title="Reset filters">
+                            <i class="fas fa-times-circle"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Table Section -->
+    <div class="table-responsive">
+        <table class="table table-hover" id="{{ table_id }}">
+            <thead>
+                <tr>
+                    {% for column in columns %}
+                    {% if column.key not in hide_columns %}
+                    <th scope="col" data-column-key="{{ column.key }}">{{ column.label }}</th>
+                    {% endif %}
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% if data|length > 0 %}
+                    {% for item in data %}
+                    <tr class="clickable-row" 
+                        data-row-id="{{ item.id }}" 
+                        data-click-type="{{ row_click_type }}"
+                        {% if row_click_type == 'modal' %}data-modal-id="{{ modal_id }}"{% endif %}
+                        {% if row_click_type == 'page' %}data-page-url="{% if custom_page_url %}{{ custom_page_url|replace('{id}', item.id) }}{% else %}{{ request.path }}view?id={{ item.id }}{% endif %}"{% endif %}>
+                        {% for column in columns %}
+                        {% if column.key not in hide_columns %}
+                        <td>{{ item[column.key]|default('') }}</td>
+                        {% endif %}
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="{{ columns|length - hide_columns|length }}" class="text-center py-4">
+                        <div class="empty-state">
+                            <div class="empty-icon mb-3">
+                                <i class="fas fa-search text-muted"></i>
+                            </div>
+                            <h6 class="empty-title">{{ empty_message }}</h6>
+                            <p class="empty-description text-muted">Try adjusting your search or filter to find what you're looking for.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    /* Data Table Styles */
+    .data-table-component .filter-section {
+        background-color: #f9fafb;
+        border-radius: 10px;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+    }
+    
+    .data-table-component .form-label {
+        color: #6b7280;
+        margin-bottom: 0.25rem;
+    }
+    
+    .data-table-component .form-select,
+    .data-table-component .form-control {
+        border-radius: 6px;
+        border: 1px solid #d1d5db;
+        background-color: #fff;
+    }
+    
+    .data-table-component .form-select:focus,
+    .data-table-component .form-control:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+    }
+    
+    .data-table-component .input-group-text {
+        border-radius: 0 6px 6px 0;
+        border-left: none;
+    }
+    
+    .data-table-component .table {
+        margin-bottom: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    
+    .data-table-component .table th {
+        background-color: #f9fafb;
+        font-weight: 600;
+        color: #4b5563;
+        padding: 0.75rem 1rem;
+        border-top: 1px solid #e5e7eb;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 0.875rem;
+    }
+    
+    .data-table-component .table td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #f3f4f6;
+        color: #374151;
+        font-size: 0.875rem;
+    }
+    
+    .data-table-component .table tbody tr:hover {
+        background-color: #f9fafb;
+    }
+    
+    .data-table-component .clickable-row {
+        cursor: pointer;
+    }
+    
+    .data-table-component .empty-state {
+        padding: 2rem 0;
+    }
+    
+    .data-table-component .empty-icon {
+        font-size: 2.5rem;
+        color: #d1d5db;
+    }
+    
+    .data-table-component .btn-link {
+        text-decoration: none;
+    }
+    
+    .data-table-component .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border-radius: 1rem;
+    }
+    
+    .data-table-component .status-success {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+    }
+    
+    .data-table-component .status-warning {
+        background-color: rgba(245, 158, 11, 0.1);
+        color: #f59e0b;
+    }
+    
+    .data-table-component .status-danger {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+    }
+    
+    .data-table-component .status-info {
+        background-color: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+    }
+    
+    .data-table-component .status-default {
+        background-color: rgba(107, 114, 128, 0.1);
+        color: #6b7280;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize the DataTable component
+        const tableComponent = document.getElementById('{{ table_id }}-component');
+        if (!tableComponent) return;
+        
+        const table = document.getElementById('{{ table_id }}');
+        const searchInput = document.getElementById('{{ table_id }}-search');
+        const resetButton = document.getElementById('{{ table_id }}-reset-filters');
+        const filterInputs = tableComponent.querySelectorAll('.data-table-filter');
+        
+        // Handle filter changes
+        function applyFilters() {
+            const rows = table.querySelectorAll('tbody tr');
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+            
+            // Collect filter values
+            const activeFilters = {};
+            filterInputs.forEach(filter => {
+                const filterId = filter.dataset.filterId;
+                const filterValue = filter.value;
+                if (filterValue) {
+                    activeFilters[filterId] = filterValue;
+                }
+            });
+            
+            rows.forEach(row => {
+                if (row.classList.contains('empty-row')) return;
+                
+                let showRow = true;
+                
+                // Apply search filter
+                if (searchTerm) {
+                    let rowText = row.textContent.toLowerCase();
+                    if (!rowText.includes(searchTerm)) {
+                        showRow = false;
+                    }
+                }
+                
+                // Apply other filters
+                if (showRow && Object.keys(activeFilters).length > 0) {
+                    for (const [filterId, filterValue] of Object.entries(activeFilters)) {
+                        // Get the column index for this filter
+                        const columnKey = filterId.replace('Filter', '').toLowerCase();
+                        const columnIndex = Array.from(table.querySelectorAll('th')).findIndex(
+                            th => th.dataset.columnKey && th.dataset.columnKey.toLowerCase() === columnKey
+                        );
+                        
+                        if (columnIndex >= 0) {
+                            const cellValue = row.cells[columnIndex].textContent.toLowerCase();
+                            if (!cellValue.includes(filterValue.toLowerCase())) {
+                                showRow = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                row.style.display = showRow ? '' : 'none';
+            });
+            
+            // Show/hide empty state
+            const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none' && !row.classList.contains('empty-row'));
+            const emptyStateRow = table.querySelector('tbody tr.empty-row');
+            
+            if (visibleRows.length === 0 && !emptyStateRow) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.className = 'empty-row';
+                emptyRow.innerHTML = `
+                    <td colspan="${table.querySelectorAll('thead th').length}" class="text-center py-4">
+                        <div class="empty-state">
+                            <div class="empty-icon mb-3">
+                                <i class="fas fa-search text-muted"></i>
+                            </div>
+                            <h6 class="empty-title">No matching records found</h6>
+                            <p class="empty-description text-muted">Try adjusting your search or filter to find what you're looking for.</p>
+                        </div>
+                    </td>
+                `;
+                table.querySelector('tbody').appendChild(emptyRow);
+            } else if (visibleRows.length > 0 && emptyStateRow) {
+                emptyStateRow.remove();
+            }
+        }
+        
+        // Reset all filters
+        function resetFilters() {
+            if (searchInput) searchInput.value = '';
+            filterInputs.forEach(filter => {
+                filter.value = '';
+            });
+            applyFilters();
+        }
+        
+        // Setup event listeners
+        if (searchInput) {
+            searchInput.addEventListener('input', applyFilters);
+        }
+        
+        if (resetButton) {
+            resetButton.addEventListener('click', resetFilters);
+        }
+        
+        filterInputs.forEach(filter => {
+            filter.addEventListener('change', applyFilters);
+        });
+        
+        // Handle row clicks
+        const clickableRows = table.querySelectorAll('.clickable-row');
+        clickableRows.forEach(row => {
+            row.addEventListener('click', function(e) {
+                const clickType = this.dataset.clickType;
+                const rowId = this.dataset.rowId;
+                
+                if (clickType === 'modal') {
+                    const modalId = this.dataset.modalId;
+                    const modal = document.getElementById(modalId);
+                    if (modal) {
+                        // Populate modal with row data if needed
+                        const bootstrap = window.bootstrap;
+                        if (bootstrap) {
+                            const bsModal = new bootstrap.Modal(modal);
+                            bsModal.show();
+                            
+                            // Dispatch custom event for row click with data
+                            const rowClickEvent = new CustomEvent('row:clicked', {
+                                detail: {
+                                    rowId: rowId,
+                                    clickType: clickType,
+                                    modalId: modalId,
+                                    rowData: this.dataset
+                                }
+                            });
+                            document.dispatchEvent(rowClickEvent);
+                        }
+                    }
+                } else if (clickType === 'page') {
+                    const pageUrl = this.dataset.pageUrl;
+                    if (pageUrl) {
+                        window.location.href = pageUrl;
+                    }
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,238 @@
+{% macro form_table(
+    id="form-table",
+    columns=[],
+    rows=[],
+    add_button_text="Add Row"
+) %}
+<div class="form-table-wrap" id="{{ id }}-wrap">
+  <table class="form-table" id="{{ id }}">
+    <thead>
+      <tr>
+        {% for col in columns %}
+          <th>{{ col.label }}</th>
+        {% endfor %}
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        {% set row_idx = loop.index0 %}
+        <tr>
+          {% for col in columns %}
+            {% set col_idx = loop.index0 %}
+            <td>
+              {% if col.type == "input" %}
+                <input
+                  type="{{ col.input_type or 'text' }}"
+                  id="{{ col.id }}-{{ col_idx }}-{{ row_idx }}"
+                  name="{{ col.id }}-{{ row_idx }}"
+                  class="form-table-field"
+                  value="{{ row[col.id] or '' }}"
+                  placeholder="{{ col.placeholder or '' }}"
+                  autocomplete="off"
+                  {% if col.readonly %}readonly{% endif %}
+                  {% if col.disabled %}disabled{% endif %}
+                  {% if col.required %}required{% endif %}
+                  {% if col.min is defined %}min="{{ col.min }}"{% endif %}
+                  {% if col.max is defined %}max="{{ col.max }}"{% endif %}
+                  {% if col.step is defined %}step="{{ col.step }}"{% endif %}
+                />
+              {% elif col.type == "select" %}
+                <select
+                  id="{{ col.id }}-{{ col_idx }}-{{ row_idx }}"
+                  name="{{ col.id }}-{{ row_idx }}"
+                  class="form-table-field form-table-select"
+                  data-placeholder="{{ col.placeholder or 'Select' }}"
+                  {% if col.readonly %}readonly{% endif %}
+                  {% if col.disabled %}disabled{% endif %}
+                  {% if col.required %}required{% endif %}
+                >
+                  <option value="" disabled {% if not row[col.id] %}selected{% endif %}>{{ col.placeholder or 'Select' }}</option>
+                  {% for opt in col.options %}
+                    {% if opt is string %}
+                      <option value="{{ opt }}" {% if row[col.id]==opt %}selected{% endif %}>{{ opt }}</option>
+                    {% else %}
+                      <option value="{{ opt.value }}" {% if row[col.id]==opt.value %}selected{% endif %}>{{ opt.label }}</option>
+                    {% endif %}
+                  {% endfor %}
+                </select>
+              {% elif col.type == "date" %}
+                <input
+                  type="text"
+                  id="{{ col.id }}-{{ col_idx }}-{{ row_idx }}"
+                  name="{{ col.id }}-{{ row_idx }}"
+                  class="form-table-field form-table-date"
+                  value="{{ row[col.id] or '' }}"
+                  placeholder="{{ col.placeholder or 'Select date' }}"
+                  autocomplete="off"
+                  {% if col.readonly %}readonly{% endif %}
+                  {% if col.disabled %}disabled{% endif %}
+                  {% if col.required %}required{% endif %}
+                  {% if col.min is defined %}min="{{ col.min }}"{% endif %}
+                  {% if col.max is defined %}max="{{ col.max }}"{% endif %}
+                  {% if col.step is defined %}step="{{ col.step }}"{% endif %}
+                />
+              {% endif %}
+            </td>
+          {% endfor %}
+          <td>
+            <button type="button" class="form-table-remove-row" onclick="this.closest('tr').remove(); setTimeout(initFormTablePlugins_{{ id }}, 10)">Remove</button>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <button type="button" class="jk-btn jk-btn-primary jk-btn-small form-table-add-row" onclick="addFormTableRow('{{ id }}')">{{ add_button_text }}</button>
+  
+</div>
+<script>
+window['columns_{{ id }}'] = {{ columns|tojson }};
+
+function initFormTablePlugins(tableId) {
+  // Datepicker
+  $('.form-table-date').each(function() {
+    if (!$(this).data('daterangepicker')) {
+      $(this).daterangepicker({
+        singleDatePicker: true,
+        autoUpdateInput: true,
+        locale: { format: 'MM/DD/YYYY' }
+      });
+    }
+  });
+  // Select2
+  $('.form-table-select').each(function() {
+    if (!$(this).hasClass('select2-hidden-accessible')) {
+      $(this).select2({
+        width: '100%',
+        placeholder: $(this).data('placeholder') || 'Select',
+        allowClear: true,
+        minimumResultsForSearch: 0
+      });
+    }
+  });
+}
+$(document).ready(function() {
+  initFormTablePlugins('contacts-table');
+});
+function addFormTableRow(tableId) {
+  var $table = $('#' + tableId);
+  var $tbody = $table.find('tbody');
+  var rowCount = $tbody.find('tr').length;
+  var columns = window['columns_' + tableId];
+  var tr = $('<tr></tr>');
+  for (var col_idx = 0; col_idx < columns.length; col_idx++) {
+    var col = columns[col_idx];
+    var td = $('<td></td>');
+    if (col.type === "input") {
+      var $input = $('<input>', {
+        type: col.input_type || 'text',
+        id: col.id + '-' + col_idx + '-' + rowCount,
+        name: col.id + '-' + rowCount,
+        class: 'form-table-field',
+        placeholder: col.placeholder || '',
+        autocomplete: 'off'
+      });
+      if (col.readonly) $input.prop('readonly', true);
+      if (col.disabled) $input.prop('disabled', true);
+      if (col.required) $input.prop('required', true);
+      if (col.min !== undefined) $input.attr('min', col.min);
+      if (col.max !== undefined) $input.attr('max', col.max);
+      if (col.step !== undefined) $input.attr('step', col.step);
+      td.append($input);
+    } else if (col.type === "select") {
+      var select = $('<select>', {
+        id: col.id + '-' + col_idx + '-' + rowCount,
+        name: col.id + '-' + rowCount,
+        class: 'form-table-field form-table-select',
+        'data-placeholder': col.placeholder || 'Select'
+      });
+      if (col.readonly) select.prop('readonly', true);
+      if (col.disabled) select.prop('disabled', true);
+      if (col.required) select.prop('required', true);
+      select.append($('<option>', {
+        value: '',
+        text: col.placeholder || 'Select',
+        disabled: true,
+        selected: true
+      }));
+      for (var o = 0; o < col.options.length; o++) {
+        var opt = col.options[o];
+        if (typeof opt === 'string') {
+          select.append($('<option>', { value: opt, text: opt }));
+        } else {
+          select.append($('<option>', { value: opt.value, text: opt.label }));
+        }
+      }
+      td.append(select);
+    } else if (col.type === "date") {
+      var $input = $('<input>', {
+        type: col.input_type || 'text',
+        id: col.id + '-' + col_idx + '-' + rowCount,
+        name: col.id + '-' + rowCount,
+        class: 'form-table-field form-table-date',
+        placeholder: col.placeholder || '',
+        autocomplete: 'off'
+      });
+      if (col.readonly) $input.prop('readonly', true);
+      if (col.disabled) $input.prop('disabled', true);
+      if (col.required) $input.prop('required', true);
+      if (col.min !== undefined) $input.attr('min', col.min);
+      if (col.max !== undefined) $input.attr('max', col.max);
+      if (col.step !== undefined) $input.attr('step', col.step);
+      td.append($input);
+    }
+    tr.append(td);
+  }
+  // Actions column
+  var removeBtn = $('<button>', {
+    type: 'button',
+    class: 'form-table-remove-row',
+    text: 'Remove',
+    click: function() { $(this).closest('tr').remove(); setTimeout(function(){initFormTablePlugins(tableId)}, 10); }
+  });
+  tr.append($('<td>').append(removeBtn));
+  $tbody.append(tr);
+  setTimeout(function(){initFormTablePlugins(tableId)}, 10);
+}
+</script>
+<!-- jQuery (must be first) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Moment.js (required by daterangepicker) -->
+<script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<!-- Daterangepicker JS and CSS -->
+<script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<!-- Select2 JS and CSS (for select fields) -->
+<style>
+.form-table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
+.form-table th, .form-table td { border: 1px solid #e5e7eb; padding: 0.5rem; }
+.form-table-add-row { margin-top: 0.5rem; }
+.form-table-remove-row { color: #b91c1c; background: none; border: none; cursor: pointer; }
+.form-table-field {
+  width: 100%;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  font-size: 0.95rem;
+  padding: 0;
+  margin: 0;
+  height: 2rem;
+}
+.form-table-field:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
+}
+</style>
+{% endmacro %}
+
+{% macro render_field_attrs(col) %}
+    {% if col.readonly %}readonly{% endif %}
+    {% if col.disabled %}disabled{% endif %}
+    {% if col.required %}required{% endif %}
+    {% if col.min is defined %}min="{{ col.min }}"{% endif %}
+    {% if col.max is defined %}max="{{ col.max }}"{% endif %}
+    {% if col.step is defined %}step="{{ col.step }}"{% endif %}
+{% endmacro %}
