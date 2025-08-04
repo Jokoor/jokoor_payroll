@@ -1,5 +1,4 @@
 import frappe
-from jokoor.utils import handle_login
 
 def get_context(context):
     if frappe.session.user == "Guest":

@@ -20,7 +20,7 @@
  "list_title": "Employees",
  "login_required": 1,
  "max_attachment_size": 0,
- "modified": "2025-07-29 02:27:23.981980",
+ "modified": "2025-08-04 23:08:42.507195",
  "modified_by": "Administrator",
  "module": "Jokoor Payroll",
  "name": "employee",
@@ -32,18 +32,6 @@
  "show_sidebar": 0,
  "title": "Employee",
  "web_form_fields": [
-  {
-   "allow_read_on_all_link_options": 0,
-   "fieldname": "basic_information",
-   "fieldtype": "Section Break",
-   "hidden": 0,
-   "max_length": 0,
-   "max_value": 0,
-   "precision": "",
-   "read_only": 0,
-   "reqd": 0,
-   "show_in_filter": 0
-  },
   {
    "allow_read_on_all_link_options": 0,
    "fieldname": "first_name",
@@ -362,19 +350,6 @@
   },
   {
    "allow_read_on_all_link_options": 0,
-   "fieldname": "employment_details",
-   "fieldtype": "Page Break",
-   "hidden": 0,
-   "label": "Joining",
-   "max_length": 0,
-   "max_value": 0,
-   "precision": "",
-   "read_only": 0,
-   "reqd": 0,
-   "show_in_filter": 0
-  },
-  {
-   "allow_read_on_all_link_options": 0,
    "fieldname": "branch",
    "fieldtype": "Link",
    "hidden": 0,
@@ -438,19 +413,6 @@
    "options": "Email",
    "precision": "",
    "read_only": 1,
-   "reqd": 0,
-   "show_in_filter": 0
-  },
-  {
-   "allow_read_on_all_link_options": 0,
-   "fieldname": "address_section",
-   "fieldtype": "Section Break",
-   "hidden": 0,
-   "label": "Address",
-   "max_length": 0,
-   "max_value": 0,
-   "precision": "",
-   "read_only": 0,
    "reqd": 0,
    "show_in_filter": 0
   },
